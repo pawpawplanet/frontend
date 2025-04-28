@@ -19,3 +19,10 @@ export function registerUser(data) {
   });
 }
 
+export function loginUser(data) {
+  return service({
+    url: `${root}/login`,
+    method: 'post',
+    data,
+  });
+}
