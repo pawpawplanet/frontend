@@ -68,10 +68,15 @@ const open = ref(false)
               <SvgIcon name="paw" color="#FFCF75" :size="28" />
             </div>
             <div class="px-2">
-              <ButtonComponent class="btn-primary" text="登入" />
+              <RouterLink to="/login">
+                <ButtonComponent class="btn-primary" text="登入" />
+              </RouterLink>
+              
             </div>
             <div class="px-2">
-              <ButtonComponent class="btn-outline-dark-second" text="註冊" />
+              <RouterLink to="/signup">
+                <ButtonComponent class="btn-outline-dark-second" text="註冊" />
+              </RouterLink>
             </div>
           </div>
         </div>
