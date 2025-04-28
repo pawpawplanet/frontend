@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // create an axios instance
 const service = axios.create({
-  baseURL: '', // api url
+  baseURL: 'http://localhost:8080', // api url
   withCredentials: false, // send cookies when cross-domain requests
   timeout: 40000, // request timeout
 });
@@ -10,8 +10,12 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   (config) => {
-    // 驗證 token 動作
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
+
   },
   (error) => {
     console.log(error);
@@ -20,11 +24,16 @@ service.interceptors.request.use(
 );
 
 // response interceptor
-service.interceptors.response.use((response) => {
+service.interceptors.response.use(
+  (response) => {
     console.log(response)
+    return response;
     // 回傳錯誤動作，可搭配 toast 顯示錯誤資訊
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    return Promise.reject(error);
+  }
+
 );
 
 export default service;
