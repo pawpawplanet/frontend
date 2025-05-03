@@ -1,5 +1,6 @@
 <script setup>
 import Header from '@/components/header/header-component.vue'
+import Foorer from '@/components/footer/footer-component.vue'
 </script>
 <template>
   <div class="w-100 min-vh-100">
@@ -9,5 +10,6 @@ import Header from '@/components/header/header-component.vue'
         <RouterView />
       </div>
     </main>
+    <Foorer />
   </div>
 </template>
