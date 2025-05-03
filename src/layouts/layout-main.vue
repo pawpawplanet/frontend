@@ -1,15 +1,15 @@
 <script setup>
 import Header from '@/components/header/header-component.vue'
-import Foorer from '@/components/footer/footer-component.vue'
+import Footer from '@/components/footer/footer-component.vue'
 </script>
 <template>
-  <div class="w-100 min-vh-100">
+  <main class="w-100 layout-main">
     <Header />
-    <main>
+    <div class="w-100 layout-main-content">
       <div class="container">
         <RouterView />
       </div>
-    </main>
-    <Foorer />
-  </div>
+      <Footer />
+    </div>
+  </main>
 </template>
