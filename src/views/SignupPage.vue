@@ -24,6 +24,7 @@
           <div class="mb-3">
             <label for="password" class="form-label">密碼</label>
             <input type="password" class="form-control" id="password" v-model="password" required>
+            <div class="form-text">密碼需包含至少 8 個字元並包含英文與數字</div>
           </div>
           <div class="mb-3">
             <label for="confirmPassword" class="form-label">確認密碼</label>
@@ -89,7 +90,7 @@
       const response = await registerUser(formData); 
       console.log('註冊成功:', response.data);
       alert('註冊成功！');
-      router.push('/');
+      router.push('/login');
     } catch (error) {
       console.error('註冊失敗:', error.response?.data || error.message);
       if (error.response && error.response.data && error.response.data.message) {
