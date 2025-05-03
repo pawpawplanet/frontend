@@ -1,47 +1,58 @@
 <template>
-   
-   <div class="w-100 h-25 bg-secondary-tint py-1-25">
-      <div class="container">
-          <div class="d-flex align-items-center justify-content-between">
-              <RouterLink to="/">
-              <img src="@/assets/images/logo/logo.png" alt="">
-              </RouterLink>
-          </div>
-      </div>    
-   </div>
+  <!-- 上方 Logo 區塊 -->
+  <div class="w-100 h-25 bg-secondary-tint py-1-25">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between">
+        <RouterLink to="/">
+          <img src="@/assets/images/logo/logo.png" alt="logo">
+        </RouterLink>
+      </div>
+    </div>    
+  </div>
 
-    <div class="container py-5">
-      <h1>註冊</h1>
-      <form @submit.prevent="submitForm">
-        <div class="mb-3">
-          <label for="email" class="form-label">Email address</label>
-          <input type="email" class="form-control" id="email" v-model="email" required>
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">密碼</label>
-          <input type="password" class="form-control" id="password" v-model="password" required>
-        </div>
-        <div class="mb-3">
-          <label for="confirmPassword" class="form-label">確認密碼</label>
-          <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label d-block">選擇身分</label>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" id="roleEmployer" name="role" value="owner" v-model="role">
-            <label class="form-check-label" for="roleEmployer">飼主</label>
+  <!-- 註冊表單 + Icon -->
+  <div class="container py-5">
+    <div class="row">
+      <!-- 左側：註冊表單 -->
+      <div class="col-md-8">
+        <h1>註冊</h1>
+        <form @submit.prevent="submitForm">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" v-model="email" required>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" id="roleContractor" name="role" value="freelancer" v-model="role">
-            <label class="form-check-label" for="roleContractor">接案者</label>
+          <div class="mb-3">
+            <label for="password" class="form-label">密碼</label>
+            <input type="password" class="form-control" id="password" v-model="password" required>
           </div>
-        </div>
-        <button type="submit" class="btn btn-primary">註冊</button>
-      </form>
-      <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">確認密碼</label>
+            <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label d-block">選擇身分</label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="roleEmployer" name="role" value="owner" v-model="role">
+              <label class="form-check-label" for="roleEmployer">飼主</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="roleContractor" name="role" value="freelancer" v-model="role">
+              <label class="form-check-label" for="roleContractor">接案者</label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">註冊</button>
+        </form>
+        <p v-if="errorMessage" class="text-danger mt-3">{{ errorMessage }}</p>
+      </div>
+
+      <!-- 右側：Icon -->
+      <div class="col-md-4 d-flex align-items-center justify-content-center">
+        <SvgIcon name="paw" color="#FFCF75" :size="80" />
+      </div>
     </div>
-  </template>
-  
+  </div>
+</template>
+
   <script setup>
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
