@@ -1,15 +1,38 @@
 
 <template>
     <main>
-        <div class="w-100 h-25 bg-secondary-tint py-1-25">
-            <div class="container">
-                <div class="d-flex align-items-center justify-content-between">
-                    <RouterLink to="/">
-                    <img src="@/assets/images/logo/logo.png" alt="">
-                    </RouterLink>
-                </div>
-            </div>
+      <div class="w-100 h-25 bg-secondary-tint py-1-25">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between">
+      <!-- 左側 Logo -->
+      <RouterLink to="/">
+        <img src="@/assets/images/logo/logo.png" alt="">
+      </RouterLink>
+
+      <!-- 右側 使用者選單 -->
+      <div class="d-flex align-items-center">
+        <span class="me-2">飼主及寵物個人中心</span>
+        <div class="dropdown">
+          <button
+            class="btn btn-light dropdown-toggle d-flex align-items-center"
+            type="button"
+            id="userDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <i class="bi bi-person-circle fs-4 me-2"></i>
+            使用者姓名
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="#">個人資料</a></li>
+            <li><a class="dropdown-item" href="#">登出</a></li>
+          </ul>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
     <div class="container py-5">
       <h2 class="text-center mb-4">飼主及毛小孩個人中心</h2>
