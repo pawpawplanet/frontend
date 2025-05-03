@@ -3,7 +3,7 @@ import { ref } from 'vue'
 const open = ref(false)
 </script>
 <template>
-  <div class="w-100 h-25 bg-secondary-tint py-1-25">
+  <div class="position-fixed top-0 w-100 bg-secondary-tint py-1-25">
     <div class="container">
       <div class="d-flex align-items-center justify-content-between">
         <RouterLink to="/">
