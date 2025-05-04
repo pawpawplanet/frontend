@@ -1,38 +1,67 @@
+<script setup>
+  import Modal from '@/components/modal/owner-modal.vue'
+  import { ref } from 'vue'
+  
+  const thisModal = ref();
+  const owner = ref({
+    name: '王志明',
+    location: '台北市信義區',
+    phone: '0988576463',
+    email: 'love_cat0908@gmaile',
+    avatar: 'https://via.placeholder.com/250', // 替換為實際照片 URL
+    description: '嗨嗨!我是Eason,家有一隻傲嬌貓主子,喜歡分享貓咪日常,和大家一起療癒放鬆日'
+  })
+  
+  const editProfile = () => {
+    // alert('進入編輯模式')
+    showModal();
+  }
+  
+  const addPet = () => {
+    alert('跳轉新增毛小孩頁面')
+  }
 
+  const submitOwner = ()=>{
+    console.log("API送出");
+  }
+  function showModal() {
+    console.log("Modal打開");
+    thisModal.value.p_show()
+  }
+</script>
 <template>
-    <main>
-      <div class="w-100 h-25 bg-secondary-tint py-1-25">
-  <div class="container">
-    <div class="d-flex align-items-center justify-content-between">
-      <!-- 左側 Logo -->
-      <RouterLink to="/">
-        <img src="@/assets/images/logo/logo.png" alt="">
-      </RouterLink>
+  <main>
+    <div class="w-100 h-25 bg-secondary-tint py-1-25">
+      <div class="container">
+        <div class="d-flex align-items-center justify-content-between">
+          <!-- 左側 Logo -->
+          <RouterLink to="/">
+            <img src="@/assets/images/logo/logo.png" alt="">
+          </RouterLink>
 
-      <!-- 右側 使用者選單 -->
-      <div class="d-flex align-items-center">
-        <span class="me-2">飼主及寵物個人中心</span>
-        <div class="dropdown">
-          <button
-            class="btn btn-light dropdown-toggle d-flex align-items-center"
-            type="button"
-            id="userDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            <i class="bi bi-person-circle fs-4 me-2"></i>
-            使用者姓名
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="#">個人資料</a></li>
-            <li><a class="dropdown-item" href="#">登出</a></li>
-          </ul>
+          <!-- 右側 使用者選單 -->
+          <div class="d-flex align-items-center">
+            <span class="me-2">飼主及寵物個人中心</span>
+            <div class="dropdown">
+              <button
+                class="btn btn-light dropdown-toggle d-flex align-items-center"
+                type="button"
+                id="userDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-person-circle fs-4 me-2"></i>
+                使用者姓名
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="#">個人資料</a></li>
+                <li><a class="dropdown-item" href="#">登出</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
-
 
     <div class="container py-5">
       <h2 class="text-center mb-4">飼主及毛小孩個人中心</h2>
@@ -60,39 +89,19 @@
         </button>
       </div>
     </div>
-    </main>
 
-    <link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-/>
-  </template>
-  
-  <script setup>
-  
-  import { ref } from 'vue'
-  
-  const owner = ref({
-    name: '王志明',
-    location: '台北市信義區',
-    phone: '0988576463',
-    email: 'love_cat0908@gmaile',
-    avatar: 'https://via.placeholder.com/250', // 替換為實際照片 URL
-    description: '嗨嗨!我是Eason,家有一隻傲嬌貓主子,喜歡分享貓咪日常,和大家一起療癒放鬆日'
-  })
-  
-  const editProfile = () => {
-    alert('進入編輯模式')
-  }
-  
-  const addPet = () => {
-    alert('跳轉新增毛小孩頁面')
-  }
-  </script>
-  
-  <style scoped>
+    <Modal title="modal1" ref="thisModal" @submit-owner="submitOwner">
+      <template #body>編輯 個人資訊</template>
+    </Modal>
+  </main>
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+  />
+</template>
+<style scoped>
   .card {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
-  </style>
-  
+</style>
