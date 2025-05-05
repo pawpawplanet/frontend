@@ -26,3 +26,22 @@ export function loginUser(data) {
     data,
   });
 }
+
+export function PostOwnerProfile(data) {
+  const token = localStorage.getItem('token');
+  console.log('Token:', token);
+  if (!token) {
+    console.error('No token found');
+    return Promise.reject('No token found');
+  }
+
+
+  return service({
+    url: `${root}/profile`,
+    method: 'post',
+    data,
+    headers: {
+      Authorization: `Bearer ${token}`, // 加入 token
+    },
+  });
+}

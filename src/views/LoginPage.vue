@@ -70,8 +70,10 @@ const submitForm = async () => {
     try {
       const response = await loginUser(formData); 
       console.log('登入成功:', response.data);
-      const token = response.data.token;
+      const token = response.data.data.token;
+      console.log("test token:",token);
       localStorage.setItem('token', token);
+      //console.log("test token:", localStorage.getItem('token')); 
       //alert('登入成功 !');
       router.push('/ownerprofile');
     } catch (error) {
