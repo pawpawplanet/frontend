@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, ref, reactive , computed} from 'vue'
 import Modal from 'bootstrap/js/dist/modal'
 
 // 定義父組件會接收的事件名稱
@@ -11,11 +11,21 @@ let modal;
 // 用 reactive() 來綁定所有表單欄位
 const updatedOwner = reactive({
   name: '',
-  location: '',
+  city: '',
+  area: '',
   phone: '',
   // email: '',
   description: ''
 });
+
+const cityAreaMap = {
+  台北市: ['信義區', '大安區'],
+  新北市: ['板橋區']
+}
+
+const availableAreas = computed(() => {
+  return cityAreaMap[updatedOwner.city] || []
+})
 
 onMounted(() => {
   modal = new Modal(modal_ref.value)
@@ -57,11 +67,23 @@ defineExpose({ p_show: c_show })
                   </div>
                 </div>
                 <div class="mb-3 row">
+                  <label for="input2" class="col-lg-4 col-form-label">所在縣市:</label>
+                  <div class="col-lg-8">
+                    <select v-model="updatedOwner.city" class="form-select" aria-label="Default select example" id="input2">
+                      <!-- <option selected>選擇縣市</option> -->
+                      <option value="台北市">台北市</option>
+                      <option value="新北市">新北市</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3 row">
                   <label for="input2" class="col-lg-4 col-form-label">所在地區:</label>
                   <div class="col-lg-8">
-                    <select v-model="updatedOwner.location" class="form-select" aria-label="Default select example" id="input2">
-                      <option selected>選擇地區</option>
-                      <option value="1">One</option>
+                    <select v-model="updatedOwner.area" class="form-select" aria-label="Default select example" id="input2">
+                      <!-- <option selected>選擇地區</option> -->
+                      <option v-for="area in availableAreas" :key="area" :value="area">
+                        {{ area }}
+                      </option>
                     </select>
                   </div>
                 </div>
