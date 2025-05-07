@@ -1,3 +1,12 @@
+body {
+  li {
+    list-style: none;
+  }
+  p {
+    font-family: 'jf-openhuninn-2.1', sans-serif;
+    margin-bottom: 0;
+  }
+}
 @import "base/base";
 @import "custom/font";
 @import "custom/custom-bootstrap";
@@ -6,7 +15,11 @@
 @import "utilities/background";
 @import "utilities/colors";
 @import "utilities/border";
+@import "utilities/flex";
 @import "components/header";
 @import "components/footer";
 @import "components/button";
 @import "components/dropdown";
+@import "form/select";
+@import "form/input";
+@import "pages/home";
