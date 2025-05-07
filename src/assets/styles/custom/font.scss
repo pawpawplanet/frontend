@@ -3,16 +3,38 @@
   src: url('@/assets/fonts/GenSenRounded2TC-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
+  ascent-override: 90%;
+  descent-override: 10%;
+  line-gap-override: 0%;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'GenSenRounded2 TC';
   src: url('@/assets/fonts/GenSenRounded2TC-Light.woff2') format('woff2');
   font-weight: 300;
+  ascent-override: 90%;
+  descent-override: 10%;
+  line-gap-override: 0%;
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'GenSenRounded2 TC';
   src: url('@/assets/fonts/GenSenRounded2TC-Bold.woff2') format('woff2');
   font-weight: bold;
+  ascent-override: 90%;
+  descent-override: 10%;
+  line-gap-override: 0%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'jf-openhuninn-2.1';
+  src: url('@/assets/fonts/jf-openhuninn-2.1.woff2') format('woff2');
+  font-weight: normal;
+  ascent-override: 90%;
+  descent-override: 10%;
+  line-gap-override: 0%;
+  font-display: swap;
 }

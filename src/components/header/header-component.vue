@@ -1,9 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { useTemplateRef, ref, onMounted } from 'vue'
+
 const open = ref(false)
+const menu = useTemplateRef('header-menu')
+
+const clickOtherElement = (e) => {
+  if (!menu.value.contains(e.target)) {
+    open.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', clickOtherElement)
+})
 </script>
 <template>
-  <div class="position-fixed top-0 w-100 bg-secondary-tint py-1-25">
+  <div class="header position-fixed top-0 w-100 bg-secondary-tint py-1-25">
     <div class="container">
       <div class="d-flex align-items-center justify-content-between">
         <RouterLink to="/">
@@ -13,8 +25,9 @@ const open = ref(false)
           <div class="px-2">
             <div class="dropdown">
               <button
+                ref="header-menu"
                 type="button"
-                class="btn text-decoration-none text-primary-dark-second header-link fw-bold"
+                class="btn btn-link text-decoration-none text-primary-dark-second header-link fw-bold"
                 id="dropdownMenuButton1"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"

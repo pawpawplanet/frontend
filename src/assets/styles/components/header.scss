@@ -1,5 +1,9 @@
-.header-link {
-  display: flex;
-  height: 54px;
-  padding: 12px;
+.header {
+  z-index: 999;
+  &-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 54px;
+  }
 }

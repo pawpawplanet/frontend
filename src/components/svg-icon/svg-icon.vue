@@ -18,7 +18,7 @@ const props = defineProps({
     default: 'icon',
   },
   size: {
-    type: Number,
+    type: [Number, String],
     default: 24,
   },
   name: {

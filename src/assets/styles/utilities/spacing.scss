@@ -12,4 +12,14 @@
   padding-top: $spacer * 1.25;
   padding-bottom: $spacer * 1.25;
 }
-
+.p-6 {
+  padding: $spacer * 4;
+}
+.px-6 {
+  padding-left: $spacer * 4;
+  padding-right: $spacer * 4;
+}
+.py-6 {
+  padding-top: $spacer * 4;
+  padding-bottom: $spacer * 4;
+}

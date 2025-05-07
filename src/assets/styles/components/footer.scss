@@ -16,11 +16,13 @@
       font-weight: 700;
       color: $primary-dark-second;
       text-decoration: none;
-      padding-bottom: 4px;
     }
   }
   &-rights {
     font-size: 16px;
     color: $black-900;
+    p {
+      margin-bottom: 0;
+    }
   }
 }
