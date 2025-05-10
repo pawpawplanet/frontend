@@ -1,15 +1,17 @@
 <script setup>
   import Modal from '@/components/modal/owner-modal.vue'
-  import { ref } from 'vue'
+  import { ref , onMounted } from 'vue'
+  import { PatchOwnerProfile, GetOwnerProfile } from '@/plugins/api/users/users.js';
+  const loading = ref(true);
   
   const thisModal = ref();
   const owner = ref({
-    name: '王志明',
-    location: '台北市信義區',
-    phone: '0988576463',
-    email: 'love_cat0908@gmaile',
-    avatar: 'https://via.placeholder.com/250', // 替換為實際照片 URL
-    description: '嗨嗨!我是Eason,家有一隻傲嬌貓主子,喜歡分享貓咪日常,和大家一起療癒放鬆日'
+    // name: '王志明',
+    // location: '台北市信義區',
+    // phone: '0988576463',
+    // email: 'love_cat0908@gmaile',
+    // avatar: 'https://via.placeholder.com/250', // 替換為實際照片 URL
+    // description: '嗨嗨!我是Amy,家有一隻傲嬌貓主子,喜歡分享貓咪日常,和大家一起療癒放鬆日'
   })
   
   const editProfile = () => {
@@ -21,9 +23,34 @@
     alert('跳轉新增毛小孩頁面')
   }
 
-  const submitOwner = ()=>{
-    console.log("API送出");
+  const submitOwner = async (updatedOwner) => {
+    try {
+      console.log("送出資料：", updatedOwner)
+      const response = await PatchOwnerProfile(updatedOwner);
+      console.log('送出成功:', response.data);
+      alert('更新成功！');
+      //thisModal.value.p_hide(); // 關閉 Modal
+      owner.value = updatedOwner; // 更新畫面上的 owner 資料
+    } catch (error) {
+      console.error('送出失敗:', error);
+      alert('更新失敗，請稍後再試。');
+    }
   }
+
+
+  onMounted(async () => {
+    try {
+      const response = await GetOwnerProfile();
+      owner.value = response.data.data.user; 
+    } catch (err) {
+      console.error('取得個人資料失敗:', err);
+      err.value = '無法取得個人資料，請稍後再試。';
+    } finally {
+      loading.value = false;
+    }
+  });
+
+
   function showModal() {
     console.log("Modal打開");
     thisModal.value.p_show()
@@ -51,7 +78,7 @@
                 aria-expanded="false"
               >
                 <i class="bi bi-person-circle fs-4 me-2"></i>
-                使用者姓名
+                {{ owner.name }}
               </button>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="#">個人資料</a></li>
@@ -75,7 +102,8 @@
               </button>
             </div>
             <p><strong>飼主名稱:</strong>{{ owner.name }}</p>
-            <p><strong>所在地區:</strong>{{ owner.location }}</p>
+            <p><strong>所在縣市:</strong>{{ owner.city }}</p>
+            <p><strong>所在地區:</strong>{{ owner.area }}</p>
             <p><strong>電話:</strong>{{ owner.phone }}</p>
             <p><strong>Email:</strong>{{ owner.email }}</p>
             <p><strong>自我介紹:</strong>{{ owner.description }}</p>
