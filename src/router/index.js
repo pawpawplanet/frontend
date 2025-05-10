@@ -5,6 +5,9 @@ import BecomeSitterPage from '../views/BecomeSitterPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 import SignupPage from '../views/SignupPage.vue'
 import OwnerProfile from '../views/OwnerProfile.vue'
+import FreelancerInfo from '../views/FreelancerInfo.vue'
+import ServiceEditor from '../views/ServiceEditor.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +25,17 @@ const router = createRouter({
           path: 'become-a-sitter',
           name: 'becomesitter',
           component: BecomeSitterPage,
-        }
+        },
+        {
+          path: '/freelancer-info',
+          name: 'freelancer-info',
+          component: FreelancerInfo,
+        },
+        {
+          path: '/freelancer/services/:type',
+          name: 'service-editor',
+          component: ServiceEditor,
+        },
       ],
     },
     {
