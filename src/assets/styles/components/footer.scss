@@ -16,6 +16,9 @@
       font-weight: 700;
       color: $primary-dark-second;
       text-decoration: none;
+      &:hover {
+        color: $primary-tint !important;
+      }
     }
   }
   &-rights {

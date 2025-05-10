@@ -9,4 +9,9 @@
 .btn-outline-dark-second {
   border-color: $primary-dark-second;
   color: $primary-dark-second;
+  &:hover {
+    color: $white;
+    border-color: $primary-dark-second;
+    background: $primary-dark-second;
+  }
 }

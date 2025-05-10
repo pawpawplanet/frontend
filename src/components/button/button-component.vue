@@ -26,12 +26,17 @@ const props = defineProps({
     type: Number,
   },
 })
+const emit = defineEmits(['onPress'])
+const onClick = (value) => {
+  emit('onPress', value)
+}
 </script>
 <template>
   <button
     type="button"
     class="btn custom-btn fw-bold"
     :class="props.class"
+    @click="onClick"
   >
     <SvgIcon
       v-if="prependIcon.length > 0"
