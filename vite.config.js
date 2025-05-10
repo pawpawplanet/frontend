@@ -14,6 +14,7 @@ export default defineConfig({
     vueDevTools(),
     createSvgIconsPlugin({
       // Specify the icon folder to be cached
+      // eslint-disable-next-line no-undef
       iconDirs: [path.resolve(process.cwd(), 'src/icons')],
       // Specify symbolId format
       symbolId: 'icon-[dir]-[name]',
