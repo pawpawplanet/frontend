@@ -31,14 +31,16 @@ const onImageLoad = () => {
 .swiper-prev-btn {
   position: absolute;
   top: 50%;
-  left: -88px;
+  left: -70px;
   transform: translateY(-50%);
+  z-index: 2;
 }
 .swiper-next-btn {
   position: absolute;
   top: 50%;
-  right: -88px;
+  right: -70px;
   transform: translateY(-50%);
+  z-index: 2;
 }
 </style>
 <template>
