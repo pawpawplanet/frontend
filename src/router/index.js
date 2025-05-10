@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LayoutMain from '@/layouts/layout-main.vue'
 import HomeView from '../views/HomeView.vue'
+import BecomeSitterPage from '../views/BecomeSitterPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 import SignupPage from '../views/SignupPage.vue'
 import OwnerProfile from '../views/OwnerProfile.vue'
@@ -16,6 +17,11 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: HomeView,
+        },
+        {
+          path: 'become-a-sitter',
+          name: 'becomesitter',
+          component: BecomeSitterPage,
         }
       ],
     },

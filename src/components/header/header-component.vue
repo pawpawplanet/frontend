@@ -70,7 +70,7 @@ onMounted(() => {
           </div>
           <div class="px-2">
             <RouterLink
-              to=""
+              to="/become-a-sitter"
               class="btn text-decoration-none text-primary-dark-second header-link fw-bold"
             >
               成為接案者
