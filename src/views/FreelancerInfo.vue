@@ -31,7 +31,7 @@ import isEqual from "lodash/isEqual"
 import ProfileForm from "@/components/admin/freelancer/ProfileForm.vue"
 import WeeklyToggle from '@/components/admin/freelancer/WeeklyToggle.vue'
 import WeeklySelector from '@/components/admin/freelancer/WeeklySelector.vue'
-import Schedule from '@/components/admin/freelancer/Schedule.vue'
+import Schedule from '@/components/admin/freelancer/Schedule-component.vue'
 import ServiceList from '@/components/admin/freelancer/ServiceList.vue'
 import { getFreelancerProfile, updateFreelancerProfile } from '@/plugins/api/users/freelancers.js'; 
 
