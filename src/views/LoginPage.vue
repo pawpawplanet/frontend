@@ -1,15 +1,4 @@
 <template>
-  <!-- 上方 Logo 區塊 -->
-  <div class="w-100 h-25 bg-secondary-tint py-1-25">
-    <div class="container">
-      <div class="d-flex align-items-center justify-content-between">
-        <RouterLink to="/">
-          <img src="@/assets/images/logo/logo.png" alt="logo">
-        </RouterLink>
-      </div>
-    </div>    
-  </div>
-
   <!-- 登入表單與 Icon -->
   <div class="container py-5">
     <div class="row">
@@ -31,7 +20,7 @@
           </div>
         </form>
         <p class="text-danger mb-0 mt-3">
-          還沒有帳號? 
+          還沒有帳號?
           <router-link to="/signup" class="text-primary text-decoration-underline">立即註冊</router-link>
         </p>
       </div>
@@ -47,7 +36,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { loginUser } from '@/plugins/api/users/users.js'; 
+import { loginUser } from '@/plugins/api/users/users.js';
 
 const email = ref('');
 const password = ref('');
@@ -56,31 +45,31 @@ const router = useRouter();
 
 
 const submitForm = async () => {
-  
+
   errorMessage.value = '';
 
   const formData = {
     email: email.value,
     password: password.value,
-    
+
   };
 
     console.log("formData:", formData);
-  
+
     try {
-      const response = await loginUser(formData); 
+      const response = await loginUser(formData);
       console.log('登入成功:', response.data);
       const token = response.data.data.token;
       console.log("test token:",token);
       localStorage.setItem('token', token);
-      //console.log("test token:", localStorage.getItem('token')); 
+      //console.log("test token:", localStorage.getItem('token'));
       //alert('登入成功 !');
       //router.push('/ownerprofile');
       const base64Url = token.split('.')[1];
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const payload = JSON.parse(decodeURIComponent(escape(window.atob(base64))));
       console.log('解析後的 payload:', payload);
-      
+
       if (payload.role === 'owner') {
         router.push('/ownerprofile');
       } else if (payload.role === 'freelancer') {

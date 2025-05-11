@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import loginRouter from '@/router/modules/login.js'
 import LayoutMain from '@/layouts/layout-main.vue'
-import HomeView from '../views/HomeView.vue'
-import BecomeSitterPage from '../views/BecomeSitterPage.vue'
-import LoginPage from '../views/LoginPage.vue'
-import SignupPage from '../views/SignupPage.vue'
-import OwnerProfile from '../views/OwnerProfile.vue'
-import FreelancerInfo from '../views/FreelancerInfo.vue'
-import ServiceEditor from '../views/ServiceEditor.vue'
+import HomeView from '@/views/HomeView.vue'
+import signUpRouter from '@/router/modules/signup.js'
+import ownerprofileRouter from '@/router/modules/ownerprofile.js'
+import becomeSitterRouter from '@/router/modules/become-sitter.js'
+import freelancerInfoRouter from '@/router/modules/freelancer-info.js'
+import freelancerServicesRouter from '@/router/modules/freelancer-services.js'
 
 
 const router = createRouter({
@@ -21,38 +21,14 @@ const router = createRouter({
           name: 'home',
           component: HomeView,
         },
-        {
-          path: 'become-a-sitter',
-          name: 'becomesitter',
-          component: BecomeSitterPage,
-        },
-        {
-          path: '/freelancer-info',
-          name: 'freelancer-info',
-          component: FreelancerInfo,
-        },
-        {
-          path: '/freelancer/services/:type',
-          name: 'service-editor',
-          component: ServiceEditor,
-        },
+        loginRouter,
+        signUpRouter,
+        ownerprofileRouter,
+        becomeSitterRouter,
+        freelancerInfoRouter,
+        freelancerServicesRouter,
       ],
     },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginPage,
-    },
-    {
-      path: '/signup',
-      name: 'signup',
-      component: SignupPage,
-    },
-    {
-      path: '/ownerprofile',
-      name: 'ownerprofile',
-      component: OwnerProfile,
-    }
   ],
 })
 

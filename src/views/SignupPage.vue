@@ -1,15 +1,4 @@
 <template>
-  <!-- 上方 Logo 區塊 -->
-  <div class="w-100 h-25 bg-secondary-tint py-1-25">
-    <div class="container">
-      <div class="d-flex align-items-center justify-content-between">
-        <RouterLink to="/">
-          <img src="@/assets/images/logo/logo.png" alt="logo">
-        </RouterLink>
-      </div>
-    </div>    
-  </div>
-
   <!-- 註冊表單 + Icon -->
   <div class="container py-5">
     <div class="row">
@@ -58,7 +47,7 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { registerUser } from '@/plugins/api/users/users.js'; // 引入註冊 API 函數
-  
+
   const email = ref('');
   const password = ref('');
   const confirmPassword = ref('');
@@ -68,7 +57,7 @@
   const router = useRouter();
 
 
-  
+
   const submitForm = async () => {
      errorMessage.value = '';
 
@@ -76,18 +65,18 @@
       errorMessage.value = '密碼和確認密碼不一致';
       return;
     }
-  
+
     const formData = {
       email: email.value,
       password: password.value,
-      confirmPassword: confirmPassword.value, 
+      confirmPassword: confirmPassword.value,
       role: role.value,
     };
 
     //console.log("formData:", formData);
-  
+
     try {
-      const response = await registerUser(formData); 
+      const response = await registerUser(formData);
       console.log('註冊成功:', response.data);
       alert('註冊成功！');
       router.push('/login');
