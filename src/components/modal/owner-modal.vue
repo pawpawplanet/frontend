@@ -55,7 +55,7 @@ defineExpose({ p_show: c_show })
             <div class="row">
               <div class="col-lg-6">
                 <div class="flex-center">
-                  <img src="..." class="img-fluid mb-2" alt="飼主照片">
+                  <img src="" class="img-fluid mb-2" alt="飼主照片">
                 </div>
                 <p class="flex-center">[上傳照片]</p>
               </div>
