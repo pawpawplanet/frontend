@@ -45,7 +45,7 @@ const onImageLoad = () => {
 </style>
 <template>
   <div class="position-relative w-100">
-    <button type="button" class="btn swiper-prev-btn" id="prev">
+    <button type="button" class="btn swiper-prev-btn" id="prev" @click="prevEl">
       <SvgIcon name="chevron_left" :size="44" color="#452B14" />
     </button>
     <swiper
@@ -53,7 +53,7 @@ const onImageLoad = () => {
       class="w-100"
       :slides-per-view="3"
       :space-between="16"
-      :navigation="{ nextEl: '#search_next', prevEl: '#search_prev' }"
+      :navigation="{ nextEl: '#next', prevEl: '#prev' }"
       @swiper="onSwiper"
       @slideChange="onSlideChange"
     >
@@ -256,7 +256,7 @@ const onImageLoad = () => {
         </div>
       </swiper-slide>
     </swiper>
-    <button type="button" class="btn swiper-next-btn" id="next">
+    <button type="button" class="btn swiper-next-btn" id="next" @click="nextEl">
       <SvgIcon name="chevron_right" :size="44" color="#452B14" />
     </button>
   </div>
