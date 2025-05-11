@@ -75,7 +75,21 @@ const submitForm = async () => {
       localStorage.setItem('token', token);
       //console.log("test token:", localStorage.getItem('token')); 
       //alert('登入成功 !');
-      router.push('/ownerprofile');
+      //router.push('/ownerprofile');
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(decodeURIComponent(escape(window.atob(base64))));
+      console.log('解析後的 payload:', payload);
+      
+      if (payload.role === 'owner') {
+        router.push('/ownerprofile');
+      } else if (payload.role === 'freelancer') {
+        router.push('/freelancer-info');
+      } else {
+        console.warn('未知角色:', payload.role);
+        errorMessage.value = '無法識別使用者角色';
+      }
+
     } catch (error) {
       console.error('登入失敗:', error.response?.data || error.message);
       if (error.response && error.response.data && error.response.data.message) {
