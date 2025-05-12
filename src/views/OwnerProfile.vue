@@ -1,18 +1,13 @@
 <script setup>
   import Modal from '@/components/modal/owner-modal.vue'
   import { ref , onMounted } from 'vue'
-  import { PatchOwnerProfile, GetOwnerProfile } from '@/plugins/api/users/users.js';
+  import { useRouter } from 'vue-router';
+  import { PatchOwnerProfile, GetOwnerProfile, logoutUser } from '@/plugins/api/users/users.js';
   const loading = ref(true);
-  
+  const router = useRouter();
   const thisModal = ref();
-  const owner = ref({
-    // name: '王志明',
-    // location: '台北市信義區',
-    // phone: '0988576463',
-    // email: 'love_cat0908@gmaile',
-    // avatar: 'https://via.placeholder.com/250', // 替換為實際照片 URL
-    // description: '嗨嗨!我是Amy,家有一隻傲嬌貓主子,喜歡分享貓咪日常,和大家一起療癒放鬆日'
-  })
+  const owner = ref({})
+  
   
   const editProfile = () => {
     // alert('進入編輯模式')
@@ -22,6 +17,17 @@
   const addPet = () => {
     alert('跳轉新增毛小孩頁面')
   }
+
+  const logout = async () => {
+      try {
+        await logoutUser()
+      } catch (error) {
+        console.warn('登出錯誤:', error)
+      } finally {
+        localStorage.removeItem('token')
+        router.push('/')
+      }
+    }
 
   const submitOwner = async (updatedOwner) => {
     try {
@@ -82,7 +88,8 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="#">個人資料</a></li>
-                <li><a class="dropdown-item" href="#">登出</a></li>
+                <!-- <li><a class="dropdown-item" href="#">登出</a></li> -->
+                <li><a class="dropdown-item" href="#" @click.prevent="logout">登出</a></li>
               </ul>
             </div>
           </div>
