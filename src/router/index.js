@@ -30,11 +30,13 @@ const router = createRouter({
           path: '/freelancer-info',
           name: 'freelancer-info',
           component: FreelancerInfo,
+
         },
         {
           path: '/freelancer/services/:type',
           name: 'service-editor',
           component: ServiceEditor,
+
         },
       ],
     },
@@ -52,6 +54,7 @@ const router = createRouter({
       path: '/ownerprofile',
       name: 'ownerprofile',
       component: OwnerProfile,
+
     }
   ],
 })

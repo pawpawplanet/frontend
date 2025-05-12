@@ -3,6 +3,8 @@
   import { ref , onMounted } from 'vue'
   import { useRouter } from 'vue-router';
   import { PatchOwnerProfile, GetOwnerProfile, logoutUser } from '@/plugins/api/users/users.js';
+  import { useLoginStore } from '@/stores/login.js';
+
   const loading = ref(true);
   const router = useRouter();
   const thisModal = ref();
@@ -45,9 +47,17 @@
 
 
   onMounted(async () => {
+    const loginStore = useLoginStore();
+    if (!loginStore.is_login) {
+        router.push('/login')
+        return
+    }
+
+
     try {
       const response = await GetOwnerProfile();
       owner.value = response.data.data.user; 
+      console.log("取得的 owner:", owner.value);
     } catch (err) {
       console.error('取得個人資料失敗:', err);
       err.value = '無法取得個人資料，請稍後再試。';
@@ -112,7 +122,9 @@
             <p><strong>所在縣市:</strong>{{ owner.city }}</p>
             <p><strong>所在地區:</strong>{{ owner.area }}</p>
             <p><strong>電話:</strong>{{ owner.phone }}</p>
-            <p><strong>Email:</strong>{{ owner.email }}</p>
+            <div v-if="!loading && owner.email">
+              <p><strong>Email:</strong>{{ owner.email }}</p>
+            </div>
             <p><strong>自我介紹:</strong>{{ owner.description }}</p>
           </div>
         </div>
