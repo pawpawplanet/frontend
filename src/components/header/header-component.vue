@@ -102,10 +102,14 @@ onMounted(() => {
             <div v-if="is_login" class="px-2">
               <div class="d-flex align-items-center">
                 <div class="header-avatar">
-                  <img src="@/assets/images/header/header_avatar.jpg" alt="">
+                  <!--                  無上傳會員大頭貼預設 svg-->
+                  <SvgIcon name="user" color="#452B14" size="20"/>
+                  <!--                  上傳會員大頭貼顯示圖片-->
+<!--                  <img :src="" alt="">-->
                 </div>
                 <div class="px-2">
-                  <h4 class="header-name">Teresa</h4>
+<!--                  無填寫會員名稱預設 會員-->
+                  <h4 class="header-name">會員</h4>
                 </div>
               </div>
             </div>

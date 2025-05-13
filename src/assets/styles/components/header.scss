@@ -14,6 +14,10 @@
     height: 44px;
     border-radius: 50%;
     border: 2px solid $primary-dark;
+    background: $primary-tint;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
     img {
       width: 100%;
