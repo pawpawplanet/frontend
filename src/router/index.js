@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import loginRouter from '@/router/modules/login.js'
 import LayoutMain from '@/layouts/layout-main.vue'
-import HomeView from '../views/HomeView.vue'
-import BecomeSitterPage from '../views/BecomeSitterPage.vue'
-import LoginPage from '../views/LoginPage.vue'
-import SignupPage from '../views/SignupPage.vue'
-import OwnerProfile from '../views/OwnerProfile.vue'
-import FreelancerInfo from '../views/FreelancerInfo.vue'
-import ServiceEditor from '../views/ServiceEditor.vue'
+import HomeView from '@/views/HomeView.vue'
+import signUpRouter from '@/router/modules/signup.js'
+import ownerprofileRouter from '@/router/modules/ownerprofile.js'
+import becomeSitterRouter from '@/router/modules/become-sitter.js'
+import freelancerInfoRouter from '@/router/modules/freelancer-info.js'
+import freelancerServicesRouter from '@/router/modules/freelancer-services.js'
 
+import { useLoginStore } from '@/stores/login.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,42 +22,42 @@ const router = createRouter({
           name: 'home',
           component: HomeView,
         },
-        {
-          path: 'become-a-sitter',
-          name: 'becomesitter',
-          component: BecomeSitterPage,
-        },
-        {
-          path: '/freelancer-info',
-          name: 'freelancer-info',
-          component: FreelancerInfo,
-
-        },
-        {
-          path: '/freelancer/services/:type',
-          name: 'service-editor',
-          component: ServiceEditor,
-
-        },
+        loginRouter,
+        signUpRouter,
+        ownerprofileRouter,
+        becomeSitterRouter,
+        freelancerInfoRouter,
+        freelancerServicesRouter,
       ],
     },
-    {
-      path: '/login',
-      name: 'login',
-      component: LoginPage,
-    },
-    {
-      path: '/signup',
-      name: 'signup',
-      component: SignupPage,
-    },
-    {
-      path: '/ownerprofile',
-      name: 'ownerprofile',
-      component: OwnerProfile,
-
-    }
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const { is_login } = useLoginStore()
+  // 先判斷是否已登入
+  if (is_login) {
+    // 已登入判斷 meta verification_required
+    if (to.meta.verification_required) {
+      next()
+    } else if (!to.meta.verification_required) {
+      if (to.path === '/login' || to.path === '/signup') {
+        console.log('已登入')
+        next('/')
+      } else {
+        next()
+      }
+    }
+  } else if (!is_login) {
+    // 未登入判斷 meta verification_required
+    // verification_required 為 true 頁面需要登入才可瀏覽
+    if (to.meta.verification_required) {
+      next('/')
+    } else {
+      next()
+    }
+  }
+  // next()
 })
 
 export default router
