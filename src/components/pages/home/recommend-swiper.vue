@@ -33,6 +33,7 @@ const onImageLoad = () => {
   top: 50%;
   left: -70px;
   transform: translateY(-50%);
+  border: none;
   z-index: 2;
 }
 .swiper-next-btn {
@@ -40,6 +41,7 @@ const onImageLoad = () => {
   top: 50%;
   right: -70px;
   transform: translateY(-50%);
+  border: none;
   z-index: 2;
 }
 </style>
