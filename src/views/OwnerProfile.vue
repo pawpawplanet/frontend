@@ -58,15 +58,15 @@
 </script>
 <template>
   <main>
-    <div class="w-100 h-25 bg-secondary-tint py-1-25">
+    <!-- <div class="w-100 h-25 bg-secondary-tint py-1-25">
       <div class="container">
         <div class="d-flex align-items-center justify-content-between">
-          <!-- 左側 Logo -->
+          //  左側 Logo
           <RouterLink to="/">
             <img src="@/assets/images/logo/logo.png" alt="">
           </RouterLink>
 
-          <!-- 右側 使用者選單 -->
+          // 右側 使用者選單
           <div class="d-flex align-items-center">
             <span class="me-2">飼主及寵物個人中心</span>
             <div class="dropdown">
@@ -88,7 +88,8 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
+
 
     <div class="container py-5">
       <h2 class="text-center mb-4">飼主及毛小孩個人中心</h2>
