@@ -76,10 +76,10 @@
     //console.log("formData:", formData);
 
     try {
-      const response = await registerUser(formData);
-      console.log('註冊成功:', response.data);
+      const data = await registerUser(formData);
+      console.log('註冊成功:', data);
       alert('註冊成功！');
-      router.push('/login');
+      await router.push('/login');
     } catch (error) {
       console.error('註冊失敗:', error.response?.data || error.message);
       if (error.response && error.response.data && error.response.data.message) {

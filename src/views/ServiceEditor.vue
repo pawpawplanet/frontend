@@ -127,7 +127,7 @@
 import { ref, computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import FileUpload from 'vue-upload-component'
-import { uploadImage } from '@/plugins/api/users/upload.js'; 
+import { uploadImage } from '@/plugins/api/users/upload.js';
 
 const route = useRoute()
 const router = useRouter()
@@ -213,7 +213,7 @@ const handleInput =  async (newFile) => {
 
   try {
     const res = await uploadImage(formData)
-    const imageUrl = res.data?.data?.image_url
+    const imageUrl = res.data?.image_url
     // 把圖片上傳後的 URL 設進 file 中，這樣就會存在 form.images 裡
     newFile.url = imageUrl
   } catch (err) {

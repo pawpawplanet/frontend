@@ -34,9 +34,15 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const { is_login } = useLoginStore()
+  const login_status = localStorage.getItem('token')
+  const user_info = localStorage.getItem('user_info')
+
+  const { changeLoginStatus, saveUserInfo } = useLoginStore()
+
   // 先判斷是否已登入
-  if (is_login) {
+  if (login_status) {
+    changeLoginStatus(true)
+    saveUserInfo(JSON.parse(user_info))
     // 已登入判斷 meta verification_required
     if (to.meta.verification_required) {
       next()
@@ -48,7 +54,7 @@ router.beforeEach((to, from, next) => {
         next()
       }
     }
-  } else if (!is_login) {
+  } else if (!login_status) {
     // 未登入判斷 meta verification_required
     // verification_required 為 true 頁面需要登入才可瀏覽
     if (to.meta.verification_required) {

@@ -1,13 +1,19 @@
 <script setup>
 import { useTemplateRef, ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useLoginStore } from '@/stores/login.js'
+import { logoutUser } from '@/plugins/api/users/users.js'
+import { useToast } from '@/plugins/toast/toast-plugin.js'
 
 const router = useRouter()
-const { is_login } = useLoginStore()
+const route = useRoute()
+const toast = useToast()
+const loginStore = useLoginStore()
+const { is_login, user } = storeToRefs(loginStore)
+const { removeLoginStatus, removeUserInfo } = loginStore
 const open = ref(false)
 const menu = useTemplateRef('header-menu')
-
 
 const clickOtherElement = (e) => {
   if (!menu.value.contains(e.target)) {
@@ -15,11 +21,15 @@ const clickOtherElement = (e) => {
   }
 }
 
-const clickLoginBtn = () => {
-  if (is_login) {
-    console.log('click')
+const clickLoginBtn = async () => {
+  if (is_login.value) {
+    await logoutUser()
+    removeLoginStatus(false)
+    removeUserInfo(false)
+    toast.show('登出成功', 'success')
+    if (route.meta.verification_required) await router.push('/')
   } else {
-    router.push('/login')
+    await router.push('/login')
   }
 }
 
@@ -100,18 +110,21 @@ onMounted(() => {
               <SvgIcon name="paw" color="#FFCF75" :size="28" />
             </div>
             <div v-if="is_login" class="px-2">
-              <div class="d-flex align-items-center">
+              <RouterLink
+                :to="user.role === 'freelancer' ? '/freelancer-info' : '/ownerprofile'"
+                class="d-flex align-items-center text-decoration-none"
+              >
                 <div class="header-avatar">
                   <!--                  無上傳會員大頭貼預設 svg-->
-                  <SvgIcon name="user" color="#452B14" size="20"/>
+                  <SvgIcon v-if="!user.avatar" name="user" color="#452B14" size="20"/>
                   <!--                  上傳會員大頭貼顯示圖片-->
-<!--                  <img :src="" alt="">-->
+                  <img v-else :src="user.avatar" alt="">
                 </div>
                 <div class="px-2">
 <!--                  無填寫會員名稱預設 會員-->
-                  <h4 class="header-name">會員</h4>
+                  <h4 class="header-name">{{ !user.name ? '會員' : user.name }}</h4>
                 </div>
-              </div>
+              </RouterLink>
             </div>
             <div class="px-2">
               <ButtonComponent class="btn-primary" :text="is_login ? '登出' : '登入'" @on-press="clickLoginBtn" />

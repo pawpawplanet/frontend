@@ -35,39 +35,17 @@ export function logoutUser() {
 }
 
 export function PatchOwnerProfile(data) {
-  const token = localStorage.getItem('token');
-  console.log('Token:', token);
-  if (!token) {
-    console.error('No token found');
-    return Promise.reject('No token found');
-  }
-
-
   return service({
     url: `${root}/profile`,
     method: 'patch',
     data,
-    headers: {
-      Authorization: `Bearer ${token}`, // 加入 token
-    },
   });
 }
 
 
 export function GetOwnerProfile() {
-  const token = localStorage.getItem('token');
-  console.log('Token:', token);
-
-  if (!token) {
-    console.error('No token found');
-    return Promise.reject('No token found');
-  }
-
   return service({
     url: `${root}/profile`,
     method: 'get',
-    headers: {
-      Authorization: `Bearer ${token}`, // 加入 token
-    },
   });
 }

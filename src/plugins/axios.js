@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useToast } from '@/plugins/toast/toast-plugin.js'
 
 // create an axios instance
 const service = axios.create({
@@ -26,11 +27,11 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   (response) => {
-    console.log(response)
-    return response;
-    // 回傳錯誤動作，可搭配 toast 顯示錯誤資訊
+    const { data } = response
+    return data.data
   },
   (error) => {
+    console.log(error)
     return Promise.reject(error);
   }
 

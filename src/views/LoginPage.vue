@@ -36,12 +36,16 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { loginUser } from '@/plugins/api/users/users.js';
+import { loginUser, GetOwnerProfile } from '@/plugins/api/users/users.js';
+import { useLoginStore } from '@/stores/login.js'
+import { useToast } from '@/plugins/toast/toast-plugin.js'
 
 const email = ref('');
 const password = ref('');
 const errorMessage = ref('');
 const router = useRouter();
+const { changeLoginStatus, saveUserInfo } = useLoginStore()
+const toast = useToast()
 
 
 const submitForm = async () => {
@@ -57,11 +61,13 @@ const submitForm = async () => {
     console.log("formData:", formData);
 
     try {
-      const response = await loginUser(formData);
-      console.log('登入成功:', response.data);
-      const token = response.data.data.token;
+      const data = await loginUser(formData);
+      console.log('登入成功:', data);
+      const token = data.token;
       console.log("test token:",token);
       localStorage.setItem('token', token);
+      changeLoginStatus(true)
+      toast.show('登入成功', 'success')
       //console.log("test token:", localStorage.getItem('token'));
       //alert('登入成功 !');
       //router.push('/ownerprofile');
@@ -69,16 +75,15 @@ const submitForm = async () => {
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const payload = JSON.parse(decodeURIComponent(escape(window.atob(base64))));
       console.log('解析後的 payload:', payload);
-
+      await getUserInfo()
       if (payload.role === 'owner') {
-        router.push('/ownerprofile');
+        await router.push('/ownerprofile');
       } else if (payload.role === 'freelancer') {
-        router.push('/freelancer-info');
+        await router.push('/freelancer-info');
       } else {
         console.warn('未知角色:', payload.role);
         errorMessage.value = '無法識別使用者角色';
       }
-
     } catch (error) {
       console.error('登入失敗:', error.response?.data || error.message);
       if (error.response && error.response.data && error.response.data.message) {
@@ -88,5 +93,16 @@ const submitForm = async () => {
       }
     }
   };
+
+const getUserInfo = async () => {
+  const { user } = await GetOwnerProfile()
+  const userInfo = {
+    name: user.name,
+    avatar: user.avatar,
+    role: user.role,
+  }
+  localStorage.setItem('user_info', JSON.stringify(userInfo))
+  saveUserInfo(userInfo)
+}
 
 </script>

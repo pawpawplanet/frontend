@@ -33,7 +33,7 @@ import WeeklyToggle from '@/components/admin/freelancer/WeeklyToggle.vue'
 import WeeklySelector from '@/components/admin/freelancer/WeeklySelector.vue'
 import Schedule from '@/components/admin/freelancer/Schedule-component.vue'
 import ServiceList from '@/components/admin/freelancer/ServiceList.vue'
-import { getFreelancerProfile, updateFreelancerProfile } from '@/plugins/api/users/freelancers.js'; 
+import { getFreelancerProfile, updateFreelancerProfile } from '@/plugins/api/users/freelancers.js';
 import { useLoginStore } from '@/stores/login.js';
 import { useRouter } from 'vue-router';
 
@@ -70,19 +70,19 @@ const router = useRouter();
 onMounted(async() => {
   const loginStore = useLoginStore();
     if (!loginStore.is_login) {
-        router.push('/login')
+        await router.push('/login')
         return
     }
-  init()
+  await init()
 })
 
 async function init() {
   //取得保姆個人資料
-  
+
 
   const { data } = await getFreelancerProfile()
-  console.log('fetchedData',data?.data)
-  const normalizedData = normalizeFormData(data?.data || {})
+  console.log('fetchedData', data)
+  const normalizedData = normalizeFormData(data || {})
   originalForm.value = normalizedData
   tempForm.value = JSON.parse(JSON.stringify(normalizedData)) //深拷貝
   //沒有填寫完整資料就預設為編輯模式
@@ -123,7 +123,7 @@ async function confirmSave() {
     await updateFreelancerProfile(params)
     isEditMode.value = false
     //更新保姆資料
-    init()
+    await init()
   } catch (e) {
     console.error(e)
   }

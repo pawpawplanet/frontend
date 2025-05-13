@@ -4,7 +4,9 @@
   import { useRouter } from 'vue-router';
   import { PatchOwnerProfile, GetOwnerProfile, logoutUser } from '@/plugins/api/users/users.js';
   import { useLoginStore } from '@/stores/login.js';
+  import { useToast } from '@/plugins/toast/toast-plugin.js'
 
+  const toast = useToast()
   const loading = ref(true);
   const router = useRouter();
   const thisModal = ref();
@@ -36,7 +38,7 @@
       console.log("送出資料：", updatedOwner)
       const response = await PatchOwnerProfile(updatedOwner);
       console.log('送出成功:', response.data);
-      alert('更新成功！');
+      toast.show('更新成功', 'success')
       //thisModal.value.p_hide(); // 關閉 Modal
       owner.value = updatedOwner; // 更新畫面上的 owner 資料
     } catch (error) {
@@ -49,14 +51,15 @@
   onMounted(async () => {
     const loginStore = useLoginStore();
     if (!loginStore.is_login) {
-        router.push('/login')
+        await router.push('/login')
         return
     }
 
 
     try {
       const response = await GetOwnerProfile();
-      owner.value = response.data.data.user;
+      console.log(response)
+      owner.value = response.user;
       console.log("取得的 owner:", owner.value);
     } catch (err) {
       console.error('取得個人資料失敗:', err);
