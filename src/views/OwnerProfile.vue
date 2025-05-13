@@ -9,13 +9,13 @@
   const router = useRouter();
   const thisModal = ref();
   const owner = ref({})
-  
-  
+
+
   const editProfile = () => {
     // alert('進入編輯模式')
     showModal();
   }
-  
+
   const addPet = () => {
     alert('跳轉新增毛小孩頁面')
   }
@@ -56,7 +56,7 @@
 
     try {
       const response = await GetOwnerProfile();
-      owner.value = response.data.data.user; 
+      owner.value = response.data.data.user;
       console.log("取得的 owner:", owner.value);
     } catch (err) {
       console.error('取得個人資料失敗:', err);
@@ -74,38 +74,38 @@
 </script>
 <template>
   <main>
-    <!-- <div class="w-100 h-25 bg-secondary-tint py-1-25">
-      <div class="container">
-        <div class="d-flex align-items-center justify-content-between">
-          //  左側 Logo
-          <RouterLink to="/">
-            <img src="@/assets/images/logo/logo.png" alt="">
-          </RouterLink>
+<!--    <div class="w-100 h-25 bg-secondary-tint py-1-25">-->
+<!--      <div class="container">-->
+<!--        <div class="d-flex align-items-center justify-content-between">-->
+<!--          //  左側 Logo-->
+<!--          <RouterLink to="/">-->
+<!--            <img src="@/assets/images/logo/logo.png" alt="">-->
+<!--          </RouterLink>-->
 
-          // 右側 使用者選單
-          <div class="d-flex align-items-center">
-            <span class="me-2">飼主及寵物個人中心</span>
-            <div class="dropdown">
-              <button
-                class="btn btn-light dropdown-toggle d-flex align-items-center"
-                type="button"
-                id="userDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <i class="bi bi-person-circle fs-4 me-2"></i>
-                {{ owner.name }}
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li><a class="dropdown-item" href="#">個人資料</a></li>
-                <!-- <li><a class="dropdown-item" href="#">登出</a></li> -->
-                <li><a class="dropdown-item" href="#" @click.prevent="logout">登出</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
+<!--          // 右側 使用者選單-->
+<!--          <div class="d-flex align-items-center">-->
+<!--            <span class="me-2">飼主及寵物個人中心</span>-->
+<!--            <div class="dropdown">-->
+<!--              <button-->
+<!--                class="btn btn-light dropdown-toggle d-flex align-items-center"-->
+<!--                type="button"-->
+<!--                id="userDropdown"-->
+<!--                data-bs-toggle="dropdown"-->
+<!--                aria-expanded="false"-->
+<!--              >-->
+<!--                <i class="bi bi-person-circle fs-4 me-2"></i>-->
+<!--                {{ owner.name }}-->
+<!--              </button>-->
+<!--              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">-->
+<!--                <li><a class="dropdown-item" href="#">個人資料</a></li>-->
+<!--                &lt;!&ndash; <li><a class="dropdown-item" href="#">登出</a></li> &ndash;&gt;-->
+<!--                <li><a class="dropdown-item" href="#" @click.prevent="logout">登出</a></li>-->
+<!--              </ul>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
 
     <div class="container py-5">
@@ -130,7 +130,7 @@
           </div>
         </div>
       </div>
-  
+
       <div class="text-center mt-4">
         <button class="btn btn-success rounded-pill px-4 py-2" @click="addPet">
           <i class="bi bi-plus-circle me-2"></i>新增毛小孩資訊
