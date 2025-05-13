@@ -27,6 +27,13 @@ export function loginUser(data) {
   });
 }
 
+export function logoutUser() {
+  return service({
+    url: `${root}/logout`,
+    method: 'post'
+  });
+}
+
 export function PatchOwnerProfile(data) {
   const token = localStorage.getItem('token');
   console.log('Token:', token);

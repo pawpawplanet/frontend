@@ -32,6 +32,11 @@ onMounted(() => {
 })
 
 function c_show() {
+  updatedOwner.name = ''
+  updatedOwner.city = ''
+  updatedOwner.area = ''
+  updatedOwner.phone = ''
+  updatedOwner.description = ''
   modal.show()
 }
 

@@ -34,6 +34,8 @@ import WeeklySelector from '@/components/admin/freelancer/WeeklySelector.vue'
 import Schedule from '@/components/admin/freelancer/Schedule-component.vue'
 import ServiceList from '@/components/admin/freelancer/ServiceList.vue'
 import { getFreelancerProfile, updateFreelancerProfile } from '@/plugins/api/users/freelancers.js'; 
+import { useLoginStore } from '@/stores/login.js';
+import { useRouter } from 'vue-router';
 
 const emptyForm = {
   name: '',
@@ -63,13 +65,21 @@ const originalForm = ref({ ...emptyForm })
 const tempForm = ref({ ...emptyForm })
 //編輯表格數據跟原始數據比對，有變更就為true
 const hasChanges = ref(false)
+const router = useRouter();
 
 onMounted(async() => {
+  const loginStore = useLoginStore();
+    if (!loginStore.is_login) {
+        router.push('/login')
+        return
+    }
   init()
 })
 
 async function init() {
   //取得保姆個人資料
+  
+
   const { data } = await getFreelancerProfile()
   console.log('fetchedData',data?.data)
   const normalizedData = normalizeFormData(data?.data || {})

@@ -1,18 +1,15 @@
 <script setup>
   import Modal from '@/components/modal/owner-modal.vue'
   import { ref , onMounted } from 'vue'
-  import { PatchOwnerProfile, GetOwnerProfile } from '@/plugins/api/users/users.js';
+  import { useRouter } from 'vue-router';
+  import { PatchOwnerProfile, GetOwnerProfile, logoutUser } from '@/plugins/api/users/users.js';
+  import { useLoginStore } from '@/stores/login.js';
+
   const loading = ref(true);
-  
+  const router = useRouter();
   const thisModal = ref();
-  const owner = ref({
-    // name: '王志明',
-    // location: '台北市信義區',
-    // phone: '0988576463',
-    // email: 'love_cat0908@gmaile',
-    // avatar: 'https://via.placeholder.com/250', // 替換為實際照片 URL
-    // description: '嗨嗨!我是Amy,家有一隻傲嬌貓主子,喜歡分享貓咪日常,和大家一起療癒放鬆日'
-  })
+  const owner = ref({})
+  
   
   const editProfile = () => {
     // alert('進入編輯模式')
@@ -22,6 +19,17 @@
   const addPet = () => {
     alert('跳轉新增毛小孩頁面')
   }
+
+  const logout = async () => {
+      try {
+        await logoutUser()
+      } catch (error) {
+        console.warn('登出錯誤:', error)
+      } finally {
+        localStorage.removeItem('token')
+        router.push('/')
+      }
+    }
 
   const submitOwner = async (updatedOwner) => {
     try {
@@ -39,9 +47,17 @@
 
 
   onMounted(async () => {
+    const loginStore = useLoginStore();
+    if (!loginStore.is_login) {
+        router.push('/login')
+        return
+    }
+
+
     try {
       const response = await GetOwnerProfile();
       owner.value = response.data.data.user; 
+      console.log("取得的 owner:", owner.value);
     } catch (err) {
       console.error('取得個人資料失敗:', err);
       err.value = '無法取得個人資料，請稍後再試。';
@@ -82,7 +98,8 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="#">個人資料</a></li>
-                <li><a class="dropdown-item" href="#">登出</a></li>
+                <!-- <li><a class="dropdown-item" href="#">登出</a></li> -->
+                <li><a class="dropdown-item" href="#" @click.prevent="logout">登出</a></li>
               </ul>
             </div>
           </div>
@@ -106,7 +123,9 @@
             <p><strong>所在縣市:</strong>{{ owner.city }}</p>
             <p><strong>所在地區:</strong>{{ owner.area }}</p>
             <p><strong>電話:</strong>{{ owner.phone }}</p>
-            <p><strong>Email:</strong>{{ owner.email }}</p>
+            <div v-if="!loading && owner.email">
+              <p><strong>Email:</strong>{{ owner.email }}</p>
+            </div>
             <p><strong>自我介紹:</strong>{{ owner.description }}</p>
           </div>
         </div>
