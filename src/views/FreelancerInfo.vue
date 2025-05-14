@@ -80,7 +80,7 @@ async function init() {
   //取得保姆個人資料
 
 
-  const { data } = await getFreelancerProfile()
+  const data  = await getFreelancerProfile()
   console.log('fetchedData', data)
   const normalizedData = normalizeFormData(data || {})
   originalForm.value = normalizedData
