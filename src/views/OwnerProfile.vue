@@ -2,7 +2,7 @@
   import Modal from '@/components/modal/owner-modal.vue'
   import { ref , onMounted } from 'vue'
   import { useRouter } from 'vue-router';
-  import { PatchOwnerProfile, GetOwnerProfile, logoutUser } from '@/plugins/api/users/users.js';
+  import { PatchOwnerProfile, GetOwnerProfile } from '@/plugins/api/users/users.js';
   import { useLoginStore } from '@/stores/login.js';
   import { useToast } from '@/plugins/toast/toast-plugin.js'
 
@@ -22,16 +22,16 @@
     alert('跳轉新增毛小孩頁面')
   }
 
-  const logout = async () => {
-      try {
-        await logoutUser()
-      } catch (error) {
-        console.warn('登出錯誤:', error)
-      } finally {
-        localStorage.removeItem('token')
-        router.push('/')
-      }
-    }
+  // const logout = async () => {
+  //     try {
+  //       await logoutUser()
+  //     } catch (error) {
+  //       console.warn('登出錯誤:', error)
+  //     } finally {
+  //       localStorage.removeItem('token')
+  //       router.push('/')
+  //     }
+  //   }
 
   const submitOwner = async (updatedOwner) => {
     try {
