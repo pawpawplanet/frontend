@@ -50,7 +50,7 @@
 
   onMounted(async () => {
     const loginStore = useLoginStore();
-    if (!loginStore.is_login) {
+    if (!loginStore.is_login || loginStore.user.role !== 'owner') {
         await router.push('/login')
         return
     }

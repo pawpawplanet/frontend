@@ -69,7 +69,7 @@ const router = useRouter();
 
 onMounted(async() => {
   const loginStore = useLoginStore();
-    if (!loginStore.is_login) {
+  if (!loginStore.is_login || loginStore.user.role !== 'freelancer') {
         await router.push('/login')
         return
     }
