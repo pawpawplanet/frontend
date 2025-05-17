@@ -21,7 +21,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 const props = defineProps({
-  editMode: {
+  isFinished: {
     type: Boolean,
     defauit: true
   }
@@ -39,7 +39,7 @@ const customerServices = [
 ]
 
 function goEdit(type) {
-  if (!props.editMode) return
+  if (!props.isFinished) return
   router.push(`/freelancer/services/${type}`)
 }
 </script>

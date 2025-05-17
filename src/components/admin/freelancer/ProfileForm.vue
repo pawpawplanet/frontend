@@ -4,7 +4,7 @@
       <div class="image-uploader">
         <div
           class="img-box"
-          v-for="(file, index) in form.avatar"
+          v-for="(file, index) in modelValue.avatar"
           :key="index"
         >
           <img :src="file.blob || file.url" />
@@ -13,9 +13,9 @@
           </div>
         </div>
         <FileUpload
-          v-show="editMode && form.avatar?.length < 1"
+          v-show="editMode && modelValue.avatar?.length < 1"
           ref="upload"
-          v-model="form.avatar"
+          v-model="modelValue.avatar"
           :multiple="true"
           :maximum="1"
           accept="image/png,image/jpeg,image/jpg"
@@ -28,53 +28,57 @@
           </div>
         </FileUpload>
       </div>
-      <small class="text-muted" v-show="editMode && form.avatar?.length < 1">(上傳圖片)</small>
+      <small class="text-muted" v-show="editMode && modelValue.avatar?.length < 1">(上傳圖片)</small>
     </div>
     <div class="col-md-8">
       <div class="mb-2">
         <label class="form-label">姓名:</label>
-        <input v-model="form.name" class="form-control" :disabled="!editMode" />
+        <input v-model="modelValue.name" class="form-control" :disabled="!editMode" />
       </div>
       <div class="mb-2">
         <label class="form-label">所在地區:</label>
         <div class="row">
           <div class="col-md-6 mb-2">
-            <select v-model="form.city" class="form-select" :disabled="!editMode">
-                <option>選擇縣市</option>
-                <option>台北市</option>
+            <select v-model="modelValue.city" class="form-select" :disabled="!editMode">
+              <option disabled value="">選擇縣市</option>
+              <option v-for="city in cityData" :key="city.name" :value="city.name">
+                {{ city.name }}
+              </option>
             </select>
           </div>
           <div class="col-md-6">
-            <select v-model="form.area" class="form-select" :disabled="!editMode">
-              <option>選擇區域</option>
-              <option>信義區</option>
+            <select v-model="modelValue.area" class="form-select" :disabled="!editMode || !modelValue.city">
+              <option disabled value="">選擇區域</option>
+              <option v-for="area in availableAreas" :key="area.zip" :value="area.name">
+                {{ area.name }}
+              </option>
             </select>
           </div>
         </div>
       </div>
       <div class="mb-2">
         <label class="form-label">電話:</label>
-        <input v-model="form.phone" class="form-control" :disabled="!editMode" />
+        <input v-model="modelValue.phone" class="form-control" :disabled="!editMode" />
       </div>
       <div class="mb-2">
         <label class="form-label">Email:</label>
-        <input v-model="form.email" class="form-control" disabled />
+        <input v-model="modelValue.email" class="form-control" disabled />
       </div>
       <div class="mb-2">
         <label class="form-label">銀行帳戶:</label>
-        <input v-model="form.bank_account.bank" class="form-control" placeholder="銀行名稱" :disabled="!editMode" />
+        <input v-model="modelValue.bank_account.bank" class="form-control" placeholder="銀行名稱" :disabled="!editMode" />
       </div>
       <div class="mb-2">
         <label class="form-label">戶名:</label>
-        <input v-model="form.bank_account.account_name" class="form-control" :disabled="!editMode" />
+        <input v-model="modelValue.bank_account.account_name" class="form-control" :disabled="!editMode" />
       </div>
       <div class="mb-2">
         <label class="form-label">帳號:</label>
-        <input v-model="form.bank_account.account_number" class="form-control" :disabled="!editMode" />
+        <input v-model="modelValue.bank_account.account_number" class="form-control" :disabled="!editMode" />
       </div>
       <div>
         <label class="form-label">自我介紹:</label>
-        <textarea v-model="form.description" class="form-control" rows="3" :disabled="!editMode"></textarea>
+        <textarea v-model="modelValue.description" class="form-control" rows="3" :disabled="!editMode"></textarea>
       </div>
     </div>
   </div>
@@ -82,23 +86,24 @@
 
 
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { ref, computed } from 'vue'
 import FileUpload from 'vue-upload-component'
 import { uploadImage } from '@/plugins/api/users/upload.js'; 
+import cityData from '@/assets/tw-city-data.json'
 
-const props = defineProps({
+defineProps({
   editMode: {
     type: Boolean,
     default: true
   },
-  formData: {
-    type: Object,
-    default: () => ({})
-  }
 })
 
-const emit = defineEmits(["updateFormData"])
-const form = reactive({})
+const modelValue = defineModel()
+
+const availableAreas = computed(() => {
+  const city = cityData.find(c => c.name === modelValue.value?.city)
+  return city ? city.districts : []
+})
 
 //  圖片上傳
 const upload = ref(null)
@@ -137,7 +142,8 @@ const handleInput =  async (newFile) => {
 
   try {
     const res = await uploadImage(formData)
-    const imageUrl = res.data?.data?.image_url
+    const imageUrl = res?.image_url
+    console.log(123,res)
     // 把圖片上傳後的 URL 設進 file 中，這樣就會存在 form.avatar 裡
     newFile.url = imageUrl
   } catch (err) {
@@ -148,20 +154,11 @@ const handleInput =  async (newFile) => {
 }
 
 const remove = (file) => {
-  const index = form.avatar.findIndex(f => f.url === file.url)
+  const index = modelValue.value.avatar.findIndex(f => f.url === file.url)
   if (index !== -1) {
-    form.avatar.splice(index, 1)
+    modelValue.value.avatar.splice(index, 1)
   }
 }
-
-watch(() => props.formData, () => {
-  Object.assign(form, props.formData)
-}, { immediate: true })
-
-watch(form, (newVal) => {
-  emit('updateFormData', { ...newVal })
-}, { deep: true })
-
 </script>
 <style scoped lang="scss">
 .image-uploader {
@@ -193,8 +190,9 @@ img {
     position: absolute;
     color: #ffffff;
     z-index: 1;
-    top: -2px;
-    left: 2px;
+    top: -8px;
+    left: 5px;
+    font-size: 20px;
   }
 }
 .upload {
