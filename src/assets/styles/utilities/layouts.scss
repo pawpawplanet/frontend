@@ -7,6 +7,7 @@
   min-height: 100vh;
   background: $secondary-tint;
   &-content {
+    min-height: 100vh;
     padding-top: var(--app-bar-height);
   }
 }

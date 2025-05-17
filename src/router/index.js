@@ -7,6 +7,7 @@ import ownerprofileRouter from '@/router/modules/ownerprofile.js'
 import becomeSitterRouter from '@/router/modules/become-sitter.js'
 import freelancerInfoRouter from '@/router/modules/freelancer-info.js'
 import freelancerServicesRouter from '@/router/modules/freelancer-services.js'
+import freelancerListsRouter from '@/router/modules/freelancer-list.js'
 
 import { useLoginStore } from '@/stores/login.js'
 
@@ -28,6 +29,7 @@ const router = createRouter({
         becomeSitterRouter,
         freelancerInfoRouter,
         freelancerServicesRouter,
+        freelancerListsRouter,
       ],
     },
   ],
