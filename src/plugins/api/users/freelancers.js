@@ -17,3 +17,19 @@ export function updateFreelancerProfile(data) {
     data,
   });
 }
+
+export function createOrUpdateService(data) {
+  return service({
+    url: `${root}/services`,
+    method: 'post',
+    data,
+  });
+}
+
+export function getFreelancerServiceDetail(data) {
+  return service({
+    url: `${root}/services/${data}`,
+    method: 'get',
+    data,
+  });
+}
