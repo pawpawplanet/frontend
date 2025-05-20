@@ -56,23 +56,23 @@
     }
   }
   &-sidebar {
-    top: 20px;
-    right: 20px;
+    top: 16px;
+    right: 16px;
   }
   &-expand {
-    width: 68px;
-    height: 68px;
+    width: 44px;
+    height: 44px;
     box-shadow: 0 0 8px rgba($black, 0.15);
   }
   &-zoom {
-    width: 68px;
-    height: 136px;
+    width: 44px;
+    height: 88px;
     border-radius: 100px;
     box-shadow: 0 0 8px rgba($black, 0.15);
     overflow: hidden;
     &-btn {
-      width: 68px;
-      height: 68px;
+      width: 44px;
+      height: 44px;
     }
   }
   &-divide {
