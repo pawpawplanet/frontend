@@ -1,0 +1,139 @@
+.freelancer-list {
+  height: calc(100vh - var(--app-bar-height));
+  &-section {
+    border-radius: 20px;
+    height: calc(100% - 64px - 84px);
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+  &-search {
+    padding: 20px;
+  }
+  &-tab {
+    width: 131px;
+    padding: 8px;
+    &:first-child {
+      width: 190px;
+    }
+  }
+  &-num {
+    font-size: 20px;
+    font-weight: 700;
+    color: $primary-dark-second;
+  }
+  &-items {
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  &-card {
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    &:hover {
+      background: $black-100;
+    }
+    &-pic {
+      border-radius: 20px;
+      background: $black-100;
+    }
+    &-badge {
+      min-width: 142px;
+      max-width: 142px;
+      height: 32px;
+    }
+    &-name {
+      font-size: 20px;
+    }
+    &-comment {
+      font-size: 14px;
+    }
+    &-price {
+      font-size: 20px;
+    }
+  }
+  &-sidebar {
+    top: 16px;
+    right: 16px;
+  }
+  &-expand {
+    width: 44px;
+    height: 44px;
+    box-shadow: 0 0 8px rgba($black, 0.15);
+  }
+  &-zoom {
+    width: 44px;
+    height: 88px;
+    border-radius: 100px;
+    box-shadow: 0 0 8px rgba($black, 0.15);
+    overflow: hidden;
+    &-btn {
+      width: 44px;
+      height: 44px;
+    }
+  }
+  &-divide {
+    height: 1px;
+    background: $black-100;
+  }
+  &-landmarks {
+    bottom: 60px;
+    right: 200px;
+  }
+  &-location {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border: 4px solid $primary-dark-second;
+    &.choose {
+      background: $primary-tint;
+      svg {
+        color: $primary-dark-second !important;
+      }
+      &:before {
+        background: $primary-tint !important;
+      }
+    }
+    &:hover {
+      background: $primary-tint;
+      svg {
+        color: $primary-dark-second !important;
+      }
+      &:before {
+        background: $primary-tint !important;
+      }
+    }
+    &:before {
+      content: "";
+      position: absolute;
+      top: 72px;
+      width: 12px;
+      height: 18px;
+      background: $primary-dark-second;
+      border-bottom-left-radius: 100px;
+      border-bottom-right-radius: 100px;
+      border-bottom: 4px solid $primary-dark-second;
+      border-left: 4px solid $primary-dark-second;
+      border-right: 4px solid $primary-dark-second;
+      z-index: 2;
+    }
+    &-card {
+      bottom: 50%;
+      left: 0;
+      transform: translate(-50%, -15%);
+      border-radius: 40px;
+      padding: 20px;
+      box-shadow: 0 0 8px rgba($black, 0.15);
+      &-btn {
+        top: 8px;
+        right: 8px;
+      }
+      &-top {
+        border-radius: 20px;
+      }
+    }
+  }
+}
