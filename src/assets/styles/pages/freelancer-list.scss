@@ -1,8 +1,9 @@
 .freelancer-list {
-  height: calc(100vh - var(--app-bar-height));
+  //height: calc(100vh - var(--app-bar-height));
   &-section {
     border-radius: 20px;
-    height: calc(100% - 64px - 84px);
+    //height: calc(100% - 64px - 84px);
+    height: calc(100vh - 64px);
     overflow: hidden;
     img {
       width: 100%;
