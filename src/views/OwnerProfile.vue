@@ -1,5 +1,6 @@
 <script setup>
   import Modal from '@/components/modal/owner-modal.vue'
+  import PetModal from '@/components/modal/owner-pet-modal.vue'
   import { ref , onMounted } from 'vue'
   import { useRouter } from 'vue-router';
   import { PatchOwnerProfile, GetOwnerProfile } from '@/plugins/api/users/users.js';
@@ -10,28 +11,18 @@
   const loading = ref(true);
   const router = useRouter();
   const thisModal = ref();
+  const thisPetModal = ref();
   const owner = ref({})
-
 
   const editProfile = () => {
     // alert('進入編輯模式')
     showModal();
   }
 
-  const addPet = () => {
-    alert('跳轉新增毛小孩頁面')
+  const addPetProfile = () => {
+    // alert('跳轉新增毛小孩頁面')
+    showPetModal();
   }
-
-  // const logout = async () => {
-  //     try {
-  //       await logoutUser()
-  //     } catch (error) {
-  //       console.warn('登出錯誤:', error)
-  //     } finally {
-  //       localStorage.removeItem('token')
-  //       router.push('/')
-  //     }
-  //   }
 
   const submitOwner = async (updatedOwner) => {
     try {
@@ -47,6 +38,14 @@
     }
   }
 
+  const submitPet = async (data) => {
+    try {
+      console.log("submitPet");
+      console.log(data);
+    } catch (error) {
+      console.error('送出失敗:', error);
+    }
+  }
 
   onMounted(async () => {
     const loginStore = useLoginStore();
@@ -74,43 +73,13 @@
     console.log("Modal打開");
     thisModal.value.p_show()
   }
+  function showPetModal() {
+    console.log("PetModal打開");
+    thisPetModal.value.p_show()
+  }
 </script>
 <template>
   <main>
-<!--    <div class="w-100 h-25 bg-secondary-tint py-1-25">-->
-<!--      <div class="container">-->
-<!--        <div class="d-flex align-items-center justify-content-between">-->
-<!--          //  左側 Logo-->
-<!--          <RouterLink to="/">-->
-<!--            <img src="@/assets/images/logo/logo.png" alt="">-->
-<!--          </RouterLink>-->
-
-<!--          // 右側 使用者選單-->
-<!--          <div class="d-flex align-items-center">-->
-<!--            <span class="me-2">飼主及寵物個人中心</span>-->
-<!--            <div class="dropdown">-->
-<!--              <button-->
-<!--                class="btn btn-light dropdown-toggle d-flex align-items-center"-->
-<!--                type="button"-->
-<!--                id="userDropdown"-->
-<!--                data-bs-toggle="dropdown"-->
-<!--                aria-expanded="false"-->
-<!--              >-->
-<!--                <i class="bi bi-person-circle fs-4 me-2"></i>-->
-<!--                {{ owner.name }}-->
-<!--              </button>-->
-<!--              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">-->
-<!--                <li><a class="dropdown-item" href="#">個人資料</a></li>-->
-<!--                &lt;!&ndash; <li><a class="dropdown-item" href="#">登出</a></li> &ndash;&gt;-->
-<!--                <li><a class="dropdown-item" href="#" @click.prevent="logout">登出</a></li>-->
-<!--              </ul>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-
     <div class="container py-5">
       <h2 class="text-center mb-4">飼主及毛小孩個人中心</h2>
       <div class="card mx-auto p-4" style="max-width: 700px; border-radius: 20px;">
@@ -135,7 +104,7 @@
       </div>
 
       <div class="text-center mt-4">
-        <button class="btn btn-success rounded-pill px-4 py-2" @click="addPet">
+        <button class="btn btn-success rounded-pill px-4 py-2" @click="addPetProfile">
           <i class="bi bi-plus-circle me-2"></i>新增毛小孩資訊
         </button>
       </div>
@@ -144,6 +113,9 @@
     <Modal title="modal1" ref="thisModal" @submit-owner="submitOwner">
       <template #body>編輯 個人資訊</template>
     </Modal>
+    <PetModal title="petModal1" ref="thisPetModal" @submit-pet="submitPet">
+      <template #body>新增毛小孩資訊</template>
+    </PetModal>
   </main>
 
   <link
