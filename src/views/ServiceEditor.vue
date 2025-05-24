@@ -147,21 +147,20 @@ const service = computed(() => serviceMap[type] || { label: '', icon: '' })
 
 const form = ref({
   enabled: true,
-  service_type_id: 1,
-  title: '狗狗日托',
-  description: '放心交給我們，我們幫你把狗狗找顧好唷',
-  price: 800,
-  price_unit: '每天8小時', 
-  allowed_pet_types: [0, 1],
-  allowed_pet_ages: { min: 1, max: 10 },
-  allowed_pet_sizes: [0, 1],
-  allowed_pet_genders: [0, 1],
+  title: null,
+  description: null,
+  price: null,
+  price_unit: null, 
+  allowed_pet_types: [],
+  allowed_pet_ages: { min: null, max: null },
+  allowed_pet_sizes: [],
+  allowed_pet_genders: [],
   images: [],
   extra_options: {
-    outdoor_area_size: '25坪',
-    house_type: '透天',
-    pee_poo_times_per_day: 3,
-    walk_times_per_day: 2
+    outdoor_area_size: null,
+    house_type: null,
+    pee_poo_times_per_day: null,
+    walk_times_per_day: null
   }
 })
 onMounted(async () => {
@@ -172,11 +171,22 @@ async function init() {
   const data = await getFreelancerServiceDetail(type)
   console.log('initdata', data)
   if (data) {
-    form.value = data
+    form.value = normalizeFormData(data)
   }
 }
+//整理返回資料
+function normalizeFormData(data = {}) {
+  return {
+    ...data,
+    images: Array.isArray(data.images)
+      ? data.images.map(url => ({ url, blob: null }))
+      : []//圖片返回資料整理，避免是null以及整理成套件要的資料格式
+  }
+}
+
 async function submit() {
   const payload = {
+    service_type_id: Number(type),
     ...form.value,
     images: getImageUrls(form.value.images)
   }
@@ -185,13 +195,14 @@ async function submit() {
 
   try {
     await createOrUpdateService(payload)
+    goBack()
   } catch(error) {
     console.log(error)
   }
 }
 
 function goBack() {
-  router.back()
+  router.push('/freelancer-info')
 }
 
 //  圖片上傳
@@ -266,7 +277,7 @@ const getImageUrls = (fileList = []) => {
 .img-box {
   width: 100px;
   height: 100px;
-  margin: 10px 0;
+  margin: 10px 5px;
   position: relative;
 }
 img {
