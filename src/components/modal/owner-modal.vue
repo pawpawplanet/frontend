@@ -2,6 +2,9 @@
 import { onMounted, ref, reactive , computed} from 'vue'
 import Modal from 'bootstrap/js/dist/modal'
 
+const prop = defineProps({
+    title: String
+})
 // 定義父組件會接收的事件名稱
 const emit = defineEmits(['submitOwner']);
 
@@ -29,6 +32,10 @@ const availableAreas = computed(() => {
 
 onMounted(() => {
   modal = new Modal(modal_ref.value)
+  const ModalEl = document.getElementById(prop.title)
+  ModalEl.addEventListener("hide.bs.modal", () => {
+    document.activeElement?.blur()
+  })
 })
 
 function c_show() {

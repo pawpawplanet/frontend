@@ -70,11 +70,6 @@
           </div>
         </div>
 
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-        />
-
         <div class="position-relative border rounded-4 text-center p-3 mt-4">
           <div class="position-absolute top-0 start-50 translate-middle">
             <div class="text-brown fw-bold bg-white p-2">\ 評論 /</div>

@@ -108,6 +108,22 @@
           <i class="bi bi-plus-circle me-2"></i>新增毛小孩資訊
         </button>
       </div>
+
+      <div class="card mx-auto my-3" style="max-width: 540px;">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img src="" class="img-fluid rounded-start" alt="...">
+            <div>111</div>
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <Modal title="modal1" ref="thisModal" @submit-owner="submitOwner">
@@ -117,11 +133,6 @@
       <template #body>新增毛小孩資訊</template>
     </PetModal>
   </main>
-
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-  />
 </template>
 <style scoped>
   .card {
