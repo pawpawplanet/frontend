@@ -26,14 +26,16 @@
 
   const submitOwner = async (updatedOwner) => {
     try {
-      console.log("送出資料：", updatedOwner)
+      //console.log("送出資料：", updatedOwner)
       const response = await PatchOwnerProfile(updatedOwner);
-      console.log('送出成功:', response.data);
+      //console.log('送出成功:', response.data);
       toast.show('更新成功', 'success')
       //thisModal.value.p_hide(); // 關閉 Modal
-      owner.value = updatedOwner; // 更新畫面上的 owner 資料
+      owner.value = Object.assign({}, owner.value, updatedOwner);
+
+
     } catch (error) {
-      console.error('送出失敗:', error);
+      //console.error('送出失敗:', error);
       alert('更新失敗，請稍後再試。');
     }
   }
@@ -59,7 +61,7 @@
       const response = await GetOwnerProfile();
       console.log(response)
       owner.value = response.user;
-      console.log("取得的 owner:", owner.value);
+      //console.log("取得的 owner:", owner.value);
     } catch (err) {
       console.error('取得個人資料失敗:', err);
       err.value = '無法取得個人資料，請稍後再試。';
@@ -126,7 +128,7 @@
       </div>
     </div>
 
-    <Modal title="modal1" ref="thisModal" @submit-owner="submitOwner">
+    <Modal title="modal1" ref="thisModal" :ownerData="owner" @submit-owner="submitOwner">
       <template #body>編輯 個人資訊</template>
     </Modal>
     <PetModal title="petModal1" ref="thisPetModal" @submit-pet="submitPet">

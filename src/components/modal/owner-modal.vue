@@ -3,9 +3,10 @@ import { onMounted, ref, reactive , computed} from 'vue'
 import Modal from 'bootstrap/js/dist/modal'
 
 const prop = defineProps({
-    title: String
+    title: String,
+    ownerData: Object,
 })
-// 定義父組件會接收的事件名稱
+
 const emit = defineEmits(['submitOwner']);
 
 let modal_ref = ref(null);
@@ -39,11 +40,11 @@ onMounted(() => {
 })
 
 function c_show() {
-  updatedOwner.name = ''
-  updatedOwner.city = ''
-  updatedOwner.area = ''
-  updatedOwner.phone = ''
-  updatedOwner.description = ''
+  updatedOwner.name = prop.ownerData?.name || ''
+  updatedOwner.city = prop.ownerData?.city || ''
+  updatedOwner.area = prop.ownerData?.area || ''
+  updatedOwner.phone = prop.ownerData?.phone || ''
+  updatedOwner.description = prop.ownerData?.description || ''
   modal.show()
 }
 
