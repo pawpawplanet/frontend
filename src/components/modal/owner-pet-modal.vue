@@ -5,10 +5,10 @@
   const prop = defineProps({
     title: String
   })
-  const emit = defineEmits(['submitPet']);
+  const emit = defineEmits(['submitPet'])
 
-  let modal_ref = ref(null);
-  let modal;
+  let modal_ref = ref(null)
+  let modal
 
   const petData = reactive({
     "owner_id":1,
@@ -21,8 +21,8 @@
     "personality_description":"個性描述",
     "health_description":"健康描述",
     "note":"注意事項",
-    "avatar":"",
-  });
+    "avatar":"https://api.fnkr.net/testimg/80x80/00CED1/FFF/?text=test1",
+  })
 
   const formErrorCheck = reactive({
     "name":false,
@@ -35,7 +35,7 @@
     "health_description":false,
     "note":false,
     "avatar":false,
-  });
+  })
 
   const formErrorMsg = reactive({
     "name":"名稱格式錯誤",
@@ -48,7 +48,7 @@
     "health_description":"健康狀況格式錯誤",
     "note":"特殊需求與注意事項格式錯誤",
     "avatar":"照片格式錯誤",
-  });
+  })
 
   const species = [
     {"id":1,"name":'狗'},
@@ -91,7 +91,7 @@
       emit('submitPet', petData);
       modal.hide();
     }
-  };
+  }
 
   function submitForm() {
     validateForm();
@@ -124,7 +124,7 @@
             <div class="row">
               <div class="col-lg-3">
                 <div class="flex-center">
-                  <img :src="petData.avatar" class="img-fluid mb-2" alt="寵物照片">
+                  <img :src="petData.avatar" class="rounded-circle mb-2" alt="寵物照片">
                 </div>
                 <p class="flex-center upload-btn">[上傳照片]</p>
                 <input id="avatar" type="hidden" :class="{ 'is-invalid': formErrorCheck.avatar }" v-model="petData.avatar">
@@ -159,11 +159,11 @@
                   <div class="col-9">
                     <div :class="{ 'is-invalid': formErrorCheck.gender }">
                       <div class="form-check form-check-inline">
-                        <input id="genderRadio1" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" value="男" v-model="petData.gender">
+                        <input id="genderRadio1" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" :value="1" v-model="petData.gender">
                         <label for="genderRadio1" class="form-check-label">男</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input id="genderRadio2" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" value="女" v-model="petData.gender">
+                        <input id="genderRadio2" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" :value="2" v-model="petData.gender">
                         <label for="genderRadio2" class="form-check-label">女</label>
                       </div>
                     </div>

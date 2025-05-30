@@ -111,17 +111,42 @@
         </button>
       </div>
 
-      <div class="card mx-auto my-3" style="max-width: 540px;">
-        <div class="row g-0">
-          <div class="col-md-4">
-            <img src="" class="img-fluid rounded-start" alt="...">
-            <div>111</div>
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+      <div class="mt-5">
+        <div class="card p-4 mx-auto" style="max-width: 700px;">
+          <div class="row">
+            <div class="d-md-none text-end">
+              <button class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+            </div>
+            <div class="col-md-3 text-center p-3">
+              <img src="https://api.fnkr.net/testimg/80x80/00CED1/FFF/?text=test1" class="rounded-circle" alt="寵物照片" />
+              <div>小花</div>
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-5 col-md-4 text-end d-flex flex-column gap-1">
+                    <p>種類<span>｜</span></p>
+                    <p>性別<span>｜</span></p>
+                    <p>出生年月日<span>｜</span></p>
+                    <p>是否結紮<span>｜</span></p>
+                    <p>體型<span>｜</span></p>
+                  </div>
+                  <div class="col-7 col-md-8 d-flex flex-column gap-1 ps-0">
+                    <p>貓</p>
+                    <p>女</p>
+                    <p>2025-04-12</p>
+                    <p>士</p>
+                    <p>小</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-none d-md-block col-md-1 pt-3">
+              <button class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil-square"></i>
+              </button>
             </div>
           </div>
         </div>
