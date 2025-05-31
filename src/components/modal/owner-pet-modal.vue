@@ -3,7 +3,9 @@
   import Modal from 'bootstrap/js/dist/modal'
 
   const prop = defineProps({
-    title: String
+    title: String,
+    hasPet: Boolean,
+    getPetData: Object
   })
   const emit = defineEmits(['submitPet'])
 
@@ -11,30 +13,30 @@
   let modal
 
   const petData = reactive({
-    "owner_id":1,
-    "name":"小黑",
-    "species_id":1,
-    "gender": "男",
-    "birthday":"2020-10-20",
-    "is_ligation":false,
-    "size_id":1,
-    "personality_description":"個性描述",
-    "health_description":"健康描述",
-    "note":"注意事項",
-    "avatar":"https://api.fnkr.net/testimg/80x80/00CED1/FFF/?text=test1",
+    "owner_id": "",
+    "name": "",
+    "species_id": "",
+    "gender": "",
+    "birthday": "",
+    "is_ligation": "",
+    "size_id": "",
+    "personality_description": "",
+    "health_description": "",
+    "note": "",
+    "avatar": "",
   })
 
   const formErrorCheck = reactive({
-    "name":false,
-    "species_id":false,
+    "name": false,
+    "species_id": false,
     "gender": false,
-    "birthday":false,
-    "is_ligation":false,
-    "size_id":false,
-    "personality_description":false,
-    "health_description":false,
-    "note":false,
-    "avatar":false,
+    "birthday": false,
+    "is_ligation": false,
+    "size_id": false,
+    "personality_description": false,
+    "health_description": false,
+    "note": false,
+    "avatar": false,
   })
 
   const formErrorMsg = reactive({
@@ -87,7 +89,7 @@
     if (hasErrors) {
       console.log("有錯誤，阻止提交");
     } else {
-      console.log("表單可提交");
+      console.log("表單可提交");  
       emit('submitPet', petData);
       modal.hide();
     }
@@ -102,14 +104,15 @@
     const ModalEl = document.getElementById(prop.title)
     ModalEl.addEventListener("hide.bs.modal", () => {
       // 強制把焦點移出 modal，避免 aria-hidden 焦點衝突
-      document.activeElement?.blur()
+      document.activeElement?.blur();
     })
   })
 
   function c_show() {
-    modal.show()
+    modal.show();
+    if(prop.hasPet) Object.assign(petData, prop.getPetData)
   }
-
+  
   defineExpose({ p_show: c_show })
 </script>
 <template>

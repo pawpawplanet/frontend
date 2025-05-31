@@ -1,9 +1,10 @@
 <script setup>
   import Modal from '@/components/modal/owner-modal.vue'
   import PetModal from '@/components/modal/owner-pet-modal.vue'
-  import { ref , onMounted } from 'vue'
+  import { ref, reactive, onMounted, computed } from 'vue'
   import { useRouter } from 'vue-router';
   import { PatchOwnerProfile, GetOwnerProfile } from '@/plugins/api/users/users.js';
+  import { getPet, postPet, patchPet } from '@/plugins/api/pets.js';
   import { useLoginStore } from '@/stores/login.js';
   import { useToast } from '@/plugins/toast/toast-plugin.js'
 
@@ -13,6 +14,33 @@
   const thisModal = ref();
   const thisPetModal = ref();
   const owner = ref({})
+  const petData = ref(null)
+  const hasPet = ref(null)
+  const petCardData = reactive({
+    "name": null,
+    "species_id": null,
+    "gender": null,
+    "birthday": null,
+    "is_ligation": null,
+    "size_id": null,
+    "avatar": null,
+  })
+  const formatSpecies= computed(() => {
+    const mapping = { 1: '狗', 2: '貓', 3: '鳥' };
+    return mapping[petData.value.species_id] || null;
+  });
+  const formatGender= computed(() => {
+    const mapping = { 1: '男', 2: '女' };
+    return mapping[petData.value.gender] || null;
+  });
+  const formatIs_ligation= computed(() => {
+    const mapping = { true: '是', false: '否' };
+    return mapping[petData.value.is_ligation] || null;
+  });
+  const formatSize = computed(() => {
+    const mapping = { 1: '小', 2: '中', 3: '大' };
+    return mapping[petData.value.size_id] || null;
+  });
 
   const editProfile = () => {
     // alert('進入編輯模式')
@@ -41,12 +69,29 @@
   }
 
   const submitPet = async (data) => {
+    console.log("submitPet");
+    // console.log(data);
+    let postPetData;
     try {
-      console.log("submitPet");
-      console.log(data);
+      if(!hasPet.value) postPetData = await postPet(data);
+      else postPetData = await patchPet(data);
+      // console.log(postPetData);
+      petData.value = postPetData;
+      hasPet.value = true;
+      updatePetCard();
     } catch (error) {
-      console.error('送出失敗:', error);
+      console.error('寵物送出失敗:', error);
     }
+  }
+
+  const updatePetCard = () => {
+    petCardData.name = petData.value.name;
+    petCardData.birthday = petData.value.birthday;
+    petCardData.avatar = petData.value.avatar;
+    petCardData.species_id = formatSpecies.value;
+    petCardData.gender = formatGender.value;
+    petCardData.is_ligation = formatIs_ligation.value;
+    petCardData.size_id = formatSize.value;
   }
 
   onMounted(async () => {
@@ -68,8 +113,17 @@
     } finally {
       loading.value = false;
     }
-  });
 
+    try {
+      const getPetData = await getPet();
+      petData.value = (getPetData.pet!== null ? getPetData.pet : petData.value);
+      // console.log(petData.value);
+      hasPet.value = (getPetData.pet=== null ? false : true);
+      if(hasPet.value) updatePetCard();
+    }catch (err){
+      console.log('錯誤寵物get"', err);
+    }
+  });
 
   function showModal() {
     console.log("Modal打開");
@@ -105,23 +159,23 @@
         </div>
       </div>
 
-      <div class="text-center mt-4">
+      <div class="text-center mt-4" v-if="!hasPet">
         <button class="btn btn-success rounded-pill px-4 py-2" @click="addPetProfile">
           <i class="bi bi-plus-circle me-2"></i>新增毛小孩資訊
         </button>
       </div>
 
-      <div class="mt-5">
+      <div class="mt-5" v-if="hasPet">
         <div class="card p-4 mx-auto" style="max-width: 700px;">
           <div class="row">
             <div class="d-md-none text-end">
-              <button class="btn btn-outline-secondary btn-sm">
+              <button class="btn btn-outline-secondary btn-sm" @click="addPetProfile">
                 <i class="bi bi-pencil-square"></i>
               </button>
             </div>
             <div class="col-md-3 text-center p-3">
-              <img src="https://api.fnkr.net/testimg/80x80/00CED1/FFF/?text=test1" class="rounded-circle" alt="寵物照片" />
-              <div>小花</div>
+              <img :src="petCardData.avatar" class="rounded-circle" alt="寵物照片" />
+              <div>{{ petCardData.name }}</div>
             </div>
             <div class="col-md-8">
               <div class="card-body">
@@ -134,17 +188,17 @@
                     <p>體型<span>｜</span></p>
                   </div>
                   <div class="col-7 col-md-8 d-flex flex-column gap-1 ps-0">
-                    <p>貓</p>
-                    <p>女</p>
-                    <p>2025-04-12</p>
-                    <p>士</p>
-                    <p>小</p>
+                    <p>{{ petCardData.species_id }}</p>
+                    <p>{{ petCardData.gender }}</p>
+                    <p>{{ petCardData.birthday }}</p>
+                    <p>{{ petCardData.is_ligation }}</p>
+                    <p>{{ petCardData.size_id }}</p>
                   </div>
                 </div>
               </div>
             </div>
             <div class="d-none d-md-block col-md-1 pt-3">
-              <button class="btn btn-outline-secondary btn-sm">
+              <button class="btn btn-outline-secondary btn-sm" @click="addPetProfile">
                 <i class="bi bi-pencil-square"></i>
               </button>
             </div>
@@ -156,7 +210,7 @@
     <Modal title="modal1" ref="thisModal" :ownerData="owner" @submit-owner="submitOwner">
       <template #body>編輯 個人資訊</template>
     </Modal>
-    <PetModal title="petModal1" ref="thisPetModal" @submit-pet="submitPet">
+    <PetModal title="petModal1" ref="thisPetModal" :hasPet="hasPet" :getPetData="petData" @submit-pet="submitPet">
       <template #body>新增毛小孩資訊</template>
     </PetModal>
   </main>
