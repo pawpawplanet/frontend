@@ -68,9 +68,12 @@
     }
   }
 
-  const submitPet = async (data) => {
+  const submitPet = async (rawData) => {
     console.log("submitPet");
-    // console.log(data);
+    const data = {
+      ...rawData,
+      avatar: rawData.avatar?.[0]?.url || ''
+    }
     let postPetData;
     try {
       if(!hasPet.value) postPetData = await postPet(data);
@@ -131,6 +134,10 @@
   }
   function showPetModal() {
     console.log("PetModal打開");
+    petData.value.avatar = (typeof petData.value.avatar === 'string' && petData.value.avatar.trim())
+  ? [{ url: petData.value.avatar, blob: null }]
+  : (Array.isArray(petData.value.avatar) ? petData.value.avatar : []);
+
     thisPetModal.value.p_show()
   }
 </script>
