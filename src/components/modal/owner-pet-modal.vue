@@ -1,6 +1,8 @@
 <script setup>
   import { onMounted, ref, reactive } from 'vue'
   import Modal from 'bootstrap/js/dist/modal'
+  import FileUpload from 'vue-upload-component'
+  import { uploadImage } from '@/plugins/api/users/upload.js'; 
 
   const prop = defineProps({
     title: String,
@@ -23,7 +25,7 @@
     "personality_description": "",
     "health_description": "",
     "note": "",
-    "avatar": "",
+    "avatar": [],
   })
 
   const formErrorCheck = reactive({
@@ -83,7 +85,9 @@
     else formErrorCheck.is_ligation = false;
     if(validateNotRequired(petData.size_id)) formErrorCheck.size_id = true;
     else formErrorCheck.size_id = false;
-
+    if (!petData.avatar?.[0].url) formErrorCheck.avatar= true;
+    else formErrorCheck.avatar = false;
+  
     const hasErrors = Object.values(formErrorCheck).some(error => error);
     if (hasErrors) {
       console.log("有錯誤，阻止提交");
@@ -113,6 +117,61 @@
   }
   
   defineExpose({ p_show: c_show })
+
+  //  圖片上傳
+  const upload = ref(null)
+
+  const filter = (newFile, oldFile, prevent) => {
+    if (!newFile || !newFile.file) return
+
+    if (!/\.(jpeg|jpg|png)$/i.test(newFile.name)) {
+      alert('格式錯誤')
+      remove(newFile)
+      prevent()
+      return
+    }
+
+    if (newFile.size / 1024 / 1024 > 5) {
+      alert('图片大小不能超过5MB')
+      remove(newFile)
+      prevent()
+      return
+    }
+  // 創建 blob 字段 用於圖片預覽
+    const URL = window.URL || window.webkitURL
+    newFile.blob = URL.createObjectURL(newFile.file)
+  }
+
+  const handleInput =  async (newFile) => {
+    if (!newFile || !newFile.file) return
+    if (newFile.size / 1024 / 1024 > 5) {
+      alert('檔案不能超過 5MB')
+      remove(newFile)
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('file', newFile.file)
+
+    try {
+      const res = await uploadImage(formData)
+      const imageUrl = res?.image_url
+      console.log(123,res)
+      // 把圖片上傳後的 URL 設進 file 中，這樣就會存在 form.avatar 裡
+      newFile.url = imageUrl
+    } catch (err) {
+      console.error('圖片上傳失敗:', err)
+      alert('圖片上傳失敗，請重試')
+      remove(newFile)//移除這筆失敗的檔案
+    }
+  }
+
+  const remove = (file) => {
+    const index = petData.value.avatar.findIndex(f => f.url === file.url)
+    if (index !== -1) {
+      petData.value.avatar.splice(index, 1)
+    }
+  }
 </script>
 <template>
   <div class="modal fade" ref="modal_ref" :id="title" tabindex="-1" :aria-labelledby="title + 'Label'" aria-hidden="true">
@@ -124,11 +183,35 @@
               <slot name="body"></slot>
             </h5>
             <div class="row">
-              <div class="col-lg-3">
-                <div class="flex-center">
-                  <img :src="petData.avatar" class="rounded-circle mb-2" alt="寵物照片">
+              <div class="col-lg-3 text-center position-relative">
+                <div class="image-uploader">
+                  <div
+                    class="img-box"
+                    v-for="(file, index) in petData.avatar"
+                    :key="index"
+                  >
+                    <img :src="file.blob || file.url" />
+                    <div class="close" @click="remove(file)">
+                      <div class="icon-close">×</div>
+                    </div>
+                  </div>
+                  <FileUpload
+                    v-show="petData.avatar?.length < 1"
+                    ref="upload"
+                    v-model="petData.avatar"
+                    :multiple="false"
+                    :maximum="1"
+                    accept="image/png,image/jpeg,image/jpg"
+                    extensions="jpg,png,jpeg"
+                    @input-file="handleInput"
+                    @input-filter="filter"
+                  >
+                    <div class="img-box upload">
+                      <span class="upload-icon">+</span>
+                    </div>
+                  </FileUpload>
                 </div>
-                <p class="flex-center upload-btn">[上傳照片]</p>
+                <p v-show="petData.avatar?.length < 1" class="flex-center upload-btn">[上傳照片]</p>
                 <input id="avatar" type="hidden" :class="{ 'is-invalid': formErrorCheck.avatar }" v-model="petData.avatar">
                 <div v-if="formErrorCheck.avatar" class="invalid-feedback text-center">{{ formErrorMsg.avatar }}</div>
               </div>
@@ -251,6 +334,52 @@
 <style scoped>
   .upload-btn {
     cursor: pointer;
+  }
+  .image-uploader {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .img-box {
+    width: 100px;
+    height: 100px;
+    margin: 10px 0;
+    position: relative;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .close {
+    cursor: pointer;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    .icon-close {
+      position: absolute;
+      color: #ffffff;
+      z-index: 1;
+      top: -8px;
+      left: 5px;
+      font-size: 20px;
+    }
+  }
+  .upload {
+    border: 1px dashed #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .upload-icon {
+    font-size: 20px;
+    width: 24px;
+    height: 24px;
+    line-height: 15px;
   }
 </style>
 

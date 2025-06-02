@@ -16,7 +16,7 @@
           v-show="editMode && modelValue.avatar?.length < 1"
           ref="upload"
           v-model="modelValue.avatar"
-          :multiple="true"
+          :multiple="false"
           :maximum="1"
           accept="image/png,image/jpeg,image/jpg"
           extensions="jpg,png,jpeg"
