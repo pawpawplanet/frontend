@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, useTemplateRef, onMounted, nextTick, onUnmounted } from 'vue'
 
 const props = defineProps({
   value: {
@@ -12,12 +12,17 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['updateSort'])
+
+const sort = useTemplateRef('sort')
+
+
 const chooseValue = computed(() => {
-  let value = ''
+  let value = {}
   if (props.options.length > 0) {
     props.options.forEach((item) => {
       if (props.value === item.value) {
-        value = item.name
+        value = item
       }
     })
   }
@@ -29,19 +34,40 @@ const showDropDown = ref(false)
 const onPress = () => {
   showDropDown.value = !showDropDown.value
 }
+
+const updateSort = (value) => {
+  emit('updateSort', value)
+  showDropDown.value = false
+}
+
+const clickOtherElement = (e) => {
+  if (sort.value && !sort.value.contains(e.target)) {
+    showDropDown.value = false
+  }
+}
+
+onMounted(() => {
+  nextTick(() => {
+    document.addEventListener('click', (e) => clickOtherElement(e))
+  })
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', (e) => clickOtherElement(e))
+})
 </script>
 <template>
-  <div class="position-relative">
+  <div ref="sort" class="position-relative">
     <button type="button" class="btn btn-link text-decoration-none sort-selector px-0" @click="onPress">
       <span class="d-flex align-items-center">
         <div style="width: 24px; height: 24px;">
-          <SvgIcon name="descending" color="#452B14" :size="24"/>
+          <SvgIcon :name="chooseValue.icon" color="#452B14" :size="24"/>
         </div>
-        <p>{{ chooseValue }}</p>
+        <p>{{ chooseValue.name }}</p>
       </span>
     </button>
     <ul class="position-absolute sort-selector-dropdown py-2 px-0 bg-white" :class="{ 'hide': showDropDown }">
-      <li v-for="(item, key) in options" class="w-100 d-flex align-items-center" :key="key">
+      <li v-for="(item, key) in options" class="w-100 d-flex align-items-center" :key="key" @click="updateSort(item.value)">
         <div class="sort-selector-item d-flex align-items-center">
           <SvgIcon v-if="item.icon" name="descending" color="#452B14" />
           <p>

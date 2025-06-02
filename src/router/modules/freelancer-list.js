@@ -1,7 +1,7 @@
 import FreelancerList from '@/views/FreelancerList.vue'
 
 const freelancerListRouter = {
-  path: 'freelancer-list',
+  path: 'service',
   name: 'freelancerList',
   component: FreelancerList,
   meta: {
@@ -12,10 +12,11 @@ const freelancerListRouter = {
         name: '首頁',
       },
       {
-        path: '/freelancer-list',
+        path: '/service',
         name: '搜尋結果',
       },
     ],
+    keep_alive: true,
   },
 }
 

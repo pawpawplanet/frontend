@@ -88,7 +88,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import FileUpload from 'vue-upload-component'
-import { uploadImage } from '@/plugins/api/users/upload.js'; 
+import { uploadImage } from '@/plugins/api/upload/upload.js';
 import cityData from '@/assets/tw-city-data.json'
 
 defineProps({

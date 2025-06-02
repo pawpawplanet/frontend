@@ -11,23 +11,29 @@ defineProps({
   },
 })
 
+const emit = defineEmits(['updateSort'])
+
 const sortList = ref([
   {
-    value: 1,
+    value: 'newest',
     name: '最新到最舊',
     icon: 'descending',
   },
   {
-    value: 2,
+    value: 'oldest',
     name: '最舊到最新',
     icon: 'ascending',
   },
   {
-    value: 3,
+    value: 'rating',
     name: '評價最高到最低',
     icon: 'descending',
   },
 ])
+
+const updateSort = (value) => {
+  emit('updateSort', value)
+}
 </script>
 <template>
   <div class="w-100 pt-3">
@@ -37,7 +43,7 @@ const sortList = ref([
       </div>
       <div class="flex-1">
         <div class="d-flex justify-content-end">
-          <SortSelector :options="sortList" :value="selectValue" />
+          <SortSelector :options="sortList" :value="selectValue" @update-sort="updateSort"/>
         </div>
       </div>
     </div>
