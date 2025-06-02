@@ -42,10 +42,10 @@
   const formErrorMsg = reactive({
     "name":"名稱格式錯誤",
     "species_id":"種類格式錯誤",
-    "gender": "性別格式錯誤",
+    "gender":"性別格式錯誤",
     "birthday":"出生年月日格式錯誤",
     "is_ligation":"是否結紮格式錯誤",
-    "size_id":"題型格式錯誤",
+    "size_id":"體型格式錯誤",
     "personality_description":"性格描述格式錯誤",
     "health_description":"健康狀況格式錯誤",
     "note":"特殊需求與注意事項格式錯誤",
@@ -53,14 +53,13 @@
   })
 
   const species = [
-    {"id":1,"name":'狗'},
-    {"id":2,"name":'貓'},
-    {"id":3,"name":'鳥'}
+    {"id":0, "name":'貓'},
+    {"id":1, "name":'狗'}
   ]
   const sizes = [
-    {"id":1,"name":'小'},
-    {"id":2,"name":'中'},
-    {"id":3,"name":'大'}
+    {"id":0, "name":'小', "content":'小型-10公斤以下'},
+    {"id":1, "name":'中', "content":'中型-10公斤以上，20公斤以下'},
+    {"id":2, "name":'大', "content":'2 大型- 20公斤以上'}
   ]
 
   function validateNotRequired(value) {
@@ -162,11 +161,11 @@
                   <div class="col-9">
                     <div :class="{ 'is-invalid': formErrorCheck.gender }">
                       <div class="form-check form-check-inline">
-                        <input id="genderRadio1" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" :value="1" v-model="petData.gender">
+                        <input id="genderRadio1" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" :value="0" v-model="petData.gender">
                         <label for="genderRadio1" class="form-check-label">男</label>
                       </div>
                       <div class="form-check form-check-inline">
-                        <input id="genderRadio2" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" :value="2" v-model="petData.gender">
+                        <input id="genderRadio2" type="radio" class="form-check-input" :class="{ 'is-invalid': formErrorCheck.gender }" :value="1" v-model="petData.gender">
                         <label for="genderRadio2" class="form-check-label">女</label>
                       </div>
                     </div>
@@ -207,7 +206,7 @@
                         請選擇寵物體型
                       </option>
                       <option v-for="size in sizes" :key="size" :value="size.id">
-                        {{ size.name }}
+                        {{ size.name }} {{ size.content }}
                       </option>
                     </select>
                     <div v-if="formErrorCheck.size_id" class="invalid-feedback">{{ formErrorMsg.size_id }}</div>
