@@ -26,11 +26,11 @@
     "avatar": null,
   })
   const formatSpecies= computed(() => {
-    const mapping = { 1: '狗', 2: '貓', 3: '鳥' };
+    const mapping = { 0: '貓', 1: '狗' };
     return mapping[petData.value.species_id] || null;
   });
   const formatGender= computed(() => {
-    const mapping = { 1: '男', 2: '女' };
+    const mapping = { 0: '男', 1: '女' };
     return mapping[petData.value.gender] || null;
   });
   const formatIs_ligation= computed(() => {
@@ -38,7 +38,7 @@
     return mapping[petData.value.is_ligation] || null;
   });
   const formatSize = computed(() => {
-    const mapping = { 1: '小', 2: '中', 3: '大' };
+    const mapping = { 0: '小', 1: '中', 2: '大' };
     return mapping[petData.value.size_id] || null;
   });
 
