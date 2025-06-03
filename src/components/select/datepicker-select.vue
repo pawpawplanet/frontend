@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, useTemplateRef, nextTick, onMounted, onUnmounted } from 'vue'
-import { format } from 'date-fns'
+import { format, startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
 
 defineProps({
   prependIcon: {
@@ -31,6 +31,17 @@ defineProps({
 
 const dateModel = defineModel()
 
+const today = new Date()
+
+// 計算這週的週一與週日（你也可以根據區域調整起始日）
+const startOfWeekDate = startOfWeek(today, { weekStartsOn: 1 }) // 週一
+
+const endOfWeekDate = endOfWeek(today, { weekStartsOn: 1 })     // 週日
+
+const start = ref(startOfWeekDate)
+
+const end = ref(endOfWeekDate)
+
 const select = useTemplateRef('select')
 
 const showDropDown = ref(false)
@@ -52,6 +63,12 @@ const dateText = computed(() => {
   }
   return startDate
 })
+
+const attributes = computed(() => [
+  {
+    dates: { start: startOfWeek.value, end: endOfWeek.value }
+  }
+])
 
 const onPress = () => {
   showDropDown.value = !showDropDown.value
@@ -103,7 +120,9 @@ onUnmounted(() => {
           v-model.range="dateModel"
           mode="date"
           class="w-100"
+          :attributes="attributes"
           :min-date="new Date()"
+          :max-date="end"
           :masks="masks"
           @update:modelValue="updateDate"
         />

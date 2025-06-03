@@ -77,6 +77,7 @@ const chooseService = ref(null)
 
 watch(route, async (newVal) => {
   if (newVal.name === 'freelancerList') {
+    await reset()
     await checkRouteQuery(newVal)
     await getServiceList()
   }
@@ -123,7 +124,6 @@ const getServiceList = async () => {
 }
 
 const checkoutCategory = async (value) => {
-  await reset()
   switch (value) {
     case '寵物寄宿/日托':
       request.service_type_id = 0
@@ -171,7 +171,6 @@ const updateLocation = async (value) => {
       area: value.area,
     },
   })
-  await getServiceList()
 }
 
 const updateBudge = async (value) => {
@@ -226,7 +225,6 @@ const updateBudge = async (value) => {
     default:
       break;
   }
-  await getServiceList()
 }
 
 const updateDate = async (value) => {
@@ -251,8 +249,6 @@ const updateDate = async (value) => {
       date: str,
     },
   })
-  await getServiceList()
-
 }
 
 const updateSort = async (value) => {
@@ -264,7 +260,6 @@ const updateSort = async (value) => {
       sort: value === 'newest' ? undefined: value,
     },
   })
-  await getServiceList()
 }
 
 const reset = async () => {
@@ -362,7 +357,7 @@ const calcRating = (rating, index) => {
   if (rating !== 0) {
     if (rating > index - 1) return '#FFCF75'
   }
-  return '#E7E7E7'
+  return '#CECECE'
 }
 
 onMounted(async () => {
@@ -401,25 +396,25 @@ onActivated(() => {
             <SortAndNum :select-value="request.sort" :total="total" @update-sort="updateSort"/>
           </div>
           <div class="w-100 pb-4 freelancer-list-items" :style="{ 'height': `${outerHeight}px` }">
-            <div class="row gy-2 h-100">
-              <template v-if="loading">
-                <div class="w-100 py-2 d-flex justify-content-center align-items-center">
-                  <Loading :show="loading" />
-                </div>
-              </template>
-              <template v-else>
-                <template v-if="list.length > 0">
+            <template v-if="loading">
+              <div class="w-100 h-100 py-2 d-flex justify-content-center align-items-center">
+                <Loading :show="loading" />
+              </div>
+            </template>
+            <template v-else>
+              <template v-if="list.length > 0">
+                <div class="row gy-2">
                   <div v-for="(item, key) in list" class="col-12 py-2" :key="key">
                     <FreelancerCard :item="item" />
                   </div>
-                </template>
-                <template v-else>
-                  <div class="w-100 h-100 py-2 d-flex justify-content-center align-items-center">
-                    <p class="freelancer-list-items-nodata">無資料</p>
-                  </div>
-                </template>
+                </div>
               </template>
-            </div>
+              <template v-else>
+                <div class="w-100 h-100 py-2 d-flex justify-content-center align-items-center">
+                  <p class="freelancer-list-items-nodata">無資料</p>
+                </div>
+              </template>
+            </template>
           </div>
         </div>
       </div>

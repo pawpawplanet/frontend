@@ -5,6 +5,14 @@ const props = defineProps({
     required: true,
   },
 })
+
+const calcRating = (rating, index) => {
+  // 計算評分
+  if (rating !== 0) {
+    if (rating > index - 1) return '#FFCF75'
+  }
+  return '#CECECE'
+}
 </script>
 <template>
   <RouterLink :to="`/service/${props.item.id}`" class="d-block text-decoration-none w-100 border border-primary freelancer-list-card">
@@ -31,20 +39,8 @@ const props = defineProps({
             </div>
             <div class="w-100 py-2">
               <div class="row gx-1 align-items-center">
-                <div class="px-1" style="width: 32px;">
-                  <SvgIcon name="star" color="#FFCF75" />
-                </div>
-                <div class="px-1" style="width: 32px;">
-                  <SvgIcon name="star" color="#FFCF75" />
-                </div>
-                <div class="px-1" style="width: 32px;">
-                  <SvgIcon name="star" color="#FFCF75" />
-                </div>
-                <div class="px-1" style="width: 32px;">
-                  <SvgIcon name="star" color="#FFCF75" />
-                </div>
-                <div class="px-1" style="width: 32px;">
-                  <SvgIcon name="star" color="#FFCF75" />
+                <div v-for="(index) in 5" class="px-1" style="width: 32px;" :key="index">
+                  <SvgIcon name="star" :color="calcRating(props.item.rating, index)" />
                 </div>
                 <div class="col">
                   <div class="px-2">
