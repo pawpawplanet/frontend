@@ -24,12 +24,20 @@
     background: $white;
     border-radius: 20px;
     transition: max-height 0.1s ease;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
     &.hide {
       max-height: 400px;
       padding: 8px;
       border: 1px solid $primary-dark-second;
       z-index: 2;
+    }
+    &.datepicker {
+      &.hide {
+        padding: 0;
+        border: none;
+        overflow: unset;
+      }
     }
   }
   &-option {
@@ -49,6 +57,11 @@
     }
     &:hover {
       background: $black-100;
+    }
+    &.nodata {
+      &:hover {
+        background: $white;
+      }
     }
   }
   input {

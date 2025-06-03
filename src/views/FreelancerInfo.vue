@@ -7,16 +7,16 @@
           <i class="bi bi-pencil-square"></i> 編輯
         </button>
       </div>
-      <profile-form 
-        v-model="tempForm" 
+      <profile-form
+        v-model="tempForm"
         :edit-mode="isEditMode"
       >
       </profile-form>
 
       <hr />
       <h5 class="mb-3">你可以接案的時間是:</h5>
-      <weekly-availability 
-        v-model:weeklyMode="tempForm.is_weekly_mode" 
+      <weekly-availability
+        v-model:weeklyMode="tempForm.is_weekly_mode"
         v-model:selectedDays="tempForm.working_days"
         :editMode="isEditMode"
       >
@@ -45,7 +45,7 @@ import ProfileForm from "@/components/admin/freelancer/ProfileForm.vue"
 import WeeklyAvailability from '@/components/admin/freelancer/WeeklyAvailability.vue'
 import ScheduleCalendar from '@/components/admin/freelancer/ScheduleCalendar.vue'
 import ServiceList from '@/components/admin/freelancer/ServiceList.vue'
-import { getFreelancerProfile, updateFreelancerProfile } from '@/plugins/api/users/freelancers.js';
+import { getFreelancerProfile, updateFreelancerProfile } from '@/plugins/api/freelancers/freelancers.js';
 import { useLoginStore } from '@/stores/login.js';
 import { useRouter } from 'vue-router';
 

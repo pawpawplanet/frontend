@@ -29,6 +29,11 @@
   &-items {
     overflow-y: scroll;
     overflow-x: hidden;
+    &-nodata {
+      font-size: 20px;
+      font-weight: 400;
+      color: $primary-dark-second;
+    }
   }
   &-card {
     border-radius: 20px;
@@ -81,8 +86,8 @@
     background: $black-100;
   }
   &-landmarks {
-    bottom: 60px;
-    right: 200px;
+    //bottom: 60px;
+    //right: 200px;
   }
   &-location {
     position: relative;
@@ -122,6 +127,7 @@
       z-index: 2;
     }
     &-card {
+      display: none;
       bottom: 50%;
       left: 0;
       transform: translate(-50%, -15%);

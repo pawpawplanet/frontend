@@ -127,8 +127,8 @@
 import { ref, computed, onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import FileUpload from 'vue-upload-component'
-import { uploadImage } from '@/plugins/api/users/upload.js'
-import { createOrUpdateService, getFreelancerServiceDetail } from '@/plugins/api/users/freelancers.js';
+import { uploadImage } from '@/plugins/api/upload/upload.js'
+import { createOrUpdateService, getFreelancerServiceDetail } from '@/plugins/api/freelancers/freelancers.js';
 
 const route = useRoute()
 const router = useRouter()
@@ -150,7 +150,7 @@ const form = ref({
   title: null,
   description: null,
   price: null,
-  price_unit: null, 
+  price_unit: null,
   allowed_pet_types: [],
   allowed_pet_ages: { min: null, max: null },
   allowed_pet_sizes: [],

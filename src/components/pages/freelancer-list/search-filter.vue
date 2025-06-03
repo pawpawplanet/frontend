@@ -1,43 +1,94 @@
 <script setup>
-import CustomInput from '@/components/input/custom-input.vue'
 import CustomSelect from '@/components/select/custom-select.vue'
+import DatepickerSelect from '@/components/select/datepicker-select.vue'
+import CitySelect from '@/components/select/city-select.vue'
 import { ref } from 'vue'
 
-const location = ref(null)
-const date = ref(null)
-const budge = ref(null)
+defineProps({
+  cond: {
+    type: Object,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['updateBudge', 'updateDate', 'updateLocation'])
+
+const dateModel = defineModel('date')
+const locationModel = defineModel('location')
+const budgeModel = defineModel('budge')
+
+const budgeList = ref([
+  {
+    icon: 'budge',
+    value: 0,
+    name: '不限'
+  },
+  {
+    icon: 'budge',
+    value: 1,
+    name: '< NT $1000'
+  },
+  {
+    icon: 'budge',
+    value: 2,
+    name: 'NT $1000 ~ 2000'
+  },
+  {
+    icon: 'budge',
+    value: 3,
+    name: 'NT $2000 ~ 3000'
+  },
+  {
+    icon: 'budge',
+    value: 4,
+    name: '> NT $3000'
+  },
+])
+
+const updateBudget = (value) => {
+  emit('updateBudge', value.value)
+}
+
+const updateDate = (value) => {
+  emit('updateDate', value)
+}
+
+const updateLocation = (value) => {
+  emit('updateLocation', value)
+}
 </script>
 <template>
   <div class="w-100">
     <div class="row g-0">
       <div class="col-12">
-        <CustomInput
-          v-model="location"
+        <CitySelect
+          v-model="locationModel"
           prepend-icon="map"
           label=""
           placeholder="選擇你的位置"
+          @update:model="updateLocation"
         />
       </div>
       <div class="col-12">
         <div class="row g-2">
           <div class="col-6">
-            <CustomSelect
-              v-model="date"
+            <DatepickerSelect
+              v-model="dateModel"
               prepend-icon="datepicker"
-              :options="[]"
               label=""
               placeholder="日期"
-              @update-option="updateServiceType"
+              @update:modelValue="updateDate"
             />
           </div>
           <div class="col-6">
             <CustomSelect
-              v-model="budge"
+              v-model="budgeModel"
               prepend-icon="budge"
-              :options="[]"
+              :options="budgeList"
               label=""
               placeholder="預算"
-              @update-option="updateServiceType"
+              id="service-budge"
+              @update-option="updateBudget"
             />
           </div>
         </div>

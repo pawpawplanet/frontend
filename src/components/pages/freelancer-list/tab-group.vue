@@ -1,19 +1,47 @@
 <script setup>
+import { ref } from 'vue'
+
+const props = defineProps({
+  freelancerType: {
+    type: Number,
+  },
+})
+const emit = defineEmits(['press'])
+const tabGroup = ref([
+  {
+    id: 0,
+    value: '寵物寄宿/日托'
+  },
+  {
+    id: 1,
+    value: '寵物散步'
+  },
+  {
+    id: 2,
+    value: '寵物美容'
+  },
+  {
+    id: 3,
+    value: '到府服務'
+  },
+])
+
+const onPress = (value) => {
+  emit('press', value)
+}
 </script>
 <template>
   <div class="w-100">
     <div class="row g-2 justify-content-between">
-      <div class="freelancer-list-tab">
-        <button type="button" class="btn border-black-300 tab-btn choose">寵物寄宿/日托</button>
-      </div>
-      <div class="freelancer-list-tab">
-        <button type="button" class="btn border-black-300 tab-btn">寵物散步</button>
-      </div>
-      <div class="freelancer-list-tab">
-        <button type="button" class="btn border-black-300 tab-btn">寵物美容</button>
-      </div>
-      <div class="freelancer-list-tab">
-        <button type="button" class="btn border-black-300 tab-btn">到府服務</button>
+      <div v-for="(tab, key) in tabGroup" class="freelancer-list-tab" :key="key">
+        <button
+          type="button"
+          class="btn border-black-300 tab-btn"
+          :class="{ 'choose': tab.id === props.freelancerType }"
+          @click="onPress(tab.value)"
+        >
+          {{ tab.value }}
+        </button>
       </div>
     </div>
   </div>

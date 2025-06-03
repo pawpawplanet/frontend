@@ -1,7 +1,6 @@
 <script setup>
 import Breadcrumb from '@/components/breadcrumb/Breadcrumb-component.vue'
 import ListInMap from '@/components/pages/freelancer-list/list-in-map.vue'
-// import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

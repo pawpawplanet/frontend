@@ -1,15 +1,11 @@
 <script setup>
-import SvgIcon from '@/components/svg-icon/svg-icon.vue'
-import { ref, computed, onMounted, nextTick, useTemplateRef, onUnmounted } from 'vue'
+import { ref, computed, useTemplateRef, nextTick, onMounted, onUnmounted } from 'vue'
+import { format, startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
 
-const props = defineProps({
+defineProps({
   prependIcon: {
     type: String,
     default: '',
-  },
-  options: {
-    type: Array,
-    required: true,
   },
   label: {
     type: String,
@@ -27,43 +23,65 @@ const props = defineProps({
     type: String,
     default: 'select'
   },
+  disabledDates: {
+    type: Boolean,
+  },
 })
 
-const emit = defineEmits(['updateOption'])
 
-const model = defineModel()
+const dateModel = defineModel()
+
+const today = new Date()
+
+// 計算這週的週一與週日（你也可以根據區域調整起始日）
+const startOfWeekDate = startOfWeek(today, { weekStartsOn: 1 }) // 週一
+
+const endOfWeekDate = endOfWeek(today, { weekStartsOn: 1 })     // 週日
+
+const start = ref(startOfWeekDate)
+
+const end = ref(endOfWeekDate)
 
 const select = useTemplateRef('select')
 
 const showDropDown = ref(false)
 
-const chooseValue = computed(() => {
-  let value = null
-  if (model.value !== null && model.value !== undefined) {
-    if (props.options.length !== 0) {
-      props.options.forEach((item) => {
-        if (model.value === item.value) {
-          value = item.name
-        }
-      })
+const masks = ref({
+  modelValue: 'YYYY-MM-DD',
+});
+
+const dateText = computed(() => {
+  const { start, end } = dateModel.value
+  const startDate = format(start, 'yyyy-MM-dd')
+  if (end) {
+    const endDate = format(end, 'yyyy-MM-dd')
+    if (startDate !== endDate) {
+      return `${startDate}-${endDate}`
+    } else {
+      return startDate
     }
   }
-  return value
+  return startDate
 })
+
+const attributes = computed(() => [
+  {
+    dates: { start: startOfWeek.value, end: endOfWeek.value }
+  }
+])
 
 const onPress = () => {
   showDropDown.value = !showDropDown.value
-}
-
-const chooseOption = (option) => {
-  onPress()
-  emit('updateOption', option)
 }
 
 const clickOtherElement = (e) => {
   if (select.value && !select.value.contains(e.target)) {
     showDropDown.value = false
   }
+}
+
+const updateDate = () => {
+  showDropDown.value = false
 }
 
 onMounted(() => {
@@ -76,6 +94,7 @@ onUnmounted(() => {
   document.removeEventListener('click', (e) => clickOtherElement(e))
 })
 </script>
+
 <template>
   <div ref="select" class="custom-select">
     <label v-if="label.length > 0" for="service" class="home-search-label">{{ label }}</label>
@@ -85,7 +104,7 @@ onUnmounted(() => {
           <SvgIcon :name="prependIcon" color="#452B14" :size="28" />
         </div>
         <div class="flex-1">
-          <input v-model="chooseValue" :placeholder="placeholder" :id="id" readonly />
+          <input v-model="dateText" :placeholder="placeholder" :id="id" readonly />
         </div>
         <div class="flex-0">
           <SvgIcon
@@ -96,20 +115,17 @@ onUnmounted(() => {
           />
         </div>
       </div>
-      <ul class="custom-select-options" :class="{ 'hide': showDropDown }">
-        <li
-          v-for="option in options"
-          class="custom-select-option"
-          :key="option.value"
-          @click="chooseOption(option)"
-        >
-          <div v-if="option.icon" class="me-2">
-            <SvgIcon :name="option.icon" :color="model === option.value ? '#ECB88A' : '#452B14'" :size="28" />
-          </div>
-          <p :class="{ 'text-primary': model === option.value }">
-            {{ option.name }}
-          </p>
-        </li>
+      <ul class="custom-select-options datepicker" :class="{ 'hide': showDropDown }">
+        <VDatePicker
+          v-model.range="dateModel"
+          mode="date"
+          class="w-100"
+          :attributes="attributes"
+          :min-date="new Date()"
+          :max-date="end"
+          :masks="masks"
+          @update:modelValue="updateDate"
+        />
       </ul>
     </div>
   </div>
