@@ -1,38 +1,58 @@
 <script setup>
 import { ref } from 'vue'
+import CitySelect from '@/components/select/city-select.vue'
 import CustomSelect from '@/components/select/custom-select.vue'
-import CustomInput from '@/components/input/custom-input.vue'
 import ButtonComponent from '@/components/button/button-component.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const serviceModel = ref(null)
 
 const serviceTypes = ref([
   {
-    value: 1,
+    value: '寵物寄宿',
     name: '寵物寄宿',
     icon: 'pet_boarding',
   },
   {
-    value: 2,
+    value: '寵物散步',
     name: '寵物散步',
     icon: 'pet_walking',
   },
   {
-    value: 3,
+    value: '寵物美容',
     name: '寵物美容',
     icon: 'pet_grooming',
   },
   {
-    value: 4,
-    name: '到府照顧',
+    value: '到府服務',
+    name: '到府服務',
     icon: 'home_care',
   },
 ])
 
-const location = ref(null)
+const location = ref('')
 
 const updateServiceType = (option) => {
-  serviceModel.value = option.value
+  serviceModel.value = option.name
+}
+
+const updateLocation = async (value) => {
+  location.value = `${value.city} ${value.area}`
+}
+
+const search = () => {
+  const locationStr = location.value.replace(/\s+/g, "")
+  const query = {
+    type: serviceModel.value ? serviceModel.value : undefined,
+    city: locationStr.length > 0 ? locationStr.slice(0, 3) : undefined,
+    area: locationStr.length > 0 ? locationStr.slice(3) : undefined,
+  }
+  router.push({
+    path: '/service',
+    query,
+  })
 }
 </script>
 <template>
@@ -53,12 +73,13 @@ const updateServiceType = (option) => {
               />
             </div>
             <div class="col-5">
-              <CustomInput
+              <CitySelect
                 v-model="location"
                 prepend-icon="map"
                 label="附近"
                 placeholder="選擇你的位置"
                 background-is-transparent
+                @update:model="updateLocation"
               />
             </div>
             <div class="col-2 d-flex align-self-end">
@@ -69,6 +90,7 @@ const updateServiceType = (option) => {
                   prepend-icon="spotlight"
                   prepend-icon-color="#452B14"
                   :size="28"
+                  @on-press="search"
                 />
               </div>
             </div>

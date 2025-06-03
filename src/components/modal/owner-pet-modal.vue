@@ -2,7 +2,7 @@
   import { onMounted, ref, reactive } from 'vue'
   import Modal from 'bootstrap/js/dist/modal'
   import FileUpload from 'vue-upload-component'
-  import { uploadImage } from '@/plugins/api/users/upload.js'; 
+  import { uploadImage } from '@/plugins/api/upload/upload.js';
 
   const prop = defineProps({
     title: String,
@@ -87,12 +87,12 @@
     else formErrorCheck.size_id = false;
     if (!petData.avatar?.[0].url) formErrorCheck.avatar= true;
     else formErrorCheck.avatar = false;
-  
+
     const hasErrors = Object.values(formErrorCheck).some(error => error);
     if (hasErrors) {
       console.log("有錯誤，阻止提交");
     } else {
-      console.log("表單可提交");  
+      console.log("表單可提交");
       emit('submitPet', petData);
       modal.hide();
     }
@@ -115,7 +115,7 @@
     modal.show();
     if(prop.hasPet) Object.assign(petData, prop.getPetData)
   }
-  
+
   defineExpose({ p_show: c_show })
 
   //  圖片上傳

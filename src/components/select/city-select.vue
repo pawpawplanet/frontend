@@ -1,5 +1,5 @@
 <script setup>
-import { computed, watch, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import cityJson from '@/utils/city.json'
 
 defineProps({
@@ -32,11 +32,6 @@ const emit = defineEmits(['update:model'])
 const city = useTemplateRef('city')
 
 const showDropDown = ref(false)
-
-// watch(model, (value) => {
-//   showDropDown.value = value.length !== 0
-// })
-
 
 const citiesList = computed(() => {
   let arr = []

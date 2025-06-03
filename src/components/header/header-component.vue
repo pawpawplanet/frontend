@@ -75,23 +75,23 @@ onMounted(() => {
               </button>
               <ul class="dropdown-menu bg-secondary-tint border-primary-dark" :class="{ 'show': open }" aria-labelledby="dropdownMenuButton1">
                 <li>
-                  <RouterLink to="" class="dropdown-item">
+                  <RouterLink to="/service" class="dropdown-item">
                     <span class="d-inline-block">寵物寄宿</span>
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="" class="dropdown-item">
+                  <RouterLink to="/service?type=寵物散步" class="dropdown-item">
                     <span class="d-inline-block">寵物散步</span>
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="" class="dropdown-item">
+                  <RouterLink to="/service?type=寵物美容" class="dropdown-item">
                     <span class="d-inline-block">寵物美容</span>
                   </RouterLink>
                 </li>
                 <li>
-                  <RouterLink to="" class="dropdown-item">
-                    <span class="d-inline-block">到府照顧</span>
+                  <RouterLink to="/service?type=到府服務" class="dropdown-item">
+                    <span class="d-inline-block">到府服務</span>
                   </RouterLink>
                 </li>
               </ul>
