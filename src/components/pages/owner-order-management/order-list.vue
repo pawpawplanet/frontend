@@ -12,13 +12,13 @@
           >
             <button
               class="nav-link"
-              :class="{ active: activeTab === index }"
-              @click="activeTab = index"
+              :class="{ active: currentTag === tab.tag }"
+              @click="changeTab(tab.tag)"
               :id="`${tab.id}-tab`"
               type="button"
               role="tab"
               :aria-controls="tab.id"
-              :aria-selected="activeTab === index"
+              :aria-selected="currentTag === tab.tag"
             >
               {{ tab.label }}
             </button>
@@ -26,21 +26,138 @@
         </ul>
       </div>
     </div>
+    <!-- tab content -->
+    <div class="tab-content-container">
+      <order-card 
+        v-for="order in orders"
+       :key="order.id" 
+       :orderData="order" />
+    </div> 
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import OrderCard from '@/components/pages/owner-order-management/order-card.vue';
+import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router'; 
+import { getOrders } from '@/plugins/api/users/owners';
+
+const router = useRouter();
+const route = useRoute();
 
 const tabs = [
-  { id: 'pending', label: '等待回覆' },
-  { id: 'accepted', label: '預約成功付款' },
-  { id: 'paid', label: '即將執行' },
-  { id: 'latest-response', label: '最新回應' },
-  { id: 'closed', label: '結案訂單' },
-]
+  { id: 'pending', label: '等待回覆', tag: 0 },
+  { id: 'accepted', label: '預約成功付款', tag: 1 },
+  { id: 'paid', label: '即將執行', tag: 2 },
+  { id: 'latest-response', label: '最新回應', tag: 3 },
+  { id: 'closed', label: '結案訂單', tag: 4 },
+];
 
-const activeTab = ref(0)
+const currentTag = ref(0);
+const currentLimit = ref(10);
+const currentPage = ref(1);
+
+const orders = ref([])
+
+function changeTab(tag) {
+  if (currentTag.value === tag) {
+    console.log('已經在當前 Tab，無需導航。');
+    return;
+  }
+
+  currentTag.value = tag;
+  currentLimit.value = 10;
+  currentPage.value = 1;
+
+  router.push({ 
+    name: 'owner-order-management', 
+    query: { 
+      tag: String(currentTag.value),
+      limit: String(currentLimit.value),
+      page: String(currentPage.value) 
+    } 
+  }).catch(err => {
+    if (err.name !== 'NavigationDuplicated') {
+      console.error("Tab 導航失敗:", err);
+    }
+  });
+}
+
+watch(
+  () => route.query, 
+  (newQuery) => {
+    let needsRouteCorrection = false;
+
+    const newTag = parseInt(newQuery.tag, 10);
+    const newLimit = parseInt(newQuery.limit, 10);
+    const newPage = parseInt(newQuery.page, 10);
+
+    if (Number.isNaN(newTag)) {
+      needsRouteCorrection = true;
+      currentTag.value = 0;
+    } else if (!tabs.some(t => t.tag === newTag)) {
+      needsRouteCorrection = true;
+      currentTag.value = 0;
+    } else {
+      currentTag.value = newTag;
+    }
+
+    if (Number.isNaN(newLimit) || newLimit <= 0) {
+      needsRouteCorrection = true;
+      currentLimit.value = 10;
+    } else {
+      currentLimit.value = newLimit;
+    }
+
+    if (Number.isNaN(newPage) || newPage <= 0) {
+      needsRouteCorrection = true;
+      currentPage.value = 1;
+    } else {
+      currentPage.value = newPage;
+    }
+
+    const canonicalQuery = {
+      tag: String(currentTag.value),
+      limit: String(currentLimit.value),
+      page: String(currentPage.value),
+    };
+
+    // 檢查當前 route.query 是否與規範查詢參數完全一致
+    // 這裡需要確保所有 key 都存在且值相同，並且沒有額外的 key
+    needsRouteCorrection = needsRouteCorrection || !(Object.keys(canonicalQuery).length === Object.keys(newQuery).length &&
+                                  Object.keys(canonicalQuery).every(key => newQuery[key] === canonicalQuery[key]));
+
+    if (needsRouteCorrection) {
+      router.replace({
+        name: 'owner-order-management', 
+        query: canonicalQuery
+      }).catch(err => {
+          if (router.isNavigationFailure(err) && err.name === 'NavigationDuplicated') {
+              // 通常這是因為 replace 到與當前 URL 完全相同的規範 URL，可以安全忽略
+          } else {
+              console.error("路由替換失敗:", err);
+          }
+      });
+    } else {
+      fetchOrders()
+    }
+  },
+  { 
+    immediate: true,
+    deep: true
+  }
+)
+
+async function fetchOrders() {
+  try {
+    const response = await getOrders(route.query);
+    orders.value = response; 
+    console.log('訂單資料已載入: response', response);
+
+  } catch (error) {
+    console.error('載入訂單失敗:', error);
+  }
+}
 </script>
 
 <style scoped>
@@ -129,4 +246,14 @@ const activeTab = ref(0)
   box-shadow: none; /* 移除可能的陰影 */
 }
 
+.tab-content-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto; /* 水平置中自身 */
+  box-sizing: border-box; /* 確保 padding 不增加總寬度 */
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
 </style>
