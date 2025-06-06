@@ -46,7 +46,7 @@ const avatar = computed(() => {
 });
 
 onMounted(() => {
-  console.log('freelancer, order data:', props.orderData);
+  // console.log('freelancer, order data:', props.orderData);
 }); 
 </script>
 

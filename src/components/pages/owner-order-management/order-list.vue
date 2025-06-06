@@ -31,7 +31,9 @@
       <order-card 
         v-for="order in orders"
        :key="order.id" 
-       :orderData="order" />
+       :orderData="order"
+       :orderStatusActions="getOrderStatusActions(order, currentTag)"
+       @click-btn="processOrder" />
     </div> 
   </div>
 </template>
@@ -41,17 +43,24 @@ import OrderCard from '@/components/pages/owner-order-management/order-card.vue'
 import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; 
 import { getOrders } from '@/plugins/api/users/owners';
+import { patchOrderStatus } from '@/plugins/api/orders';
 
 const router = useRouter();
 const route = useRoute();
 
 const tabs = [
   { id: 'pending', label: '等待回覆', tag: 0 },
-  { id: 'accepted', label: '預約成功付款', tag: 1 },
+  { id: 'accepted', label: '預約成功待付款', tag: 1 },
   { id: 'paid', label: '即將執行', tag: 2 },
   { id: 'latest-response', label: '最新回應', tag: 3 },
   { id: 'closed', label: '結案訂單', tag: 4 },
 ];
+
+const PET_SIZE_MAP = {
+  0: '小型-10公斤以下',
+  1: '中型-10公斤以上，20公斤以下',
+  2: '大型- 20公斤以上',
+};
 
 const currentTag = ref(0);
 const currentLimit = ref(10);
@@ -82,6 +91,70 @@ function changeTab(tag) {
     }
   });
 }
+
+const getOrderStatusActions = (orderData, tag) => {
+  const order = orderData.order;
+  switch (tag) {
+    case 0: 
+      return { 
+        leftBtn : { caption: '取消', action: 'cancel'}
+      };
+    case 1: 
+      return {
+        leftBtn : { caption: '取消', action: 'cancel'},
+        rightBtn : { caption: '付款', action: 'pay'}
+      };
+    case 2:
+      return {};
+    case 3: // 最新回應 + reject
+      return {
+        rightBtn : { caption: '結案', action: 'close'}
+      };
+    case 4: {
+      switch (order.status) {
+        case 0: 
+        case 1:
+        case 2:
+          // 不會出現在結案頁籤的狀態
+          return {};
+        case 3: 
+          return {
+            status : { caption : '保姆拒絕預約', bgColor : '#CA4000', icon : 'reject.png' },
+            showStatus: true
+          };
+        case 4:   
+          return {
+            status : { caption : '取消預約', bgColor : '#B6B6B6', icon : 'cancel.png' },
+            showStatus: true
+          };
+        case 5:   
+          return {
+            status : { caption : '逾期未付款', bgColor : '#CA4000', icon : 'expired_nopay.png' },
+            showStatus: true
+          };  
+        case 6:   
+          return {
+            status : { caption : '保姆逾期未回覆', bgColor : '#CA4000', icon : 'reject.png' },
+            showStatus: true
+          };   
+        case 7: {
+          return  (order.review && Object.keys(order.review).length === 0) 
+            ? {
+              status : { caption : '訂單完成', bgColor : '#648458', icon : 'completed.png' },
+              leftBtn : { caption: '取消', action: 'cancel'},
+              rightBtn : { caption: '付款', action: 'pay'},
+              showStatus: true
+            } : null;
+        }
+
+        return {};
+      }
+    }  
+
+    console.log('無法取得訂單狀態');
+    return {};
+  }
+};
 
 watch(
   () => route.query, 
@@ -152,10 +225,19 @@ async function fetchOrders() {
   try {
     const response = await getOrders(route.query);
     orders.value = response; 
-    console.log('訂單資料已載入: response', response);
-
+    // console.log('訂單資料已載入: response', response);
   } catch (error) {
-    console.error('載入訂單失敗:', error);
+    // console.error('載入訂單失敗:', error);
+  }
+}
+
+async function processOrder(orderId, action)  {
+  try {
+    const response = await patchOrderStatus(orderId, { action: action});
+    console.log('改變訂單狀態結果: response', response);
+    changeTab(response.target_tag.value);
+  } catch(error) {
+    console.error('改變訂單狀態:', error);
   }
 }
 </script>
