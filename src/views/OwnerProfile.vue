@@ -52,8 +52,12 @@
     showPetModal();
   }
 
-  const submitOwner = async (updatedOwner) => {
+  const submitOwner = async (data) => {
     try {
+      const updatedOwner = {
+        ...data,
+        avatar: getImageUrls(data.avatar)
+      }
       //console.log("送出資料：", updatedOwner)
       const response = await PatchOwnerProfile(updatedOwner);
       //console.log('送出成功:', response.data);
@@ -134,11 +138,13 @@
   }
   function showPetModal() {
     console.log("PetModal打開");
-    petData.value.avatar = (typeof petData.value.avatar === 'string' && petData.value.avatar.trim())
-  ? [{ url: petData.value.avatar, blob: null }]
-  : (Array.isArray(petData.value.avatar) ? petData.value.avatar : []);
-
     thisPetModal.value.p_show()
+  }
+  //整理圖片入參網址
+  const getImageUrls = (fileList = []) => {
+    return fileList
+      .map(file => file?.url || '')  // 取得 .url 屬性
+      .filter(url => typeof url === 'string' && url.trim() !== '') // 過濾掉空字串、null、undefined
   }
 </script>
 <template>
@@ -147,7 +153,7 @@
       <h2 class="text-center mb-4">飼主及毛小孩個人中心</h2>
       <div class="card mx-auto p-4" style="max-width: 700px; border-radius: 20px;">
         <div class="d-flex flex-column flex-md-row">
-          <img :src="owner.avatar" alt="飼主照片" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" />
+          <img v-if="owner.avatar" :src="owner.avatar" alt="飼主照片" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" />
           <div class="flex-fill">
             <div class="text-end">
               <button class="btn btn-outline-secondary btn-sm" @click="editProfile">

@@ -11,8 +11,8 @@
   })
   const emit = defineEmits(['submitPet'])
 
-  let modal_ref = ref(null)
-  let modal
+  let modal_pet_ref = ref(null)
+  let petModal
 
   const petData = reactive({
     "owner_id": "",
@@ -94,7 +94,7 @@
     } else {
       console.log("表單可提交");
       emit('submitPet', petData);
-      modal.hide();
+      petModal.hide();
     }
   }
 
@@ -103,7 +103,7 @@
   }
 
   onMounted(() => {
-    modal = new Modal(modal_ref.value)
+    petModal = new Modal(modal_pet_ref.value)
     const ModalEl = document.getElementById(prop.title)
     ModalEl.addEventListener("hide.bs.modal", () => {
       // 強制把焦點移出 modal，避免 aria-hidden 焦點衝突
@@ -112,8 +112,16 @@
   })
 
   function c_show() {
-    modal.show();
     if(prop.hasPet) Object.assign(petData, prop.getPetData)
+
+    //圖片返回資料整理，避免是null以及整理成套件要的資料格式
+    const avatar = prop.getPetData?.avatar;
+    petData.avatar =
+      (typeof avatar === 'string' && avatar.trim())
+        ? [{ url: avatar.trim(), blob: null }]
+        : (Array.isArray(avatar) ? avatar.map(url => ({ url, blob: null })) : []);
+ 
+     petModal.show();
   }
 
   defineExpose({ p_show: c_show })
@@ -121,7 +129,7 @@
   //  圖片上傳
   const upload = ref(null)
 
-  const filter = (newFile, oldFile, prevent) => {
+  const petFilter = (newFile, oldFile, prevent) => {
     if (!newFile || !newFile.file) return
 
     if (!/\.(jpeg|jpg|png)$/i.test(newFile.name)) {
@@ -142,7 +150,7 @@
     newFile.blob = URL.createObjectURL(newFile.file)
   }
 
-  const handleInput =  async (newFile) => {
+  const handlePetInput =  async (newFile) => {
     if (!newFile || !newFile.file) return
     if (newFile.size / 1024 / 1024 > 5) {
       alert('檔案不能超過 5MB')
@@ -156,7 +164,6 @@
     try {
       const res = await uploadImage(formData)
       const imageUrl = res?.image_url
-      console.log(123,res)
       // 把圖片上傳後的 URL 設進 file 中，這樣就會存在 form.avatar 裡
       newFile.url = imageUrl
     } catch (err) {
@@ -167,14 +174,14 @@
   }
 
   const remove = (file) => {
-    const index = petData.value.avatar.findIndex(f => f.url === file.url)
+    const index = petData.avatar.findIndex(f => f.url === file.url)
     if (index !== -1) {
-      petData.value.avatar.splice(index, 1)
+      petData.avatar.splice(index, 1)
     }
   }
 </script>
 <template>
-  <div class="modal fade" ref="modal_ref" :id="title" tabindex="-1" :aria-labelledby="title + 'Label'" aria-hidden="true">
+  <div class="modal fade" ref="modal_pet_ref" :id="title" tabindex="-1" :aria-labelledby="title + 'Label'" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-body">
@@ -195,21 +202,21 @@
                       <div class="icon-close">×</div>
                     </div>
                   </div>
-                  <FileUpload
-                    v-show="petData.avatar?.length < 1"
-                    ref="upload"
-                    v-model="petData.avatar"
-                    :multiple="false"
-                    :maximum="1"
-                    accept="image/png,image/jpeg,image/jpg"
-                    extensions="jpg,png,jpeg"
-                    @input-file="handleInput"
-                    @input-filter="filter"
-                  >
-                    <div class="img-box upload">
-                      <span class="upload-icon">+</span>
-                    </div>
-                  </FileUpload>
+                    <FileUpload
+                      v-if="petData.avatar?.length < 1 && petModal?._isShown"
+                      ref="petUpload"
+                      v-model="petData.avatar"
+                      :multiple="false"
+                      :maximum="1"
+                      accept="image/png,image/jpeg,image/jpg"
+                      extensions="jpg,png,jpeg"
+                      @input-file="handlePetInput"
+                      @input-filter="petFilter"
+                    >
+                      <div class="img-box upload">
+                        <span class="upload-icon">+</span>
+                      </div>
+                    </FileUpload>
                 </div>
                 <p v-show="petData.avatar?.length < 1" class="flex-center upload-btn">[上傳照片]</p>
                 <input id="avatar" type="hidden" :class="{ 'is-invalid': formErrorCheck.avatar }" v-model="petData.avatar">
