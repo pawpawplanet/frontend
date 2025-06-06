@@ -80,7 +80,7 @@ const gender = computed(() => {
 });
 
 onMounted(() => {
-  console.log('pet, order data:', props.orderData);
+  // console.log('pet, order data:', props.orderData);
 });
 </script>
 

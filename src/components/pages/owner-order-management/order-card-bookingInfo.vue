@@ -19,7 +19,7 @@
         </p>
         <p class="mb-2">
           <span class="fw-bold me-2 ">地點 |</span> 
-          <span class="text-muted small">新北市 永和區</span>
+          <span class="text-muted small">{{ `${ freelancer.city } ${ freelancer.area }` }}</span>
         </p>
         <div class="mb-3 d-flex flex-row gap-2">
           <p class="fw-bold mb-1">備註 |</p>
@@ -54,6 +54,7 @@ const props = defineProps({
 });
 
 const service = computed(() => { return props.orderData.service });
+const freelancer = computed(() => {return props.orderData.freelancer;});
 
 const type = computed(() => {
   const typeValue = service.value.service_type_id;
@@ -77,7 +78,7 @@ const date = computed(() => { return props.orderData.order.service_date || '沒�
 const note = computed(() => { return props.orderData.note});
 
 onMounted(() => {
-  console.log('booking, order data:', props.orderData);
+  // console.log('booking, order data:', props.orderData);
 });
 </script>
 
