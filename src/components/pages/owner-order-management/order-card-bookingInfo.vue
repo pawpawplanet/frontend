@@ -30,7 +30,7 @@
         
     <div class="d-flex justify-content-between align-items-center mt-auto">
       <p class="booking-price-caption fw-bold fs-5 mb-0">總共</p>
-      <p class="booking-price-amount fw-bold fs-4  mb-0">NT$ {{ service.price }}</p>
+      <p class="booking-price-amount fw-bold fs-4  mb-0">NT$ {{ order.price }}</p>
     </div>
   </div>
 </template>
@@ -53,6 +53,7 @@ const props = defineProps({
   },
 });
 
+const order = computed(() => { return props.orderData.order });
 const service = computed(() => { return props.orderData.service });
 const freelancer = computed(() => {return props.orderData.freelancer;});
 

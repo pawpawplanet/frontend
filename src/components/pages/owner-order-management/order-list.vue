@@ -35,6 +35,8 @@
        :orderStatusActions="getOrderStatusActions(order, currentTag)"
        @click-btn="processOrder" />
     </div> 
+
+
   </div>
 </template>
 
@@ -94,6 +96,7 @@ function changeTab(tag) {
 
 const getOrderStatusActions = (orderData, tag) => {
   const order = orderData.order;
+
   switch (tag) {
     case 0: 
       return { 
@@ -108,7 +111,9 @@ const getOrderStatusActions = (orderData, tag) => {
       return {};
     case 3: // 最新回應 + reject
       return {
-        rightBtn : { caption: '結案', action: 'close'}
+          status : { caption : '保姆拒絕預約', bgColor : '#CA4000', icon : 'reject.png' },
+          showStatus: true,
+          rightBtn : { caption: '結案', action: 'close'}
       };
     case 4: {
       switch (order.status) {
