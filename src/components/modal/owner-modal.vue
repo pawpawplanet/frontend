@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, ref, reactive , computed} from 'vue'
 import Modal from 'bootstrap/js/dist/modal'
+import FileUpload from 'vue-upload-component'
+import { uploadImage } from '@/plugins/api/upload/upload.js';
 
 const prop = defineProps({
     title: String,
@@ -9,8 +11,8 @@ const prop = defineProps({
 
 const emit = defineEmits(['submitOwner']);
 
-let modal_ref = ref(null);
-let modal;
+let modal_owner_ref = ref(null);
+let ownerModal;
 
 // 用 reactive() 來綁定所有表單欄位
 const updatedOwner = reactive({
@@ -19,7 +21,8 @@ const updatedOwner = reactive({
   area: '',
   phone: '',
   // email: '',
-  description: ''
+  description: '',
+  avatar: []
 });
 
 const cityAreaMap = {
@@ -32,7 +35,7 @@ const availableAreas = computed(() => {
 })
 
 onMounted(() => {
-  modal = new Modal(modal_ref.value)
+  ownerModal = new Modal(modal_owner_ref.value)
   const ModalEl = document.getElementById(prop.title)
   ModalEl.addEventListener("hide.bs.modal", () => {
     document.activeElement?.blur()
@@ -45,7 +48,12 @@ function c_show() {
   updatedOwner.area = prop.ownerData?.area || ''
   updatedOwner.phone = prop.ownerData?.phone || ''
   updatedOwner.description = prop.ownerData?.description || ''
-  modal.show()
+  //圖片返回資料整理，避免是null以及整理成套件要的資料格式
+  updatedOwner.avatar = Array.isArray(prop.ownerData?.avatar)
+      ? prop.ownerData.avatar.map(url => ({ url, blob: null }))
+      : []
+
+  ownerModal.show()
 }
 
 function submitForm() {
@@ -54,10 +62,64 @@ function submitForm() {
 }
 
 defineExpose({ p_show: c_show })
+//  圖片上傳
+const ownerUpload = ref(null)
+
+const ownerFilter = (newFile, oldFile, prevent) => {
+  if (!newFile || !newFile.file) return
+
+  if (!/\.(jpeg|jpg|png)$/i.test(newFile.name)) {
+    alert('格式錯誤')
+    remove(newFile)
+    prevent()
+    return
+  }
+
+  if (newFile.size / 1024 / 1024 > 5) {
+    alert('图片大小不能超过5MB')
+    remove(newFile)
+    prevent()
+    return
+  }
+// 創建 blob 字段 用於圖片預覽
+  const URL = window.URL || window.webkitURL
+  newFile.blob = URL.createObjectURL(newFile.file)
+}
+
+const handleOwnerInput =  async (newFile) => {
+  if (!newFile || !newFile.file) return
+  if (newFile.size / 1024 / 1024 > 5) {
+    alert('檔案不能超過 5MB')
+    remove(newFile)
+    return
+  }
+
+  const formData = new FormData()
+  formData.append('file', newFile.file)
+
+  try {
+
+    const res = await uploadImage(formData)
+    const imageUrl = res?.image_url
+    // 把圖片上傳後的 URL 設進 file 中，這樣就會存在 form.avatar 裡
+    newFile.url = imageUrl
+  } catch (err) {
+    console.error('圖片上傳失敗:', err)
+    alert('圖片上傳失敗，請重試')
+    remove(newFile)//移除這筆失敗的檔案
+  }
+}
+
+const remove = (file) => {
+  const index = updatedOwner.avatar.findIndex(f => f.url === file.url)
+  if (index !== -1) {
+    updatedOwner.avatar.splice(index, 1)
+  }
+}
 </script>
 
 <template>
-  <div class="modal fade" ref="modal_ref" :id="title" tabindex="-1" :aria-labelledby="title + 'Label'" aria-hidden="true">
+  <div class="modal fade" ref="modal_owner_ref" :id="title" tabindex="-1" :aria-labelledby="title + 'Label'" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-body">
@@ -66,11 +128,35 @@ defineExpose({ p_show: c_show })
               <slot name="body"></slot>
             </h5>
             <div class="row">
-              <div class="col-lg-6">
-                <div class="flex-center">
-                  <img src="" class="img-fluid mb-2" alt="飼主照片">
+              <div class="col-lg-6 text-center position-relative">
+                <div class="image-uploader">
+                  <div
+                    class="img-box"
+                    v-for="(file, index) in updatedOwner.avatar"
+                    :key="index"
+                  >
+                    <img :src="file.blob || file.url" />
+                    <div class="close" @click="remove(file)">
+                      <div class="icon-close">×</div>
+                    </div>
+                  </div>
+                    <FileUpload
+                      v-if="updatedOwner.avatar?.length < 1 && ownerModal?._isShown"
+                      ref="ownerUpload"
+                      v-model="updatedOwner.avatar"
+                      :multiple="false"
+                      :maximum="1"
+                      accept="image/png,image/jpeg,image/jpg"
+                      extensions="jpg,png,jpeg"
+                      @input-file="handleOwnerInput"
+                      @input-filter="ownerFilter"
+                    >
+                      <div class="img-box upload">
+                        <span class="upload-icon">+</span>
+                      </div>
+                    </FileUpload>
                 </div>
-                <p class="flex-center">[上傳照片]</p>
+                <p v-show="updatedOwner.avatar?.length < 1" class="flex-center upload-btn">[上傳照片]</p>
               </div>
               <div class="col-lg-6">
                 <div class="mb-3 row">
@@ -132,3 +218,56 @@ defineExpose({ p_show: c_show })
     </div>
   </div>
 </template>
+<style scoped>
+  .upload-btn {
+    cursor: pointer;
+  }
+  .image-uploader {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .img-box {
+    width: 100px;
+    height: 100px;
+    margin: 10px 0;
+    position: relative;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .close {
+    cursor: pointer;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    .icon-close {
+      position: absolute;
+      color: #ffffff;
+      z-index: 1;
+      top: -8px;
+      left: 5px;
+      font-size: 20px;
+    }
+  }
+  .upload {
+    border: 1px dashed #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .upload-icon {
+    font-size: 20px;
+    width: 24px;
+    height: 24px;
+    line-height: 15px;
+  }
+</style>
+
+

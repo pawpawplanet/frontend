@@ -143,7 +143,6 @@ const handleInput =  async (newFile) => {
   try {
     const res = await uploadImage(formData)
     const imageUrl = res?.image_url
-    console.log(123,res)
     // 把圖片上傳後的 URL 設進 file 中，這樣就會存在 form.avatar 裡
     newFile.url = imageUrl
   } catch (err) {
