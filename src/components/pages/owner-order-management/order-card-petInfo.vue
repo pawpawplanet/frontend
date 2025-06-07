@@ -2,11 +2,12 @@
   <div class='pet-info'>
       <div class="pet-info-basic">
         <span class="pet-category-label">{{ species }}</span>
-        <img 
+        <div class="image-wrapper">
+          <img 
           :src="avatar" 
-          alt="Pet Avatar" 
-          class="pet-avatar-large" />
-        <p class="fw-bold mb-0">{{ pet.name }}</p>
+          alt="Pet Avatar" />
+        </div>
+        <p class="fw-bold mb-0 text-center">{{ pet.name }}</p>
       </div>
           
       <div class="pet-info-detail">
@@ -59,10 +60,7 @@ const props = defineProps({
 })
 
 const pet = computed(() => { return props.orderData.pet });
-
-const avatar = computed(() => {
-  return props.orderData.pet?.avatar?.[0] || defaultPetAvatar;
-});
+const avatar = computed(() => { return props.orderData.pet?.avatar || defaultPetAvatar; });
 
 const species = computed(() => {
   const speciesValue = pet.value?.species_id;
@@ -119,20 +117,22 @@ onMounted(() => {
   /* align-self: flex-start; 針對單一 item 對齊到彈性容器的起始位置 */
 }
 
-.pet-avatar {
-  width: 60px; /* 範例大小，根據圖片調整 */
-  height: 60px; /* 範例大小 */
-  border-radius: 50%;
-  object-fit: contain;
-  background-color: beige;
-}
-
-.pet-avatar-large {
+.image-wrapper {
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  border: 2px solid #eee;
-  background-color: #d0d0d0;
+  background-color: #f0f8ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* 防止任何可能溢出 */
+}
+
+.image-wrapper img {
+  width: 100%;             /* 讓圖片嘗試填滿容器寬度 */
+  height: 100%;            /* 讓圖片嘗試填滿容器高度 */
+  object-fit: contain;     /* 保持圖片長寬比，適應容器，可能留白 */
+  object-position: center; /* 讓圖片在容器中水平垂直居中 */
 }
 
 .pet-info-detail {
