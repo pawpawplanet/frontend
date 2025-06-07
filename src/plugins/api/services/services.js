@@ -10,10 +10,9 @@ export function getService(params) {
   });
 }
 
-export function getServiceDetail(params) {
+export function getServiceDetail(id) {
   return service({
-    url: `${root}/:id`,
+    url: `${root}/${id}`,
     method: 'get',
-    params,
-  });
+  })
 }
