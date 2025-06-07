@@ -1,12 +1,8 @@
 <template>
   <div class="row">
-    <div class="col-md-4 text-center">
+    <div class="col-md-4 text-center" v-show="modelValue?.avatar?.length || editMode">
       <div class="image-uploader">
-        <div
-          class="img-box"
-          v-for="(file, index) in modelValue.avatar"
-          :key="index"
-        >
+        <div class="img-box" v-for="(file, index) in modelValue.avatar" :key="index">
           <img :src="file.blob || file.url" />
           <div v-show="editMode" class="close" @click="remove(file)">
             <div class="icon-close">×</div>
@@ -28,9 +24,11 @@
           </div>
         </FileUpload>
       </div>
-      <small class="text-muted" v-show="editMode && modelValue.avatar?.length < 1">(上傳圖片)</small>
+      <small class="text-muted" v-show="editMode && modelValue.avatar?.length < 1"
+        >(上傳圖片)</small
+      >
     </div>
-    <div class="col-md-8">
+    <div :class="{ 'col-md-8': modelValue?.avatar?.length || editMode }">
       <div class="mb-2">
         <label class="form-label">姓名:</label>
         <input v-model="modelValue.name" class="form-control" :disabled="!editMode" />
@@ -47,7 +45,11 @@
             </select>
           </div>
           <div class="col-md-6">
-            <select v-model="modelValue.area" class="form-select" :disabled="!editMode || !modelValue.city">
+            <select
+              v-model="modelValue.area"
+              class="form-select"
+              :disabled="!editMode || !modelValue.city"
+            >
               <option disabled value="">選擇區域</option>
               <option v-for="area in availableAreas" :key="area.zip" :value="area.name">
                 {{ area.name }}
@@ -66,42 +68,59 @@
       </div>
       <div class="mb-2">
         <label class="form-label">銀行帳戶:</label>
-        <input v-model="modelValue.bank_account.bank" class="form-control" placeholder="銀行名稱" :disabled="!editMode" />
+        <input
+          v-model="modelValue.bank_account.bank"
+          class="form-control"
+          placeholder="銀行名稱"
+          :disabled="!editMode"
+        />
       </div>
       <div class="mb-2">
         <label class="form-label">戶名:</label>
-        <input v-model="modelValue.bank_account.account_name" class="form-control" :disabled="!editMode" />
+        <input
+          v-model="modelValue.bank_account.account_name"
+          class="form-control"
+          :disabled="!editMode"
+        />
       </div>
       <div class="mb-2">
         <label class="form-label">帳號:</label>
-        <input v-model="modelValue.bank_account.account_number" class="form-control" :disabled="!editMode" />
+        <input
+          v-model="modelValue.bank_account.account_number"
+          class="form-control"
+          :disabled="!editMode"
+        />
       </div>
       <div>
         <label class="form-label">自我介紹:</label>
-        <textarea v-model="modelValue.description" class="form-control" rows="3" :disabled="!editMode"></textarea>
+        <textarea
+          v-model="modelValue.description"
+          class="form-control"
+          rows="3"
+          :disabled="!editMode"
+        ></textarea>
       </div>
     </div>
   </div>
 </template>
 
-
 <script setup>
 import { ref, computed } from 'vue'
 import FileUpload from 'vue-upload-component'
-import { uploadImage } from '@/plugins/api/upload/upload.js';
+import { uploadImage } from '@/plugins/api/upload/upload.js'
 import cityData from '@/assets/tw-city-data.json'
 
 defineProps({
   editMode: {
     type: Boolean,
-    default: true
+    default: true,
   },
 })
 
 const modelValue = defineModel()
 
 const availableAreas = computed(() => {
-  const city = cityData.find(c => c.name === modelValue.value?.city)
+  const city = cityData.find((c) => c.name === modelValue.value?.city)
   return city ? city.districts : []
 })
 
@@ -124,12 +143,12 @@ const filter = (newFile, oldFile, prevent) => {
     prevent()
     return
   }
- // 創建 blob 字段 用於圖片預覽
+  // 創建 blob 字段 用於圖片預覽
   const URL = window.URL || window.webkitURL
   newFile.blob = URL.createObjectURL(newFile.file)
 }
 
-const handleInput =  async (newFile) => {
+const handleInput = async (newFile) => {
   if (!newFile || !newFile.file) return
   if (newFile.size / 1024 / 1024 > 5) {
     alert('檔案不能超過 5MB')
@@ -148,12 +167,12 @@ const handleInput =  async (newFile) => {
   } catch (err) {
     console.error('圖片上傳失敗:', err)
     alert('圖片上傳失敗，請重試')
-    remove(newFile)//移除這筆失敗的檔案
+    remove(newFile) //移除這筆失敗的檔案
   }
 }
 
 const remove = (file) => {
-  const index = modelValue.value.avatar.findIndex(f => f.url === file.url)
+  const index = modelValue.value.avatar.findIndex((f) => f.url === file.url)
   if (index !== -1) {
     modelValue.value.avatar.splice(index, 1)
   }

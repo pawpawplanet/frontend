@@ -12,11 +12,11 @@
     />
 
     <div class="legend mt-3 small">
-      <span class="legend-box bg-danger"></span> 有約
-      <span class="legend-box bg-warning"></span> 待回覆
-      <span class="legend-box bg-secondary"></span> 休假
+      <span class="legend-box bg-primary"></span> 今天
+      <span class="legend-box bg-warning"></span> 有約
+      <span class="legend-box bg-danger"></span> 待回覆
+      <span class="legend-box bg-disabled"></span> 休假
       <span class="legend-box bg-success"></span> 可接案
-      <span class="legend-box border border-primary"></span> 今天
     </div>
   </div>
 </template>
@@ -33,9 +33,9 @@ const props = defineProps({
 })
 
 const statusColors = {
-  '有約': 'bg-danger text-white',
-  '待回覆': 'bg-warning text-dark',
-  '休假': 'bg-secondary text-white',
+  '有約': 'bg-warning text-white',
+  '待回覆': 'bg-danger text-dark',
+  '休假': 'bg-disabled text-white',
   '可接案': 'bg-success text-white'
 }
 
@@ -67,7 +67,7 @@ const attrs = computed(() => {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .legend-box {
   display: inline-block;
   width: 16px;
@@ -75,5 +75,8 @@ const attrs = computed(() => {
   margin-right: 4px;
   border-radius: 3px;
   vertical-align: middle;
+}
+::v-deep .bg-disabled {
+  background: $black-300 !important;
 }
 </style>
