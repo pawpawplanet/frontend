@@ -30,11 +30,11 @@ const router = useRouter()
 
 const homeServices = [
   { name: '日托', type: 0, icon: 'bi bi-sun' },
-  { name: '美容', type: 1, icon: 'bi bi-scissors' }
+  { name: '美容', type: 2, icon: 'bi bi-scissors' }
 ]
 
 const customerServices = [
-  { name: '散步', type: 2, icon: 'bi bi-person-walking' },
+  { name: '散步', type: 1, icon: 'bi bi-person-walking' },
   { name: '到府照顧', type: 3, icon: 'bi bi-house-door' }
 ]
 

@@ -138,8 +138,8 @@ const bodySizes = ['小於10公斤以下', '10公斤以上~20公斤以下', '大
 
 const serviceMap = {
   0: { label: '日托', icon: 'bi bi-sun' },
-  1: { label: '美容', icon: 'bi bi-scissors' },
-  2: { label: '散步', icon: 'bi bi-person-walking' },
+  1: { label: '散步', icon: 'bi bi-person-walking' },
+  2: { label: '美容', icon: 'bi bi-scissors' },
   3: { label: '到府照顧', icon: 'bi bi-house-door' }
 }
 
