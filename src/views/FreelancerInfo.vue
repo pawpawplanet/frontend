@@ -16,6 +16,7 @@
       <hr />
       <h5 class="mb-3">你可以接案的時間是:</h5>
       <weekly-availability
+        class="my-3"
         v-model:weeklyMode="tempForm.is_weekly_mode"
         v-model:selectedDays="tempForm.working_days"
         :editMode="isEditMode"
