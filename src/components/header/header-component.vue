@@ -105,6 +105,14 @@ onMounted(() => {
               成為接案者
             </RouterLink>
           </div>
+          <div v-if="is_login">
+            <RouterLink
+              to="/owner-order-management"
+              class="btn text-decoration-none text-primary-dark-second header-link fw-bold"
+            >
+              管理訂單
+            </RouterLink>
+          </div>
           <div class="px-2 d-flex align-items-center">
             <div class="px-2">
               <SvgIcon name="paw" color="#FFCF75" :size="28" />
