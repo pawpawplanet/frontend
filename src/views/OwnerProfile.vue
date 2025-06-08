@@ -186,7 +186,7 @@
                 <i class="bi bi-pencil-square"></i>
               </button>
             </div>
-            <div class="col-md-3 text-center p-3">
+            <div v-if="petCardData.avatar" class="col-md-3 text-center p-3">
               <img :src="petCardData.avatar" class="rounded-circle" alt="寵物照片" />
               <div>{{ petCardData.name }}</div>
             </div>
