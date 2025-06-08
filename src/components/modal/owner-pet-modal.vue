@@ -85,8 +85,6 @@
     else formErrorCheck.is_ligation = false;
     if(validateNotRequired(petData.size_id)) formErrorCheck.size_id = true;
     else formErrorCheck.size_id = false;
-    if (!petData.avatar?.[0].url) formErrorCheck.avatar= true;
-    else formErrorCheck.avatar = false;
 
     const hasErrors = Object.values(formErrorCheck).some(error => error);
     if (hasErrors) {
