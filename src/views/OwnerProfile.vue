@@ -187,8 +187,7 @@
               </button>
             </div>
             <div v-if="petCardData.avatar" class="col-md-3 text-center p-3">
-              <img :src="petCardData.avatar" class="rounded-circle" alt="寵物照片" />
-              <div>{{ petCardData.name }}</div>
+              <img :src="petCardData.avatar" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" alt="寵物照片" />
             </div>
             <div class="col-md-8">
               <div class="card-body">
