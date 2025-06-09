@@ -160,14 +160,36 @@
                 <i class="bi bi-pencil-square"></i>
               </button>
             </div>
-            <p><strong>飼主名稱:</strong>{{ owner.name }}</p>
+
+            <div class="row">
+              <div class="col-5 col-md-4 text-end d-flex flex-column gap-1">
+                <p>飼主名稱<span>｜</span></p>
+                <p>所在縣市<span>｜</span></p>
+                <p>所在地區<span>｜</span></p>
+                <p>電話<span>｜</span></p>
+                <p>Email<span>｜</span></p>
+                <p>自我介紹<span>｜</span></p>
+              </div>
+              <div class="col-7 col-md-8 d-flex flex-column gap-1 ps-0">
+                <p>{{ owner.name }}</p>
+                <p>{{ owner.city }}</p>
+                <p>{{ owner.area }}</p>
+                <p>{{ owner.phone }}</p>
+                <!-- <p>{{ owner.email }}</p> -->
+                <div v-if="!loading && owner.email">
+                  <p>{{ owner.email }}</p>
+                </div>
+                <p>{{ owner.description }}</p>
+              </div>
+            </div>
+            <!-- <p>飼主名稱:{{ owner.name }}</p>
             <p><strong>所在縣市:</strong>{{ owner.city }}</p>
             <p><strong>所在地區:</strong>{{ owner.area }}</p>
             <p><strong>電話:</strong>{{ owner.phone }}</p>
             <div v-if="!loading && owner.email">
               <p><strong>Email:</strong>{{ owner.email }}</p>
             </div>
-            <p><strong>自我介紹:</strong>{{ owner.description }}</p>
+            <p><strong>自我介紹:</strong>{{ owner.description }}</p> -->
           </div>
         </div>
       </div>
