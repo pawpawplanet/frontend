@@ -34,6 +34,15 @@ const availableAreas = computed(() => {
   return cityAreaMap[updatedOwner.city] || []
 })
 
+const isFormValid = computed(() => {
+  return (
+    updatedOwner.name.trim() !== '' &&
+    updatedOwner.phone.trim() !== '' &&
+    updatedOwner.city.trim() !== '' &&
+    updatedOwner.area.trim() !== ''
+  )
+})
+
 onMounted(() => {
   ownerModal = new Modal(modal_owner_ref.value)
   const ModalEl = document.getElementById(prop.title)
@@ -162,13 +171,17 @@ const remove = (file) => {
                 <div class="mb-3 row">
                   <label for="input1" class="col-lg-4 col-form-label">飼主名稱:</label>
                   <div class="col-lg-8">
-                    <input type="text" v-model="updatedOwner.name" class="form-control" placeholder="請輸入飼主名字" id="input1">
+                    <input type="text" v-model="updatedOwner.name" class="form-control"
+                      :class="{ 'is-invalid': updatedOwner.name.trim() === '' }" 
+                      placeholder="請輸入飼主名字" id="input1">
                   </div>
                 </div>
                 <div class="mb-3 row">
-                  <label for="input2" class="col-lg-4 col-form-label">所在縣市:</label>
+                  <label for="input2" class="col-lg-4 col-form-label" >所在縣市:</label>
                   <div class="col-lg-8">
-                    <select v-model="updatedOwner.city" class="form-select" aria-label="Default select example" id="input2">
+                    <select v-model="updatedOwner.city" 
+                      class="form-select" aria-label="Default select example" 
+                      id="input2">
                       <!-- <option selected>選擇縣市</option> -->
                       <option value="台北市">台北市</option>
                       <option value="新北市">新北市</option>
@@ -176,7 +189,9 @@ const remove = (file) => {
                   </div>
                 </div>
                 <div class="mb-3 row">
-                  <label for="input2" class="col-lg-4 col-form-label">所在地區:</label>
+                  <label for="input2" 
+                  class="col-lg-4 col-form-label" 
+                  :class="{ 'is-invalid': updatedOwner.name.trim() === '' }" >所在地區:</label>
                   <div class="col-lg-8">
                     <select v-model="updatedOwner.area" class="form-select" aria-label="Default select example" id="input2">
                       <!-- <option selected>選擇地區</option> -->
@@ -187,9 +202,10 @@ const remove = (file) => {
                   </div>
                 </div>
                 <div class="mb-3 row">
-                  <label for="input3" class="col-lg-4 col-form-label">電話:</label>
+                  <label for="input3"  class="col-lg-4 col-form-label">電話:</label>
                   <div class="col-lg-8">
-                    <input type="text" v-model="updatedOwner.phone" class="form-control" placeholder="請輸入電話" id="input3">
+                    <input type="text" v-model="updatedOwner.phone" class="form-control" 
+                    placeholder="請輸入電話" id="input3" :class="{ 'is-invalid': updatedOwner.name.trim() === '' }">
                   </div>
                 </div>
                 <!-- <div class="mb-3 row">
@@ -207,8 +223,15 @@ const remove = (file) => {
               </div>
             </div>
             <div class="flex-center mt-5">
-              <button class="btn btn-outline-dark btn-lg px-4 me-4" data-bs-dismiss="modal">取消</button>
-              <button class="btn btn-outline-dark btn-lg px-4" data-bs-dismiss="modal" @click="submitForm">
+              <button class="btn btn-outline-dark btn-lg rounded-pill w-100" data-bs-dismiss="modal">取消</button>
+              <!-- <button class="btn btn-outline-dark btn-lg px-4" data-bs-dismiss="modal" 
+               @click="submitForm" :disabled="!isFormValid">
+                確定
+              </button> -->
+              <button class="btn btn-primary btn-lg rounded-pill w-100"
+                      data-bs-dismiss="modal"
+                      @click="submitForm"
+                      :disabled="!isFormValid">
                 確定
               </button>
             </div>
@@ -268,6 +291,8 @@ const remove = (file) => {
     height: 24px;
     line-height: 15px;
   }
+
+
 </style>
 
 

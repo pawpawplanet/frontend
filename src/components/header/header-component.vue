@@ -111,6 +111,7 @@ onMounted(() => {
             </div>
             <div v-if="is_login" class="px-2">
               <RouterLink
+                v-if="user && user.role"
                 :to="user.role === 'freelancer' ? '/freelancer-info' : '/ownerprofile'"
                 class="d-flex align-items-center text-decoration-none"
               >
