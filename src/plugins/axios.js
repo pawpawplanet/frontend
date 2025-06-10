@@ -1,5 +1,7 @@
 import axios from 'axios';
-// import { useToast } from '@/plugins/toast/toast-plugin.js'
+import { useToast } from '@/plugins/toast/toast-plugin.js'
+
+const toast = useToast()
 
 // create an axios instance
 const service = axios.create({
@@ -28,6 +30,9 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const { data } = response
+    if (data.status !== 'success') {
+      toast.show(data.message, 'error')
+    }
     return data.data
   },
   (error) => {

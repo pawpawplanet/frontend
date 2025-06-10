@@ -2,7 +2,8 @@
 import CustomSelect from '@/components/select/custom-select.vue'
 import DatepickerSelect from '@/components/select/datepicker-select.vue'
 import CitySelect from '@/components/select/city-select.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { endOfWeek, startOfWeek, addDays } from 'date-fns'
 
 defineProps({
   cond: {
@@ -16,6 +17,18 @@ const emit = defineEmits(['updateBudge', 'updateDate', 'updateLocation'])
 const dateModel = defineModel('date')
 const locationModel = defineModel('location')
 const budgeModel = defineModel('budge')
+
+const today = new Date()
+
+const endOfWeekDate = addDays(today, 6)     // 週日
+
+const end = ref(endOfWeekDate)
+
+const attributes = computed(() => [
+  {
+    dates: { start: startOfWeek.value, end: endOfWeek.value }
+  }
+])
 
 const budgeList = ref([
   {
@@ -75,6 +88,10 @@ const updateLocation = (value) => {
             <DatepickerSelect
               v-model="dateModel"
               prepend-icon="datepicker"
+              is-range
+              :attributes="attributes"
+              :min-date="new Date()"
+              :max-date="end"
               label=""
               placeholder="日期"
               @update:modelValue="updateDate"

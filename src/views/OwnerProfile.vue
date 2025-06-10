@@ -4,7 +4,7 @@
   import { ref, reactive, onMounted, computed } from 'vue'
   import { useRouter } from 'vue-router';
   import { PatchOwnerProfile, GetOwnerProfile } from '@/plugins/api/users/users.js';
-  import { getPet, postPet, patchPet } from '@/plugins/api/pets.js';
+  import { getPet, postPet, patchPet } from '@/plugins/api/pets/pets.js';
   import { useLoginStore } from '@/stores/login.js';
   import { useToast } from '@/plugins/toast/toast-plugin.js'
 

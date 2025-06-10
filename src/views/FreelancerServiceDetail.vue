@@ -225,34 +225,49 @@
           <div class="price-info d-flex justify-content-between">
             <div class="service-type text-black-900">
               <SvgIcon name="home_care" color="'#FFFFFF'" />
-              到府服務
+              {{ serviceType[serviceInfo.service_type_id] }}
             </div>
             <div class="price text-primary-dark-second fw-bold">
               NT ${{ serviceInfo.price }}/{{ serviceInfo.price_unit }}
             </div>
           </div>
-          <button class="btn btn-book w-100 mt-3" :disabled="bookingLoading">
+          <button class="btn btn-book w-100 mt-3" :disabled="bookingLoading" @click="reserve">
             <span v-if="bookingLoading" class="spinner-border spinner-border-sm me-2"></span>
             我要預約
           </button>
         </div>
       </div>
+      <ReserveModal
+        ref="reserveModal"
+        :info="serviceInfo"
+        :availableDates="availableDates"
+        :attributes="attributes"
+        :pet="petDetail"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
+import ReserveModal from '@/components/modal/reserve-modal.vue'
 import { getServiceDetail } from '@/plugins/api/services/services.js'
+import { getFreelancerSchedule } from '@/plugins/api/freelancers/freelancers.js'
+import { getReservedDates } from '@/plugins/api/owner/owner.js'
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
+import { useLoginStore } from '@/stores/login.js'
+import { useToast } from '@/plugins/toast/toast-plugin.js'
+import { getPet } from '@/plugins/api/pets/pets.js'
 
 const weeksCn = ['日', '一', '二', '三', '四', '五', '六']
 const bodySizesCn = ['小於10公斤以下', '10公斤以上~20公斤以下', '大於20公斤以上']
 const genderCn = ['男生', '女生']
 const petCn = ['犬', '貓']
+const serviceType = ['寵物日托', '寵物散步', '寵物美容', '到府照顧']
 
+const toast = useToast()
+const loginStore = useLoginStore()
 const route = useRoute()
-const router = useRouter()
 const serviceId = route.params.id
 
 const loading = ref(true)
@@ -264,6 +279,10 @@ const freelancerProfile = ref({})
 const serviceInfo = ref({})
 const reviewStatus = ref({})
 const reviews = ref([])
+const reserveModal = ref()
+const availableDates = ref([])
+const attributes = ref([])
+const petDetail = ref({})
 
 // 獲取服務提供者資訊
 const fetchServiceDetail = async (id) => {
@@ -320,10 +339,47 @@ const fetchReviews = async () => {
   }
 }
 
+const reserve = async () => {
+  if (loginStore.is_login) {
+    if (loginStore.user.role !== 'owner') {
+      toast.show('您現在身份為接案者身份，請改登入飼主身份', 'error')
+    } else if (loginStore.user.role === 'owner') {
+      await getPetDetail()
+      if (Object.keys(petDetail.value).length > 0) {
+        reserveModal.value.show()
+        await getSchedule(serviceInfo.value.freelancer_id)
+        await reservedDates()
+      } else {
+        toast.show('尚未填寫寵物資料', 'error')
+      }
+    }
+  } else {
+    toast.show('尚未登入，請登入飼主身份', 'error')
+  }
+}
+
+const getSchedule = async (id) => {
+  const { available_dates } = await getFreelancerSchedule(id)
+  availableDates.value = available_dates
+}
+
+const reservedDates = async () => {
+  const { reserved_dates } = await getReservedDates()
+  attributes.value = [{
+    highlight: 'red',
+    dates: reserved_dates,
+  }]
+}
+
+const getPetDetail = async () => {
+  const { pet } = await getPet()
+  petDetail.value = pet
+}
+
 // 初始化
 onMounted(async () => {
-  fetchServiceDetail(serviceId)
-  fetchReviews()
+  await fetchServiceDetail(serviceId)
+  await fetchReviews()
 })
 </script>
 

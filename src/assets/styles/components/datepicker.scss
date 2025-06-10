@@ -15,7 +15,10 @@
 .vc-day-content {
   border-radius: 6px !important;
 }
+.vc-blue {
+  --vc-accent-600: #ECB88A !important;
+}
 .vc-highlight-bg-solid {
   border-radius: 6px !important;
-  background: $primary !important;
+  //background: $primary !important;
 }

@@ -7,12 +7,12 @@
   color: $primary-dark-second;
 }
 .btn-outline-dark-second {
-  border-color: $primary-dark-second;
-  color: $primary-dark-second;
+  border-color: $primary-dark-second !important;
+  color: $primary-dark-second !important;
   &:hover {
-    color: $white;
-    border-color: $primary-dark-second;
-    background: $primary-dark-second;
+    color: $white !important;
+    border-color: $primary-dark-second !important;
+    background: $primary-dark-second !important;
   }
 }
 .tab-btn {

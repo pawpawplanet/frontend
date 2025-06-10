@@ -100,7 +100,6 @@ const getServiceList = async () => {
   const res = await getService(request)
   total.value = res.total
   list.value = res.services
-  console.log(list.value)
   if (res.services.length > 0) {
     res.services.forEach((service) => {
       const obj = {

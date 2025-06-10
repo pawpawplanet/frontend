@@ -1,8 +1,8 @@
 <script setup>
-import { ref, computed, useTemplateRef, nextTick, onMounted, onUnmounted } from 'vue'
-import { format, startOfWeek, endOfWeek, isWithinInterval } from 'date-fns'
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { addDays, differenceInCalendarDays, format } from 'date-fns'
 
-defineProps({
+const props = defineProps({
   prependIcon: {
     type: String,
     default: '',
@@ -24,23 +24,32 @@ defineProps({
     default: 'select'
   },
   disabledDates: {
+    type: Array,
+    default: () => [],
+  },
+  minDate: {
+    type: Date,
+    default: null,
+  },
+  maxDate: {
+    type: Date,
+    default: null,
+  },
+  isRange: {
     type: Boolean,
+    default: false,
+  },
+  attributes: {
+    type: Array,
+    default: () => [],
+  },
+  availableDates: {
+    type: Array,
+    default: () => [],
   },
 })
 
-
 const dateModel = defineModel()
-
-const today = new Date()
-
-// 計算這週的週一與週日（你也可以根據區域調整起始日）
-const startOfWeekDate = startOfWeek(today, { weekStartsOn: 1 }) // 週一
-
-const endOfWeekDate = endOfWeek(today, { weekStartsOn: 1 })     // 週日
-
-const start = ref(startOfWeekDate)
-
-const end = ref(endOfWeekDate)
 
 const select = useTemplateRef('select')
 
@@ -51,24 +60,46 @@ const masks = ref({
 });
 
 const dateText = computed(() => {
-  const { start, end } = dateModel.value
-  const startDate = format(start, 'yyyy-MM-dd')
-  if (end) {
-    const endDate = format(end, 'yyyy-MM-dd')
-    if (startDate !== endDate) {
-      return `${startDate}-${endDate}`
-    } else {
-      return startDate
+  if (props.isRange) {
+    const { start, end } = dateModel.value
+    if (start) {
+      const startDate = format(start, 'yyyy-MM-dd')
+      if (end) {
+        const endDate = format(end, 'yyyy-MM-dd')
+        if (startDate !== endDate) {
+          return `${startDate}-${endDate}`
+        } else {
+          return startDate
+        }
+      }
     }
+  } else {
+    return dateModel.value ? format(dateModel.value, 'yyyy-MM-dd') : ''
   }
-  return startDate
+  return ''
 })
 
-const attributes = computed(() => [
-  {
-    dates: { start: startOfWeek.value, end: endOfWeek.value }
+const matchDate = computed(() => {
+
+  if (props.availableDates.length > 0) {
+    let arr = []
+    const min = format(props.minDate, 'yyyy-MM-dd')
+    const max = format(props.maxDate, 'yyyy-MM-dd')
+    const diffDays = differenceInCalendarDays(max, min)
+    // 先計算一週的所有日期
+    for (let i = 0; i < diffDays; i++) {
+      arr.push(format(addDays(props.minDate, i), 'yyyy-MM-dd'))
+    }
+    let diff = [...arr.filter(x => !props.availableDates.includes(x))]
+    if (props.attributes.length > 0) {
+      let dateArr = [...arr.filter(x => props.attributes[0].dates.includes(x))]
+      diff = diff.concat(dateArr)
+      return diff
+    }
+    return []
   }
-])
+  return []
+})
 
 const onPress = () => {
   showDropDown.value = !showDropDown.value
@@ -116,16 +147,32 @@ onUnmounted(() => {
         </div>
       </div>
       <ul class="custom-select-options datepicker" :class="{ 'hide': showDropDown }">
-        <VDatePicker
-          v-model.range="dateModel"
-          mode="date"
-          class="w-100"
-          :attributes="attributes"
-          :min-date="new Date()"
-          :max-date="end"
-          :masks="masks"
-          @update:modelValue="updateDate"
-        />
+        <template v-if="isRange">
+          <VDatePicker
+            v-model.range="dateModel"
+            mode="date"
+            class="w-100"
+            :attributes="attributes"
+            :min-date="minDate"
+            :max-date="maxDate"
+            :masks="masks"
+            :disabled-dates="disabledDates"
+            @update:modelValue="updateDate"
+          />
+        </template>
+        <template v-else>
+          <VDatePicker
+            v-model="dateModel"
+            mode="date"
+            class="w-100"
+            :attributes="attributes"
+            :min-date="minDate"
+            :max-date="maxDate"
+            :masks="masks"
+            :disabled-dates="props.availableDates.length > 0 ? matchDate : disabledDates"
+            @update:modelValue="updateDate"
+          />
+        </template>
       </ul>
     </div>
   </div>

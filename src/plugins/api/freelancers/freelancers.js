@@ -33,3 +33,10 @@ export function getFreelancerServiceDetail(data) {
     data,
   });
 }
+
+export function getFreelancerSchedule(id) {
+  return service({
+    url: `${root}/${id}/schedule`,
+    method: 'get',
+  });
+}
