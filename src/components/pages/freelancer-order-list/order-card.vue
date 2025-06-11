@@ -1,48 +1,28 @@
 <script setup>
   import { ref } from 'vue';
+  import formatter from '@/stores/formatter';
   const hasBadge = ref(true);
-  defineProps({
+  const props = defineProps({
     orderData: Object,
     notModal: Boolean
   });
   const emit = defineEmits(['acceptOrder']);
-  const serviceTypes = ref([
-    {
-      name: '寵物寄宿',
-      icon: 'pet_boarding',
-    },
-    {
-      name: '寵物散步',
-      icon: 'pet_walking',
-    },
-    {
-      name: '寵物美容',
-      icon: 'pet_grooming',
-    },
-    {
-      name: '到府服務',
-      icon: 'home_care',
-    },
-    {
-      name:'地標',
-      icon:'map'
-    }
-  ])
+  const { formatSpecies, formatGender, formatSize, formatAge } = formatter(props.orderData['pet']);
+  const { formatServerType } = formatter(props.orderData['service']);
 </script>
 <template>
-  <div v-if="hasBadge" class="d-inline-block bg-primary rounded-top p-1"><span>X</span>{{ orderData.order.status }}</div>
-  <div class="card border-0 shadow-sm mb-3" :class="{ 'rounded-0': hasBadge }">
+  <div v-if="hasBadge && notModal" class="d-inline-block bg-primary small rounded-top p-1"><span></span>{{ orderData.order.status }}</div>
+  <div class="card rounded-5 shadow-sm mb-3" :class="{ 'card-round': hasBadge && notModal }">
     <div class="card-body">
       <div class="row">
         <div :class="{ 'col-lg-7': notModal }">
           <div class="d-flex align-items-center mb-2">
-            <img :src="orderData.owner.avatar" class="rounded-circle avatar me-3" alt="頭像" />
+            <img v-if="orderData.owner.avatar" :src="orderData.owner.avatar" class="rounded-circle avatar me-3" alt="人物頭像" />
+            <SvgIcon v-if="!orderData.owner.avatar" name="user" class="rounded-circle avatar me-3" color="#452B14"/>
             <div>
-              <div class="fw-bold">{{ orderData.owner.name }}</div>
-              <div class="text-primary small">
-                <span class="me-1">
-                  <SvgIcon :name="serviceTypes[4].icon" color="#ECB88A" :size="28" />
-                </span>
+              <div class="fw-bold mb-1 ms-1">{{ orderData.owner.name }}</div>
+              <div class="d-flex align-items-center text-primary small">
+                <SvgIcon name="map" color="#ECB88A" class="me-1" :size="24" />
                 <span>{{ orderData.owner.city }} {{ orderData.owner.area }}</span>
               </div>
             </div>
@@ -51,43 +31,49 @@
           <hr class="text-muted">
           <div class="d-flex mb-3">
             <div class="text-center me-3">
-              <div><span class="badge rounded-pill bg-primary text-dark mb-2">寵物</span></div>
-              <img :src="orderData.pet.avatar" class="rounded-circle avatar mb-1" alt="頭像" />
+              <div><span class="badge rounded-pill bg-primary text-dark mb-2">{{ formatSpecies }}</span></div>
+              <img v-if="orderData.pet.avatar" :src="orderData.pet.avatar" class="rounded-circle avatar mb-1" alt="寵物頭像" />
+              <SvgIcon v-if="!orderData.pet.avatar" name="user" class="rounded-circle avatar mb-1" color="#452B14"/>
               <div>{{ orderData.pet.name }}</div>
             </div>
             <div class="row w-100">
-              <div class="col-5 text-end d-flex flex-column gap-3" :class="{ 'col-xl-3': !notModal, 'col-md-2': notModal }">
-                <p>體型<span>｜</span></p>
-                <p>年紀<span>｜</span></p>
-                <p>性別<span>｜</span></p>
-                <p>個性<span>｜</span></p>
-              </div>
-              <div class="col-7 d-flex flex-column gap-3 ps-0" :class="{ 'col-xl-9': !notModal, 'col-md-10': notModal }">
-                <p>{{ orderData.pet.size }}</p>
-                <p>{{ orderData.pet.birthday }}歲</p>
-                <p>{{ orderData.pet.gender }}</p>
-                <p>{{ orderData.pet.personality_description }}</p>
-              </div>
+              <template v-for="i in 4" :key="i">
+                <div class="col-5 text-end" :class="{ 'col-xl-3': !notModal, 'col-md-2': notModal }">
+                  <p v-if="i == 1">體型<span>｜</span></p>
+                  <p v-if="i == 2">年紀<span>｜</span></p>
+                  <p v-if="i == 3">性別<span>｜</span></p>
+                  <p v-if="i == 4">個性<span>｜</span></p>
+                </div>
+                <div class="col-7 ps-0" :class="{ 'col-xl-9': !notModal, 'col-md-10': notModal }">
+                  <p v-if="i == 1">{{ formatSize }}</p>
+                  <p v-if="i == 2">{{ formatAge }} 歲</p>
+                  <p v-if="i == 3">{{ formatGender }}</p>
+                  <p v-if="i == 4">{{ orderData.pet.personality_description }}</p>
+                </div>
+              </template>
             </div>
           </div>
         </div>
         <div :class="{ 'col-lg-5': notModal }">
           <div class="bg-secondary-tint rounded-3 p-3 mb-3">
             <div class="row">
-              <div class="col-4 text-end d-flex flex-column gap-3">
-                <p>預約服務<span>｜</span></p>
-                <p>時間<span>｜</span></p>
-                <p>地點<span>｜</span></p>
-                <p>備註<span>｜</span></p>
-              </div>
-              <div class="col-8 d-flex flex-column gap-3 ps-0">
-                <p><span class="me-1">
-                  <SvgIcon :name="serviceTypes[3].icon" color="#ECB88A" :size="28" />
-                </span>{{ orderData.service.service_type_id }}</p>
-                <p>{{ orderData.order.service_date }}</p>
-                <p>{{ orderData.owner.city }} {{ orderData.owner.area }}</p>
-                <p>{{ orderData.order.note }}</p>
-              </div>
+              <template v-for="i in 4" :key="i">
+                <div class="col-5 col-md-4 text-end">
+                  <p v-if="i == 1">預約服務<span>｜</span></p>
+                  <p v-if="i == 2">時間<span>｜</span></p>
+                  <p v-if="i == 3">地點<span>｜</span></p>
+                  <p v-if="i == 4">備註<span>｜</span></p>
+                </div>
+                <div class="col-7 col-md-8 ps-0">
+                  <p v-if="i == 1" class="d-flex align-items-center">
+                    <SvgIcon :name="formatServerType.icon" color="#ECB88A" class="me-1" :size="24" />
+                    <span>{{ formatServerType.name }}</span>
+                  </p>
+                  <p v-if="i == 2">{{ orderData.order.service_date }}</p>
+                  <p v-if="i == 3">{{ orderData.owner.city }} {{ orderData.owner.area }}</p>
+                  <p v-if="i == 4">{{ orderData.order.note }}</p>
+                </div>
+              </template>
             </div>
             <hr class="text-muted">
             <div class="d-flex justify-content-between">
@@ -120,14 +106,16 @@
   </div>
 </template>
 <style scoped lang="scss">
+  .card-round {
+    border-top-left-radius: 0 !important;
+  }
   .text-brown {
     color: #7c4f27;
   }
-  .avatar{
+  .avatar {
     width: 80px;
     height: 80px;
     object-fit: cover;
-    // background-image: url('default-avatar.png');
-    // background-size: cover;
+    background-color: rgb(249, 234, 220);
   }
 </style>

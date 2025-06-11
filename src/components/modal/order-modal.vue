@@ -63,7 +63,7 @@
 <template>
   <div class="modal fade" ref="modal_ref" :id="title" tabindex="-1" :aria-labelledby="title + 'Label'" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-xl">
-      <div class="modal-content">
+      <div class="modal-content bg-secondary-tint">
         <div class="modal-header justify-content-between">
           <span></span>
           <h6 class="modal-title text-center" :id="title + 'Label'">
@@ -82,10 +82,10 @@
             </div>
             <div class="d-flex justify-content-between">
               <button type="button" class="btn border-0" @click="prev" :disabled="startIndex === 0">
-                <SvgIcon name="chevron_left" :size="24" />
+                <SvgIcon name="chevron_left" :size="28" />
               </button>
               <button type="button" class="btn border-0" @click="next" :disabled="startIndex + cardsPerPage >= samedayOrdersData.length">
-                <SvgIcon name="chevron_right" :size="24" />
+                <SvgIcon name="chevron_right" :size="28" />
               </button>
             </div>
           </div>
