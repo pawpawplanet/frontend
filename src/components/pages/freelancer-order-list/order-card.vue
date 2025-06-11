@@ -33,7 +33,7 @@
             <div class="text-center me-3">
               <div><span class="badge rounded-pill bg-primary text-dark mb-2">{{ formatSpecies }}</span></div>
               <img v-if="orderData.pet.avatar" :src="orderData.pet.avatar" class="rounded-circle avatar mb-1" alt="寵物頭像" />
-              <SvgIcon v-if="!orderData.pet.avatar" name="user" class="rounded-circle avatar me-3" color="#452B14"/>
+              <SvgIcon v-if="!orderData.pet.avatar" name="user" class="rounded-circle avatar mb-1" color="#452B14"/>
               <div>{{ orderData.pet.name }}</div>
             </div>
             <div class="row w-100">
