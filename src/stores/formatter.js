@@ -1,21 +1,50 @@
 import { computed } from 'vue';
 
 export default function formatter(data) {
+  //資料轉換
   const formatMapping = {
     species_id: { 0: '貓', 1: '狗' },
     gender: { 0: '男', 1: '女' },
     is_ligation: { true: '是', false: '否' },
-    size_id: { 0: '小', 1: '中', 2: '大' },
+    size: { 0: '小型-10公斤以下', 1: '中型-10公斤以上，20公斤以下', 2: '大型- 20公斤以上' },
+    size_id: { 0: '小型-10公斤以下', 1: '中型-10公斤以上，20公斤以下', 2: '大型- 20公斤以上' },
     tag: { 0: '等待接受', 1: '等待付款', 2: '即將執行', 3: '最新回應', 4: '結案' }
   };
+  // const formatData = (key) => computed(() => formatMapping[key][data.value[key]] || null);
+  const formatData = (key) => computed(() => formatMapping[key][data[key]] || null);
 
-  const formatData = (key) => computed(() => formatMapping[key][data.value[key]] || null);
+  //服務類型轉換
+  const serviceTypes = [
+    { name: '寵物寄宿/日托', icon: 'pet_boarding' },
+    { name: '寵物散步', icon: 'pet_walking' },
+    { name: '寵物美容', icon: 'pet_grooming' },
+    { name: '到府服務', icon: 'home_care' }
+  ];
+
+  const formatServerTypeData = (key) => computed(() => serviceTypes[data[key]] || null);
+
+  // 計算年齡
+  const formatAge = computed(() => {
+    if (!data.birthday) return null;
+    const birth = new Date(data.birthday);
+    const today = new Date();
+
+    let age = today.getFullYear() - birth.getFullYear();
+    if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age;
+  });
 
   return {
     formatSpecies: formatData('species_id'),
     formatGender: formatData('gender'),
     formatIsLigation: formatData('is_ligation'),
-    formatSize: formatData('size_id'),
-    formatTag: formatData('tag')
+    formatSize: formatData('size'),
+    formatSizeId: formatData('size_id'),
+    formatTag: formatData('tag'),
+    formatAge,
+    formatServerType: formatServerTypeData('service_type_id')
   };
 }
