@@ -39,7 +39,11 @@ const updateServiceType = (option) => {
 }
 
 const updateLocation = async (value) => {
-  location.value = `${value.city} ${value.area}`
+  if (Object.keys(value).length > 0) {
+    location.value = `${value.city} ${value.area}`
+  } else {
+    location.value = ''
+  }
 }
 
 const search = () => {
@@ -76,6 +80,7 @@ const search = () => {
               <CitySelect
                 v-model="location"
                 prepend-icon="map"
+                append-icon="cancel"
                 label="附近"
                 placeholder="選擇你的位置"
                 background-is-transparent

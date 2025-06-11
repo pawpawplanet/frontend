@@ -77,6 +77,7 @@ const updateLocation = (value) => {
         <CitySelect
           v-model="locationModel"
           prepend-icon="map"
+          append-icon="cancel"
           label=""
           placeholder="選擇你的位置"
           @update:model="updateLocation"

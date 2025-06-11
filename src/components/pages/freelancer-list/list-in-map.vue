@@ -159,17 +159,31 @@ const checkoutCategory = async (value) => {
 }
 
 const updateLocation = async (value) => {
-  location.value = `${value.city} ${value.area}`
-  request.city = value.city
-  request.area = value.area
-  await router.push({
-    path: '/service',
-    query: {
-      ...route.query,
-      city: value.city,
-      area: value.area,
-    },
-  })
+  if (Object.keys(value).length > 0) {
+    location.value = `${value.city} ${value.area}`
+    request.city = value.city
+    request.area = value.area
+    await router.push({
+      path: '/service',
+      query: {
+        ...route.query,
+        city: value.city,
+        area: value.area,
+      },
+    })
+  } else {
+    location.value = ''
+    request.city = null
+    request.area = null
+    await router.push({
+      path: '/service',
+      query: {
+        ...route.query,
+        city: undefined,
+        area: undefined,
+      },
+    })
+  }
 }
 
 const updateBudge = async (value) => {

@@ -70,6 +70,11 @@ const clickOption = (value) => {
   emit('update:model', value)
 }
 
+const cancel = () => {
+  showDropDown.value = false
+  emit('update:model', {})
+}
+
 const clickOtherElement = (e) => {
   if (city.value && !city.value.contains(e.target)) {
     showDropDown.value = false
@@ -97,12 +102,14 @@ onUnmounted(() => {
         <div class="flex-1">
           <input v-model="model" :placeholder="placeholder" @focus="onFocus" />
         </div>
-        <div v-if="appendIcon.length > 0" class="flex-0">
-          <SvgIcon
-            name="chevron_down"
-            :size="20"
-            color="#452B14"
-          />
+        <div v-show="model.length > 0" class="flex-0">
+          <button type="button" class="btn p-1 rounded-circle custom-input-cancel" @click="cancel">
+            <SvgIcon
+              :name="appendIcon"
+              :size="20"
+              color="#452B14"
+            />
+          </button>
         </div>
       </div>
       <ul class="custom-select-options" :class="{ 'hide': showDropDown }">
