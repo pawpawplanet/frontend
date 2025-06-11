@@ -1,5 +1,13 @@
 <template>
   <div class="container my-4">
+    <form 
+      ref="ecpayForm" 
+      method="POST" 
+      :action="ecpayGatewayUrl" 
+      style="display: none;" 
+    >
+    </form>
+
     <!-- tab bar -->
     <div class="tab-bar-container my-4">
       <div class="nav-pills-wrapper">
@@ -45,7 +53,7 @@ import OrderCard from '@/components/pages/owner-order-management/order-card.vue'
 import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; 
 import { getOrders } from '@/plugins/api/users/owners';
-import { patchOrderStatus } from '@/plugins/api/orders';
+import { patchOrderStatus, getOrdersAcceptedOnSameDate, postPayment } from '@/plugins/api/orders';
 
 const router = useRouter();
 const route = useRoute();
@@ -69,6 +77,13 @@ const currentLimit = ref(10);
 const currentPage = ref(1);
 
 const orders = ref([])
+
+// 綠界支付閘道 URL (請根據測試/正式環境替換)
+const ecpayGatewayUrl = ref('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5');
+
+// 使用 ref 獲取模板中的 DOM 元素引用
+const ecpayForm = ref(null); 
+
 
 function changeTab(tag) {
   if (currentTag.value === tag) {
@@ -229,21 +244,100 @@ watch(
 async function fetchOrders() {
   try {
     const response = await getOrders(route.query);
-    orders.value = response; 
-    // console.log('訂單資料已載入: response', response);
+    orders.value = response; // Vue 會自動將 response 陣列內的所有物件轉換為響應式物件 Proxy。
   } catch (error) {
-    // console.error('載入訂單失敗:', error);
+    console.error('載入訂單失敗:', error);
   }
 }
 
-async function processOrder(orderId, action)  {
+async function processOrder(order, action)  {
   try {
-    const response = await patchOrderStatus(orderId, { action: action});
-    console.log('改變訂單狀態結果: response', response);
-    changeTab(response.target_tag.value);
+    switch (action) {
+      case 'pay':
+        await handlePayAction(order)
+        break;
+      case 'comment':
+        await addReview(order.order.id)
+        break;
+      case 'accept':
+      case 'cancel':
+      case 'close':
+        await updateStatus(order.order.id, action)
+        break;
+      default:
+        console.error('不支援的訂單操作:', action);
+        break;
+    }
   } catch(error) {
-    console.error('改變訂單狀態:', error);
+    console.error('處理訂單操作時發生錯誤 :', error);
   }
+}
+
+async function handlePayAction(order) {
+  try {
+    console.log('handlePayAction: ', order)
+    const otherOrders = await getOrdersAcceptedOnSameDate(order.order.id);
+    otherOrders?.length ? showOrdersAcceptedOnSameDate(order, otherOrders) : await pay(order.order.id);
+  } catch(error) {
+    console.error('處理訂單付款有誤:', error);
+  }
+}
+
+async function updateStatus(orderId, action) {
+  try { 
+    const response = await patchOrderStatus(orderId, { action: action });
+    console.log('改變訂單狀態結果: response', response);
+    
+    if (response && response.target_tag && response.target_tag.value) {
+      changeTab(response.target_tag.value);
+    } else {
+      console.warn('更新狀態後缺少目標標籤值:', response);
+    }
+  } catch (error) {
+    console.error('更新訂單狀態失敗:', error);
+    throw error;
+  }
+}
+
+async function pay(orderId) {
+  try {
+    const ecpayParams = await postPayment(orderId)  
+    console.log('處理訂單付款，取得綠界資料: ', ecpayParams);
+
+    // 確保 ecpayForm ref 已經指向了 DOM 元素
+    if (!ecpayForm.value) {
+      throw new Error('未找到綠界支付表單元素 (ref="ecpayForm")。');
+    }
+
+    // 2. 清空表單，並動態填充隱藏的 input 欄位
+    ecpayForm.value.innerHTML = ''; 
+
+    // 遍歷後端回傳的所有綠界參數，為每個參數創建一個隱藏的 input 元素
+    for (const key in ecpayParams) {
+      if (Object.hasOwnProperty.call(ecpayParams, key)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;           // 設置 input 的 name 屬性 (綠界要求的參數名稱)
+        input.value = ecpayParams[key]; // 設置 input 的 value 屬性
+        ecpayForm.value.appendChild(input);
+      }
+    }
+
+    // 3. 透過 JavaScript 提交表單，觸發瀏覽器導向綠界支付頁面
+    console.log('綠界支付表單已準備就緒，正在提交...');
+    ecpayForm.value.submit(); // 呼叫表單的 submit() 方法
+  } catch(error) {
+    console.error('訂單付款流程有誤:', error);
+  }
+}
+
+function showOrdersAcceptedOnSameDate(theOrder, otherOrders) {
+  console.log('showOrdersAcceptedOnSameDate theOrder: ', theOrder.order.id)
+  console.log('showOrdersAcceptedOnSameDate otherOrders ', otherOrders[0].order.id)
+}
+
+async function addReview(orderId) {
+
 }
 </script>
 

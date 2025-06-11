@@ -9,3 +9,17 @@ export function patchOrderStatus(id, data) {
     data
   });
 }
+
+export function getOrdersAcceptedOnSameDate(id) {
+  return service({
+    url: `${root}/${id}/same-date/accepted`,
+    method: 'get'
+  });
+}
+
+export function postPayment(id) {
+  return service({
+    url: `${root}/${id}/payment`,
+    method: 'post'
+  });
+}
