@@ -2,7 +2,7 @@
   import { ref } from 'vue';
   import OrderCard from '@/components/pages/freelancer-order-list/order-card.vue';
   import OrderPagination from '@/components/pages/freelancer-order-list/order-Pagination.vue';
-  import Modal from '@/components/modal/order-modal.vue';
+  import Modal from '@/components/modal/order-freelancer-modal.vue';
   // import formatter from '@/stores/formatter';
 
   const thisModal = ref();
