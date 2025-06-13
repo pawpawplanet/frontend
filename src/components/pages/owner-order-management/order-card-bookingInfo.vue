@@ -7,7 +7,9 @@
         </div>
 
         <div class="service-type">
-            <span class="service-icon-wrapper"><img :src="icon" alt="location" class="service-icon-img"></span>
+            <span class="service-icon-wrapper">
+              <SvgIcon :name="icon" class="service-icon-img" color="#452B14"/>
+            </span>
             <span class="service-text">{{ type }}</span>
         </div>
       </div>
@@ -40,10 +42,10 @@
 import { defineProps, onMounted, computed } from 'vue';
 
 const SERVICE_TYPE_MAP = {
-  0: {'type' : '寵物寄宿/日托', 'icon' : 'daycare.png'},
-  1: {'type' : '寵物散步', 'icon' : 'daycare.png'},
-  2: {'type' : '寵物美容', 'icon' : 'daycare.png'},
-  3: {'type' : '到府照顧', 'icon' : 'daycare.png'},
+  0: {'type' : '寵物寄宿/日托', 'icon' : 'pet_boarding'},
+  1: {'type' : '寵物散步', 'icon' : 'pet_walking'},
+  2: {'type' : '寵物美容', 'icon' : 'pet_grooming'},
+  3: {'type' : '到府照顧', 'icon' : 'home_care'},
 };
 
 const props = defineProps({
@@ -64,15 +66,7 @@ const type = computed(() => {
 
 const icon = computed(() => {
   const typeValue = service.value.service_type_id;
-  const fileName = SERVICE_TYPE_MAP[typeValue]?.icon || 'daycare.png';
-
-  // 而 @/ 這個別名是一個建置時的功能，所以讓 Vite 在建置時處理這個 (因為 JavasScript 不解析別名)， Vite 建制時會利用特殊機制，動態產生字串，再將其轉換為正確的靜態資源 URL
-  try {
-    return new URL(`/src/assets/images/order/${fileName}`, import.meta.url).href;
-  } catch (e) {
-    console.error(`圖片路徑解析失敗: ${fileName}`, e);
-    return new URL('/src/assets/images/order/daycare.png', import.meta.url).href;
-  }
+  return SERVICE_TYPE_MAP[typeValue]?.icon || 'service';
 });
 
 const date = computed(() => { return props.orderData.order.service_date || '沒有日期'});

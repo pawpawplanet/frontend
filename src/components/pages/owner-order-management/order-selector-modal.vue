@@ -1,38 +1,3 @@
-<template>
-  <div class="modal fade" :id="modalId" tabindex="-1" :aria-labelledby="modalId + 'Label'" aria-hidden="true" ref="modalRef">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title text-center" :id="modalId + 'Label'">{{ title }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        
-        <div class="modal-body custom-modal-body">
-          <div class='order-card-wrapper' ref="orderCardWrapperRef">
-            <order-card 
-              v-for="order in orders"
-              class="order-card-fixed-width"
-              :key="order.id" 
-              :orderData="order"
-              :orderStatusActions="actions"
-              :isModalContext=true
-              @click-btn="payOrder" />
-          </div>  
-        </div>
-
-        <div class="modal-footer d-flex justify-content-between align-items-center">
-          <button type="button" class="btn btn-scroll" @click="scroll('left')">
-            <span>&lt;</span> </button>
-
-          <button type="button" class="btn btn-scroll" @click="scroll('right')">
-            <span>&gt;</span> </button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue';
 import Modal from 'bootstrap/js/dist/modal';
@@ -67,7 +32,7 @@ const props = defineProps({
     type: String,
     required: true, // 要求父元件必須傳入這個 ID
   },
-  orders: {
+  ordersData: {
     type: Array,
     required: true
   }
@@ -79,8 +44,8 @@ const orderCardWrapperRef = ref(null);
 const scrollAmount = 584;
 
 const title = computed(() => {
-  const count = props.orders?.length || 0;
-  const date = props.orders?.[0]?.order.service_date || ''
+  const count = props.ordersData?.length || 0;
+  const date = props.ordersData?.[0]?.order.service_date || ''
   return `您在 ${ date } 有 ${ count } 項待付款的預約，請從清單中選擇要付款的預約，其他預約會自動取消`
 });
 
@@ -146,10 +111,45 @@ const scroll = (direction) => {
 };
 
 async function payOrder(order, action)  {
-    console.log('hello, action:', action)
     emit('selected', order)
 }
 </script>
+
+<template>
+  <div class="modal fade" :id="modalId" tabindex="-1" :aria-labelledby="modalId + 'Label'" aria-hidden="true"
+    ref="modalRef">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" :id="modalId + 'Label'">{{ title || '沒有名字' }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body custom-modal-body">
+          <div class='order-card-wrapper' ref="orderCardWrapperRef">
+            <order-card 
+              v-for="orderData in ordersData" 
+              class="order-card-fixed-width" 
+              :key="orderData.order.id"
+              :orderData="orderData" 
+              :orderStatusActions="actions" 
+              :isModalContext=true 
+              @click-btn="payOrder" />
+          </div>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between align-items-center">
+          <button type="button" class="btn btn-scroll" @click="scroll('left')">
+            <span>&lt;</span> </button>
+
+          <button type="button" class="btn btn-scroll" @click="scroll('right')">
+            <span>&gt;</span> </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 /* order-card 的外部 Flex 容器，確保多個卡片水平排列 */

@@ -1,48 +1,3 @@
-<template>
-  <div class="order-card" 
-    :class="{ 'mt-4': showStatus }" :style="cardBorderStyle" >
-    <div v-if="showStatus" class="status-tag-basic" :style="{ backgroundColor: status.bgColor }">
-    <!-- <div v-if="showStatus" :class="{ 'status-tag': showStatus }"> -->
-      <div class="status-tag-wrapper">
-        <span class="status-tag-icon-wrapper"><img :src="statusIcon" alt="status" class="status-tag-icon-img"></span>
-        <span class="status-tag-text">{{ status.caption }}</span>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row align-items-stretch gy-4"> 
-        <!-- col-12 預設的高度就是 auto，由子元素內容決定高度 -->
-        <div :class="colClass" class="d-flex flex-column"> 
-          <!-- <p>order id : {{ orderData.order.id }}</p> -->
-          <div class="freelancer-pet-info"> 
-            <freelancer-info :orderData="orderData" />
-            <pet-info :orderData="orderData" />
-          </div>
-        </div>
-
-        <div :class="colClass" class="d-flex flex-column">
-          <div class="booking-info"> 
-            <booking-info :orderData="orderData" />
-          </div>
-
-          <!-- buttons -->
-          <div class="row gx-2 mt-3 justify-content-end">               
-            <div class="col-6" v-if="leftBtn">
-              <button class="btn btn-basic btn-cancel rounded-pill w-100"
-              @click="onClick(leftBtn)">{{ leftBtn.caption }}</button>
-            </div>
-
-            <div class="col-6" v-if="rightBtn">
-              <button class="btn btn-basic btn-pay rounded-pill w-100"
-              @click="onClick(rightBtn)">{{ rightBtn.caption }}</button>
-            </div>
-          </div>
-        </div> 
-
-      </div>
-    </div>
-  </div>  
-</template>
-
 <script setup>
 import { defineProps, computed, onMounted } from 'vue';
 import FreelancerInfo from '@/components/pages/owner-order-management/order-card-freelancerInfo.vue'
@@ -83,18 +38,6 @@ const cardBorderStyle = computed(() => {
   };
 });
 
-const statusIcon = computed(() => {
-  const fileName = status.icon || 'completed.png';
-
-  // 而 @/ 這個別名是一個建置時的功能，所以讓 Vite 在建置時處理這個 (因為 JavasScript 不解析別名)， Vite 建制時會利用特殊機制，動態產生字串，再將其轉換為正確的靜態資源 URL
-  try {
-    return new URL(`/src/assets/images/order/${fileName}`, import.meta.url).href;
-  } catch (e) {
-    console.error(`圖片路徑解析失敗: ${fileName}`, e);
-    return new URL('/src/assets/images/order/completed.png', import.meta.url).href;
-  }
-});
-
 const colClass = computed(() => { return props.isModalContext ? 'col-12' : 'col-12 col-sm-6' });
 
 const onClick = (btn) => {
@@ -102,9 +45,55 @@ const onClick = (btn) => {
 }
 
 onMounted(() => {
-  // console.log('------------------- orderStatusActions: ', props.orderStatusActions)
+  // console.log('------------------- order-card: ', props.orderData)
 })
 </script>
+
+<template>
+  <div class="order-card" 
+    :class="{ 'mt-4': showStatus }" :style="cardBorderStyle" >
+    <div v-if="showStatus" class="status-tag-basic" :style="{ backgroundColor: status.bgColor }">
+    <!-- <div v-if="showStatus" :class="{ 'status-tag': showStatus }"> -->
+      <div class="status-tag-wrapper">
+        <span class="status-tag-icon-wrapper"><SvgIcon :name="status.icon" color="#fff" class="status-tag-icon-img"/></span>
+        
+        <span class="status-tag-text">{{ status.caption }}</span>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row align-items-stretch gy-4"> 
+        <!-- col-12 預設的高度就是 auto，由子元素內容決定高度 -->
+        <div :class="colClass" class="d-flex flex-column"> 
+          <!-- <p>order id : {{ orderData.order.id }}</p> -->
+          <div class="freelancer-pet-info"> 
+            <freelancer-info :orderData="orderData" />
+            <pet-info :orderData="orderData" />
+          </div>
+        </div>
+
+        <div :class="colClass" class="d-flex flex-column">
+          <div class="booking-info"> 
+            <booking-info :orderData="orderData" />
+          </div>
+
+          <!-- buttons -->
+          <div class="row gx-2 mt-3 justify-content-end">               
+            <div class="col-6" v-if="leftBtn">
+              <button class="btn btn-basic btn-cancel rounded-pill w-100"
+              @click="onClick(leftBtn)">{{ leftBtn.caption }}</button>
+            </div>
+
+            <div class="col-6" v-if="rightBtn">
+              <button class="btn btn-basic btn-pay rounded-pill w-100"
+              @click="onClick(rightBtn)">{{ rightBtn.caption }}</button>
+            </div>
+          </div>
+        </div> 
+
+      </div>
+    </div>
+  </div>  
+</template>
 
 <style scoped>
 .order-card {
@@ -206,6 +195,4 @@ onMounted(() => {
   object-fit: contain;
   vertical-align: middle;
 }
-
-
 </style>

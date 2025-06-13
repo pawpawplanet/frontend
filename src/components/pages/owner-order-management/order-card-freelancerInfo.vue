@@ -1,17 +1,17 @@
 <template>
   <div class='freelancer-info'>
     <div class="freelancer-profile">
-      <img 
-          :src="avatar" 
-          alt="Freelancer Avatar" 
-          class="freelancer-avatar-large" />
+      <img v-if="freelancer?.avatar" :src="freelancer.avatar" class="freelancer-avatar-large" alt="Freelancer Avatar" />
+      <SvgIcon v-if="!freelancer.avatar" name="user" class="freelancer-avatar-large" color="#452B14"/>    
 
       <div class="freelancer-details">
         <h2 class="freelancer-name">{{ freelancer.name }}</h2>
         <div class="freelancer-phone-location">
           <h2 class="freelancer-phone">{{ freelancer.phone }}</h2>
           <div class="freelancer-location">
-            <span class="location-icon-wrapper"><img src="@/assets/images/order/location.png" alt="location" class="location-icon-img"></span>
+            <span class="location-icon-wrapper"><span class="location-icon-wrapper">
+              <SvgIcon name="map" color="#A87D57" :size="16"/>
+            </span></span>
             <span class="location-text">{{ `${freelancer.city} ${freelancer.area}` }}</span>
           </div>
         </div>
@@ -25,7 +25,6 @@
 </template>
 
 <script setup>
-import defaultOwnerAvatar from '@/assets/images/order/owner_avatar.png';
 import { defineProps, onMounted, computed } from 'vue';
 
 const props = defineProps({
@@ -38,11 +37,6 @@ const props = defineProps({
 // computed，template 中，使用一個 ref 或 computed 屬性時，Vue 會自動幫你解包 (unwrap) 它的 .value
 const freelancer = computed(() => {
   return props.orderData.freelancer;
-});
-
-const avatar = computed(() => {
-  return (props.orderData.freelancer?.avatar && props.orderData.freelancer.avatar.length > 0) ?
-    props.orderData.freelancer.avatar[0] : defaultOwnerAvatar;
 });
 
 onMounted(() => {

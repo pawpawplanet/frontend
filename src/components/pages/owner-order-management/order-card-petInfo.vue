@@ -1,38 +1,4 @@
-<template>
-  <div class='pet-info'>
-      <div class="pet-info-basic">
-        <span class="pet-category-label">{{ species }}</span>
-        <div class="image-wrapper">
-          <img 
-          :src="avatar" 
-          alt="Pet Avatar" />
-        </div>
-        <p class="fw-bold mb-0 text-center">{{ pet.name }}</p>
-      </div>
-          
-      <div class="pet-info-detail">
-        <div class="pet-info-detail-item">
-          <div class="pet-info-detail-item-label">體型 | </div>
-          <div class="pet-info-detail-item-content">{{ size }}</div>
-        </div>
-        <div class="pet-info-detail-item">
-          <div class="pet-info-detail-item-label">生日 | </div>
-          <div class="pet-info-detail-item-content">{{ pet.birthday }}</div>
-        </div>
-        <div class="pet-info-detail-item">
-          <div class="pet-info-detail-item-label">性別 | </div>
-          <div class="pet-info-detail-item-content">{{ gender }}</div>
-        </div>
-        <div class="pet-info-detail-item">
-          <div class="pet-info-detail-item-label">個性 | </div>
-          <div class="pet-info-detail-item-content">{{ pet.personality_description }}</div>
-        </div>
-      </div>
-  </div>
-</template>
-
 <script setup>
-import defaultPetAvatar from '@/assets/images/order/owner_avatar.png';
 import { defineProps, onMounted, computed } from 'vue';
 
 const PET_SIZE_MAP = {
@@ -60,18 +26,14 @@ const props = defineProps({
 })
 
 const pet = computed(() => { return props.orderData.pet });
-const avatar = computed(() => { return props.orderData.pet?.avatar || defaultPetAvatar; });
-
 const species = computed(() => {
   const speciesValue = pet.value?.species_id;
   return PET_SPECIES_MAP[speciesValue] || '未知的種類';
 });
-
 const size = computed(() => {
   const sizeValue = pet.value?.size;
   return PET_SIZE_MAP[sizeValue] || '未知的體型';
 });
-
 const gender = computed(() => {
   const genderValue = pet.value?.gender;
   return PET_GENDER_MAP[genderValue] || '未知的性別';
@@ -81,6 +43,38 @@ onMounted(() => {
   // console.log('pet, order data:', props.orderData);
 });
 </script>
+
+<template>
+  <div class='pet-info'>
+      <div class="pet-info-basic">
+        <span class="pet-category-label">{{ species }}</span>
+        <div class="image-wrapper">
+          <img v-if="pet?.avatar" :src="pet.avatar" alt="Pet Avatar" />
+          <SvgIcon v-if="!pet?.avatar" name="user" color="#452B14"/>    
+        </div>
+        <p class="fw-bold mb-0 text-center">{{ pet.name || '找不到名字' }}</p>
+      </div>
+          
+      <div class="pet-info-detail">
+        <div class="pet-info-detail-item">
+          <div class="pet-info-detail-item-label">體型 | </div>
+          <div class="pet-info-detail-item-content">{{ size }}</div>
+        </div>
+        <div class="pet-info-detail-item">
+          <div class="pet-info-detail-item-label">生日 | </div>
+          <div class="pet-info-detail-item-content">{{ pet.birthday }}</div>
+        </div>
+        <div class="pet-info-detail-item">
+          <div class="pet-info-detail-item-label">性別 | </div>
+          <div class="pet-info-detail-item-content">{{ gender }}</div>
+        </div>
+        <div class="pet-info-detail-item">
+          <div class="pet-info-detail-item-label">個性 | </div>
+          <div class="pet-info-detail-item-content">{{ pet.personality_description }}</div>
+        </div>
+      </div>
+  </div>
+</template>
 
 <style scoped>
 .pet-info {
@@ -100,6 +94,7 @@ onMounted(() => {
 
   display: flex;
   flex-direction: column;
+  /* justify-content: flex-start; */
   align-items: center;
 
   gap: 4px; /* 分類標籤與寵物詳細資訊之間的間距 */

@@ -1,3 +1,339 @@
+<script setup>
+import OrderCard from '@/components/pages/owner-order-management/order-card.vue';
+import OrderSelectorModal from '@/components/pages/owner-order-management/order-selector-modal.vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { getOrders } from '@/plugins/api/users/owners';
+import { patchOrderStatus, getOrdersAcceptedOnSameDate, postPayment } from '@/plugins/api/orders';
+
+const router = useRouter();
+const route = useRoute();
+
+const tabs = [
+  { id: 'pending', label: '等待回覆', tag: 0 },
+  { id: 'accepted', label: '預約成功待付款', tag: 1 },
+  { id: 'paid', label: '即將執行', tag: 2 },
+  { id: 'latest-response', label: '最新回應', tag: 3 },
+  { id: 'closed', label: '結案訂單', tag: 4 },
+];
+
+const PET_SIZE_MAP = {
+  0: '小型-10公斤以下',
+  1: '中型-10公斤以上，20公斤以下',
+  2: '大型- 20公斤以上',
+};
+
+const currentTag = ref(0);
+const currentLimit = ref(10);
+const currentPage = ref(1);
+
+const ordersData = ref([])
+const ordersDataInModal = ref([])
+
+// const ecpayGatewayUrl = ref(import.meta.env.ECPAY_URL); // 綠界支付閘道 URL
+const ecpayGatewayUrl = ref('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5'); // 綠界支付閘道 URL
+const ecpayForm = ref(null); // 使用 ref 獲取模板中的 DOM 元素引用
+
+const showOrderSelectorModal = ref(false);
+const orderSelectorModalRef = ref(null);
+const tabButtonRefs = ref({});
+
+function changeTab(tag) {
+  if (currentTag.value === tag) {
+    console.log('已經在當前 Tab，無需導航。');
+    return;
+  }
+
+  currentTag.value = tag;
+  currentLimit.value = 10;
+  currentPage.value = 1;
+
+  router.push({
+    name: 'owner-order-management',
+    query: {
+      tag: String(currentTag.value),
+      limit: String(currentLimit.value),
+      page: String(currentPage.value)
+    }
+  }).catch(err => {
+    if (err.name !== 'NavigationDuplicated') {
+      console.error("Tab 導航失敗:", err);
+    }
+  });
+}
+
+const getOrderStatusActions = (orderData, tag) => {
+  const order = orderData.order;
+
+  switch (tag) {
+    case 0:
+      return {
+        leftBtn: { caption: '取消', action: 'cancel' }
+      };
+    case 1:
+      return {
+        leftBtn: { caption: '取消', action: 'cancel' },
+        rightBtn: { caption: '付款', action: 'pay' }
+      };
+    case 2:
+      return {};
+    case 3: // 最新回應 + reject
+      return {
+        status: { caption: '保姆拒絕預約', bgColor: '#CA4000', icon: 'reject.png' },
+        showStatus: true,
+        rightBtn: { caption: '結案', action: 'close' }
+      };
+    case 4: {
+      switch (order.status) {
+        case 0:
+        case 1:
+        case 2:
+          // 不會出現在結案頁籤的狀態
+          return {};
+        case 3:
+          return {
+            status: { caption: '保姆拒絕預約', bgColor: '#CA4000', icon: 'rejected' },
+            showStatus: true
+          };
+        case 4:
+          return {
+            status: { caption: '取消預約', bgColor: '#B6B6B6', icon: 'cancelled' },
+            showStatus: true
+          };
+        case 5:
+          return {
+            status: { caption: '逾期未付款', bgColor: '#CA4000', icon: 'nopay' },
+            showStatus: true
+          };
+        case 6:
+          return {
+            status: { caption: '保姆逾期未回覆', bgColor: '#CA4000', icon: 'rejected' },
+            showStatus: true
+          };
+        case 7: {
+          return (order.review && Object.keys(order.review).length === 0)
+            ? {
+              status: { caption: '訂單完成', bgColor: '#648458', icon: 'completed' },
+              leftBtn: { caption: '取消', action: 'cancel' },
+              rightBtn: { caption: '付款', action: 'pay' },
+              showStatus: true
+            } : null;
+        }
+
+        return {};
+      }
+    }
+
+    console.log('無法取得訂單狀態');
+    return {};
+  }
+};
+
+watch(
+  () => route.query,
+  (newQuery) => {
+    let needsRouteCorrection = false;
+
+    const newTag = parseInt(newQuery.tag, 10);
+    const newLimit = parseInt(newQuery.limit, 10);
+    const newPage = parseInt(newQuery.page, 10);
+
+    if (Number.isNaN(newTag)) {
+      needsRouteCorrection = true;
+      currentTag.value = 0;
+    } else if (!tabs.some(t => t.tag === newTag)) {
+      needsRouteCorrection = true;
+      currentTag.value = 0;
+    } else {
+      currentTag.value = newTag;
+    }
+
+    if (Number.isNaN(newLimit) || newLimit <= 0) {
+      needsRouteCorrection = true;
+      currentLimit.value = 10;
+    } else {
+      currentLimit.value = newLimit;
+    }
+
+    if (Number.isNaN(newPage) || newPage <= 0) {
+      needsRouteCorrection = true;
+      currentPage.value = 1;
+    } else {
+      currentPage.value = newPage;
+    }
+
+    const canonicalQuery = {
+      tag: String(currentTag.value),
+      limit: String(currentLimit.value),
+      page: String(currentPage.value),
+    };
+
+    // 檢查當前 route.query 是否與規範查詢參數完全一致
+    // 這裡需要確保所有 key 都存在且值相同，並且沒有額外的 key
+    needsRouteCorrection = needsRouteCorrection 
+      || !(Object.keys(canonicalQuery).length === Object.keys(newQuery).length &&
+        Object.keys(canonicalQuery).every(key => newQuery[key] === canonicalQuery[key]));
+
+    if (needsRouteCorrection) {
+      router.replace({
+        name: 'owner-order-management',
+        query: canonicalQuery
+      }).catch(err => {
+        if (router.isNavigationFailure(err) && err.name === 'NavigationDuplicated') {
+        } else {
+          console.error("路由替換失敗:", err);
+        }
+      });
+    } else {
+      fetchOrders()
+    }
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+)
+
+async function handleOrderSelected(order) {
+  try {
+    if (tabButtonRefs.value[currentTag.value]) {
+      tabButtonRefs.value[currentTag.value].focus();
+      console.log('在呼叫 hideModal 前，焦點已預先移回活躍的 Tab 按鈕。');
+    }
+
+    if (orderSelectorModalRef.value) {
+      orderSelectorModalRef.value.hideModal(); // 呼叫子元件暴露出來的方法
+    }
+    await pay(order.order.id);
+  } catch (error) {
+    console.error('處理訂單選取付款有誤:', error);
+  }
+}
+
+async function fetchOrders() {
+  try {
+    const response = await getOrders(route.query);
+    ordersData.value = response; // Vue 會自動將 response 陣列內的所有物件轉換為響應式物件 Proxy。
+  } catch (error) {
+    console.error('載入訂單失敗:', error);
+  }
+}
+
+async function processOrder(orderData, action) {
+  try {
+    switch (action) {
+      case 'pay':
+        await handlePayAction(orderData)
+        break;
+      case 'comment':
+        await addReview(orderData.order.id)
+        break;
+      case 'accept':
+      case 'cancel':
+      case 'close':
+        await updateStatus(orderData.order.id, action)
+        break;
+      default:
+        console.error('不支援的訂單操作:', action);
+        break;
+    }
+  } catch (error) {
+    console.error('處理訂單操作時發生錯誤 :', error);
+  }
+}
+
+async function handlePayAction(orderData) {
+  try {
+    const apiResponseJSOrders = await getOrdersAcceptedOnSameDate(orderData.order.id);
+    apiResponseJSOrders?.length ? 
+      showOrdersAcceptedOnSameDate(orderData, apiResponseJSOrders) : await pay(orderData.order.id);
+  } catch (error) {
+    console.error('處理訂單付款有誤:', error);
+  }
+}
+
+async function updateStatus(orderId, action) {
+  try {
+    const response = await patchOrderStatus(orderId, { action: action });
+    console.log('改變訂單狀態結果: response', response);
+
+    if (response && response.target_tag && response.target_tag.value) {
+      changeTab(response.target_tag.value);
+    } else {
+      console.warn('更新狀態後缺少目標標籤值:', response);
+    }
+  } catch (error) {
+    console.error('更新訂單狀態失敗:', error);
+    throw error;
+  }
+}
+
+async function pay(orderId) {
+  try {
+    const ecpayParams = await postPayment(orderId)
+    console.log('處理訂單付款，取得綠界資料: ', ecpayParams);
+
+    // 確保 ecpayForm ref 已經指向了 DOM 元素
+    if (!ecpayForm.value) {
+      throw new Error('未找到綠界支付表單元素 (ref="ecpayForm")。');
+    }
+
+    // 清空表單，並動態填充隱藏的 input 欄位
+    ecpayForm.value.innerHTML = '';
+
+    // 遍歷後端回傳的所有綠界參數，為每個參數創建一個隱藏的 input 元素
+    for (const key in ecpayParams) {
+      if (Object.hasOwnProperty.call(ecpayParams, key)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;           // 設置 input 的 name 屬性 (綠界要求的參數名稱)
+        input.value = ecpayParams[key]; // 設置 input 的 value 屬性
+        ecpayForm.value.appendChild(input);
+      }
+    }
+
+    // 透過 JavaScript 提交表單，觸發瀏覽器導向綠界支付頁面
+    console.log('綠界支付表單已準備就緒，正在提交...');
+    ecpayForm.value.submit(); // 呼叫表單的 submit() 方法
+  } catch (error) {
+    console.error('訂單付款流程有誤:', error);
+  }
+}
+
+function showOrdersAcceptedOnSameDate(theOrderData, otherJSOrders) {
+  ordersDataInModal.value.push(theOrderData)
+  ordersDataInModal.value.push(...otherJSOrders)
+  showOrderSelectorModal.value = true; // 將此變數設為 true，Modal 就會出現
+}
+
+async function addReview(orderId) {
+
+}
+
+// 處理 Modal 關閉後的邏輯
+const handleModalHidden = () => {
+  console.log('Modal 已關閉。');
+  ordersDataInModal.value = [];
+  showOrderSelectorModal.value = false; // 同步父元素的狀態，確保 Modal 狀態正確
+
+  nextTick(() => {
+    // 只有當當前焦點不在預期的回歸點時才再次聚焦，避免不必要的重複聚焦
+    if (tabButtonRefs.value[currentTag.value] && document.activeElement !== tabButtonRefs.value[currentTag.value]) {
+      tabButtonRefs.value[currentTag.value].focus();
+      console.log('handleModalHidden: 焦點再次確認已返回活躍的 Tab 按鈕。');
+    }
+  });
+};
+
+onMounted(() => {
+  nextTick(() => {
+    if (tabButtonRefs.value[currentTag.value]) {
+      tabButtonRefs.value[currentTag.value].focus();
+    }
+  });
+});
+</script>
+
 <template>
   <div class="container my-4">
     <form 
@@ -38,359 +374,22 @@
     <!-- tab content -->
     <div class="tab-content-container">
       <order-card 
-        v-for="order in orders"
-       :key="order.id" 
-       :orderData="order"
-       :orderStatusActions="getOrderStatusActions(order, currentTag)"
+        v-for="orderData in ordersData"
+       :key="orderData.order.id" 
+       :orderData="orderData"
+       :orderStatusActions="getOrderStatusActions(orderData, currentTag)"
        @click-btn="processOrder" />
     </div> 
 
     <OrderSelectorModal
       :show="showOrderSelectorModal"          
-      :orders="ordersInModal"             
+      :ordersData="ordersDataInModal"             
       :modalId="'OrderSelectorModal'"    
        @hidden="handleModalHidden"
        @selected="handleOrderSelected" 
        ref="orderSelectorModalRef" />
   </div>
 </template>
-
-<script setup>
-import OrderCard from '@/components/pages/owner-order-management/order-card.vue';
-import OrderSelectorModal from '@/components/pages/owner-order-management/order-selector-modal.vue';
-import { ref, watch, onMounted, nextTick } from 'vue';
-import { useRouter, useRoute } from 'vue-router'; 
-import { getOrders } from '@/plugins/api/users/owners';
-import { patchOrderStatus, getOrdersAcceptedOnSameDate, postPayment } from '@/plugins/api/orders';
-
-const router = useRouter();
-const route = useRoute();
-
-const tabs = [
-  { id: 'pending', label: '等待回覆', tag: 0 },
-  { id: 'accepted', label: '預約成功待付款', tag: 1 },
-  { id: 'paid', label: '即將執行', tag: 2 },
-  { id: 'latest-response', label: '最新回應', tag: 3 },
-  { id: 'closed', label: '結案訂單', tag: 4 },
-];
-
-const PET_SIZE_MAP = {
-  0: '小型-10公斤以下',
-  1: '中型-10公斤以上，20公斤以下',
-  2: '大型- 20公斤以上',
-};
-
-const currentTag = ref(0);
-const currentLimit = ref(10);
-const currentPage = ref(1);
-
-const orders = ref([])
-const ordersInModal = ref([])
-
-// const ecpayGatewayUrl = ref(import.meta.env.ECPAY_URL); // 綠界支付閘道 URL
-const ecpayGatewayUrl = ref('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5'); // 綠界支付閘道 URL
-const ecpayForm = ref(null); // 使用 ref 獲取模板中的 DOM 元素引用
-
-const showOrderSelectorModal = ref(false);
-const orderSelectorModalRef = ref(null);
-const tabButtonRefs = ref({});
-
-
-function changeTab(tag) {
-  if (currentTag.value === tag) {
-    console.log('已經在當前 Tab，無需導航。');
-    return;
-  }
-
-  currentTag.value = tag;
-  currentLimit.value = 10;
-  currentPage.value = 1;
-
-  router.push({ 
-    name: 'owner-order-management', 
-    query: { 
-      tag: String(currentTag.value),
-      limit: String(currentLimit.value),
-      page: String(currentPage.value) 
-    } 
-  }).catch(err => {
-    if (err.name !== 'NavigationDuplicated') {
-      console.error("Tab 導航失敗:", err);
-    }
-  });
-}
-
-const getOrderStatusActions = (orderData, tag) => {
-  const order = orderData.order;
-
-  switch (tag) {
-    case 0: 
-      return { 
-        leftBtn : { caption: '取消', action: 'cancel'}
-      };
-    case 1: 
-      return {
-        leftBtn : { caption: '取消', action: 'cancel'},
-        rightBtn : { caption: '付款', action: 'pay'}
-      };
-    case 2:
-      return {};
-    case 3: // 最新回應 + reject
-      return {
-          status : { caption : '保姆拒絕預約', bgColor : '#CA4000', icon : 'reject.png' },
-          showStatus: true,
-          rightBtn : { caption: '結案', action: 'close'}
-      };
-    case 4: {
-      switch (order.status) {
-        case 0: 
-        case 1:
-        case 2:
-          // 不會出現在結案頁籤的狀態
-          return {};
-        case 3: 
-          return {
-            status : { caption : '保姆拒絕預約', bgColor : '#CA4000', icon : 'reject.png' },
-            showStatus: true
-          };
-        case 4:   
-          return {
-            status : { caption : '取消預約', bgColor : '#B6B6B6', icon : 'cancel.png' },
-            showStatus: true
-          };
-        case 5:   
-          return {
-            status : { caption : '逾期未付款', bgColor : '#CA4000', icon : 'expired_nopay.png' },
-            showStatus: true
-          };  
-        case 6:   
-          return {
-            status : { caption : '保姆逾期未回覆', bgColor : '#CA4000', icon : 'reject.png' },
-            showStatus: true
-          };   
-        case 7: {
-          return  (order.review && Object.keys(order.review).length === 0) 
-            ? {
-              status : { caption : '訂單完成', bgColor : '#648458', icon : 'completed.png' },
-              leftBtn : { caption: '取消', action: 'cancel'},
-              rightBtn : { caption: '付款', action: 'pay'},
-              showStatus: true
-            } : null;
-        }
-
-        return {};
-      }
-    }  
-
-    console.log('無法取得訂單狀態');
-    return {};
-  }
-};
-
-watch(
-  () => route.query, 
-  (newQuery) => {
-    let needsRouteCorrection = false;
-
-    const newTag = parseInt(newQuery.tag, 10);
-    const newLimit = parseInt(newQuery.limit, 10);
-    const newPage = parseInt(newQuery.page, 10);
-
-    if (Number.isNaN(newTag)) {
-      needsRouteCorrection = true;
-      currentTag.value = 0;
-    } else if (!tabs.some(t => t.tag === newTag)) {
-      needsRouteCorrection = true;
-      currentTag.value = 0;
-    } else {
-      currentTag.value = newTag;
-    }
-
-    if (Number.isNaN(newLimit) || newLimit <= 0) {
-      needsRouteCorrection = true;
-      currentLimit.value = 10;
-    } else {
-      currentLimit.value = newLimit;
-    }
-
-    if (Number.isNaN(newPage) || newPage <= 0) {
-      needsRouteCorrection = true;
-      currentPage.value = 1;
-    } else {
-      currentPage.value = newPage;
-    }
-
-    const canonicalQuery = {
-      tag: String(currentTag.value),
-      limit: String(currentLimit.value),
-      page: String(currentPage.value),
-    };
-
-    // 檢查當前 route.query 是否與規範查詢參數完全一致
-    // 這裡需要確保所有 key 都存在且值相同，並且沒有額外的 key
-    needsRouteCorrection = needsRouteCorrection || !(Object.keys(canonicalQuery).length === Object.keys(newQuery).length &&
-                                  Object.keys(canonicalQuery).every(key => newQuery[key] === canonicalQuery[key]));
-
-    if (needsRouteCorrection) {
-      router.replace({
-        name: 'owner-order-management', 
-        query: canonicalQuery
-      }).catch(err => {
-          if (router.isNavigationFailure(err) && err.name === 'NavigationDuplicated') {
-              // 通常這是因為 replace 到與當前 URL 完全相同的規範 URL，可以安全忽略
-          } else {
-              console.error("路由替換失敗:", err);
-          }
-      });
-    } else {
-      fetchOrders()
-    }
-  },
-  { 
-    immediate: true,
-    deep: true
-  }
-)
-
-async function handleOrderSelected(order) {
-  try {
-    if (tabButtonRefs.value[currentTag.value]) {
-      tabButtonRefs.value[currentTag.value].focus();
-      console.log('在呼叫 hideModal 前，焦點已預先移回活躍的 Tab 按鈕。');
-    }
-
-    if (orderSelectorModalRef.value) {
-      orderSelectorModalRef.value.hideModal(); // 呼叫子元件暴露出來的方法
-    }
-    await pay(order.order.id);
-  } catch (error) {
-    console.error('處理訂單選取付款有誤:', error);
-  }
-}
-
-async function fetchOrders() {
-  try {
-    const response = await getOrders(route.query);
-    orders.value = response; // Vue 會自動將 response 陣列內的所有物件轉換為響應式物件 Proxy。
-  } catch (error) {
-    console.error('載入訂單失敗:', error);
-  }
-}
-
-async function processOrder(order, action)  {
-  try {
-    switch (action) {
-      case 'pay':
-        await handlePayAction(order)
-        break;
-      case 'comment':
-        await addReview(order.order.id)
-        break;
-      case 'accept':
-      case 'cancel':
-      case 'close':
-        await updateStatus(order.order.id, action)
-        break;
-      default:
-        console.error('不支援的訂單操作:', action);
-        break;
-    }
-  } catch(error) {
-    console.error('處理訂單操作時發生錯誤 :', error);
-  }
-}
-
-async function handlePayAction(order) {
-  try {
-    const otherOrders = await getOrdersAcceptedOnSameDate(order.order.id);
-    otherOrders?.length ? showOrdersAcceptedOnSameDate(order, otherOrders) : await pay(order.order.id);
-    // otherOrders?.length ? await pay(order.order.id) : await pay(order.order.id);
-  } catch(error) {
-    console.error('處理訂單付款有誤:', error);
-  }
-}
-
-async function updateStatus(orderId, action) {
-  try { 
-    const response = await patchOrderStatus(orderId, { action: action });
-    console.log('改變訂單狀態結果: response', response);
-    
-    if (response && response.target_tag && response.target_tag.value) {
-      changeTab(response.target_tag.value);
-    } else {
-      console.warn('更新狀態後缺少目標標籤值:', response);
-    }
-  } catch (error) {
-    console.error('更新訂單狀態失敗:', error);
-    throw error;
-  }
-}
-
-async function pay(orderId) {
-  try {
-    const ecpayParams = await postPayment(orderId)  
-    console.log('處理訂單付款，取得綠界資料: ', ecpayParams);
-
-    // 確保 ecpayForm ref 已經指向了 DOM 元素
-    if (!ecpayForm.value) {
-      throw new Error('未找到綠界支付表單元素 (ref="ecpayForm")。');
-    }
-
-    // 清空表單，並動態填充隱藏的 input 欄位
-    ecpayForm.value.innerHTML = ''; 
-
-    // 遍歷後端回傳的所有綠界參數，為每個參數創建一個隱藏的 input 元素
-    for (const key in ecpayParams) {
-      if (Object.hasOwnProperty.call(ecpayParams, key)) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;           // 設置 input 的 name 屬性 (綠界要求的參數名稱)
-        input.value = ecpayParams[key]; // 設置 input 的 value 屬性
-        ecpayForm.value.appendChild(input);
-      }
-    }
-
-    // 透過 JavaScript 提交表單，觸發瀏覽器導向綠界支付頁面
-    console.log('綠界支付表單已準備就緒，正在提交...');
-    ecpayForm.value.submit(); // 呼叫表單的 submit() 方法
-  } catch(error) {
-    console.error('訂單付款流程有誤:', error);
-  }
-}
-
-function showOrdersAcceptedOnSameDate(theOrder, otherOrders) {
-  ordersInModal.value.push(theOrder)
-  ordersInModal.value.push(...otherOrders)
-  showOrderSelectorModal.value = true; // 將此變數設為 true，Modal 就會出現
-}
-
-async function addReview(orderId) {
-
-}
-
-// 處理 Modal 關閉後的邏輯
-const handleModalHidden = () => {
-  console.log('Modal 已關閉。');
-  ordersInModal.value = [];
-  showOrderSelectorModal.value = false; // 同步父元素的狀態，確保 Modal 狀態正確
-
-  nextTick(() => {
-    // 只有當當前焦點不在預期的回歸點時才再次聚焦，避免不必要的重複聚焦
-    if (tabButtonRefs.value[currentTag.value] && document.activeElement !== tabButtonRefs.value[currentTag.value]) {
-      tabButtonRefs.value[currentTag.value].focus();
-      console.log('handleModalHidden: 焦點再次確認已返回活躍的 Tab 按鈕。');
-    }
-  });
-};
-
-onMounted(() => {
-  nextTick(() => {
-    if (tabButtonRefs.value[currentTag.value]) {
-      tabButtonRefs.value[currentTag.value].focus();
-    }
-  });
-});
-</script>
 
 <style scoped>
 .tab-bar-container {
