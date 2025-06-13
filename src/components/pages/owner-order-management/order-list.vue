@@ -27,6 +27,7 @@
               role="tab"
               :aria-controls="tab.id"
               :aria-selected="currentTag === tab.tag"
+              :ref="el => { if (el) tabButtonRefs[tab.tag] = el }"
             >
               {{ tab.label }}
             </button>
@@ -44,13 +45,20 @@
        @click-btn="processOrder" />
     </div> 
 
-
+    <OrderSelectorModal
+      :show="showOrderSelectorModal"          
+      :orders="ordersInModal"             
+      :modalId="'OrderSelectorModal'"    
+       @hidden="handleModalHidden"
+       @selected="handleOrderSelected" 
+       ref="orderSelectorModalRef" />
   </div>
 </template>
 
 <script setup>
 import OrderCard from '@/components/pages/owner-order-management/order-card.vue';
-import { ref, watch } from 'vue';
+import OrderSelectorModal from '@/components/pages/owner-order-management/order-selector-modal.vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; 
 import { getOrders } from '@/plugins/api/users/owners';
 import { patchOrderStatus, getOrdersAcceptedOnSameDate, postPayment } from '@/plugins/api/orders';
@@ -77,12 +85,15 @@ const currentLimit = ref(10);
 const currentPage = ref(1);
 
 const orders = ref([])
+const ordersInModal = ref([])
 
-// 綠界支付閘道 URL (請根據測試/正式環境替換)
-const ecpayGatewayUrl = ref('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5');
+// const ecpayGatewayUrl = ref(import.meta.env.ECPAY_URL); // 綠界支付閘道 URL
+const ecpayGatewayUrl = ref('https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5'); // 綠界支付閘道 URL
+const ecpayForm = ref(null); // 使用 ref 獲取模板中的 DOM 元素引用
 
-// 使用 ref 獲取模板中的 DOM 元素引用
-const ecpayForm = ref(null); 
+const showOrderSelectorModal = ref(false);
+const orderSelectorModalRef = ref(null);
+const tabButtonRefs = ref({});
 
 
 function changeTab(tag) {
@@ -241,6 +252,22 @@ watch(
   }
 )
 
+async function handleOrderSelected(order) {
+  try {
+    if (tabButtonRefs.value[currentTag.value]) {
+      tabButtonRefs.value[currentTag.value].focus();
+      console.log('在呼叫 hideModal 前，焦點已預先移回活躍的 Tab 按鈕。');
+    }
+
+    if (orderSelectorModalRef.value) {
+      orderSelectorModalRef.value.hideModal(); // 呼叫子元件暴露出來的方法
+    }
+    await pay(order.order.id);
+  } catch (error) {
+    console.error('處理訂單選取付款有誤:', error);
+  }
+}
+
 async function fetchOrders() {
   try {
     const response = await getOrders(route.query);
@@ -275,9 +302,9 @@ async function processOrder(order, action)  {
 
 async function handlePayAction(order) {
   try {
-    console.log('handlePayAction: ', order)
     const otherOrders = await getOrdersAcceptedOnSameDate(order.order.id);
     otherOrders?.length ? showOrdersAcceptedOnSameDate(order, otherOrders) : await pay(order.order.id);
+    // otherOrders?.length ? await pay(order.order.id) : await pay(order.order.id);
   } catch(error) {
     console.error('處理訂單付款有誤:', error);
   }
@@ -309,7 +336,7 @@ async function pay(orderId) {
       throw new Error('未找到綠界支付表單元素 (ref="ecpayForm")。');
     }
 
-    // 2. 清空表單，並動態填充隱藏的 input 欄位
+    // 清空表單，並動態填充隱藏的 input 欄位
     ecpayForm.value.innerHTML = ''; 
 
     // 遍歷後端回傳的所有綠界參數，為每個參數創建一個隱藏的 input 元素
@@ -323,7 +350,7 @@ async function pay(orderId) {
       }
     }
 
-    // 3. 透過 JavaScript 提交表單，觸發瀏覽器導向綠界支付頁面
+    // 透過 JavaScript 提交表單，觸發瀏覽器導向綠界支付頁面
     console.log('綠界支付表單已準備就緒，正在提交...');
     ecpayForm.value.submit(); // 呼叫表單的 submit() 方法
   } catch(error) {
@@ -332,13 +359,37 @@ async function pay(orderId) {
 }
 
 function showOrdersAcceptedOnSameDate(theOrder, otherOrders) {
-  console.log('showOrdersAcceptedOnSameDate theOrder: ', theOrder.order.id)
-  console.log('showOrdersAcceptedOnSameDate otherOrders ', otherOrders[0].order.id)
+  ordersInModal.value.push(theOrder)
+  ordersInModal.value.push(...otherOrders)
+  showOrderSelectorModal.value = true; // 將此變數設為 true，Modal 就會出現
 }
 
 async function addReview(orderId) {
 
 }
+
+// 處理 Modal 關閉後的邏輯
+const handleModalHidden = () => {
+  console.log('Modal 已關閉。');
+  ordersInModal.value = [];
+  showOrderSelectorModal.value = false; // 同步父元素的狀態，確保 Modal 狀態正確
+
+  nextTick(() => {
+    // 只有當當前焦點不在預期的回歸點時才再次聚焦，避免不必要的重複聚焦
+    if (tabButtonRefs.value[currentTag.value] && document.activeElement !== tabButtonRefs.value[currentTag.value]) {
+      tabButtonRefs.value[currentTag.value].focus();
+      console.log('handleModalHidden: 焦點再次確認已返回活躍的 Tab 按鈕。');
+    }
+  });
+};
+
+onMounted(() => {
+  nextTick(() => {
+    if (tabButtonRefs.value[currentTag.value]) {
+      tabButtonRefs.value[currentTag.value].focus();
+    }
+  });
+});
 </script>
 
 <style scoped>

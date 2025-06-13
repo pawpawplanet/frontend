@@ -10,16 +10,16 @@
     </div>
     <div class="container">
       <div class="row align-items-stretch gy-4"> 
-        
         <!-- col-12 預設的高度就是 auto，由子元素內容決定高度 -->
-        <div class="col-12 col-sm-6 d-flex flex-column"> 
+        <div :class="colClass" class="d-flex flex-column"> 
+          <!-- <p>order id : {{ orderData.order.id }}</p> -->
           <div class="freelancer-pet-info"> 
             <freelancer-info :orderData="orderData" />
             <pet-info :orderData="orderData" />
           </div>
         </div>
 
-        <div class="col-12 col-sm-6 d-flex flex-column">
+        <div :class="colClass" class="d-flex flex-column">
           <div class="booking-info"> 
             <booking-info :orderData="orderData" />
           </div>
@@ -57,6 +57,10 @@ const props = defineProps({
   orderStatusActions: {
     type: Object,
     required: false
+  },
+  isModalContext: {
+    type: Boolean,
+    default: false,
   }
 });
 
@@ -91,8 +95,10 @@ const statusIcon = computed(() => {
   }
 });
 
+const colClass = computed(() => { return props.isModalContext ? 'col-12' : 'col-12 col-sm-6' });
+
 const onClick = (btn) => {
-  emit('clickBtn', props.orderData.order.id, btn.action)
+  emit('clickBtn', props.orderData, btn.action)
 }
 
 onMounted(() => {
@@ -200,4 +206,6 @@ onMounted(() => {
   object-fit: contain;
   vertical-align: middle;
 }
+
+
 </style>
