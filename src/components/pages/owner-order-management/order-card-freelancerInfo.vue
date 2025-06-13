@@ -1,3 +1,23 @@
+<script setup>
+import { defineProps, onMounted, computed } from 'vue';
+
+const props = defineProps({
+  orderData: {
+    type: Object,
+    required: true,
+  }
+});
+
+// computed，template 中，使用一個 ref 或 computed 屬性時，Vue 會自動幫你解包 (unwrap) 它的 .value
+const freelancer = computed(() => {
+  return props.orderData.freelancer;
+});
+
+onMounted(() => {
+  // console.log('freelancer, order data:', props.orderData);
+}); 
+</script>
+
 <template>
   <div class='freelancer-info'>
     <div class="freelancer-profile">
@@ -24,25 +44,7 @@
   </div>
 </template>
 
-<script setup>
-import { defineProps, onMounted, computed } from 'vue';
 
-const props = defineProps({
-  orderData: {
-    type: Object,
-    required: true,
-  }
-});
-
-// computed，template 中，使用一個 ref 或 computed 屬性時，Vue 會自動幫你解包 (unwrap) 它的 .value
-const freelancer = computed(() => {
-  return props.orderData.freelancer;
-});
-
-onMounted(() => {
-  // console.log('freelancer, order data:', props.orderData);
-}); 
-</script>
 
 <style scoped>
 .freelancer-info {

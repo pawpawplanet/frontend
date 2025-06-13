@@ -1,43 +1,3 @@
-<template>
-  <div class="booking-info">
-    <div class="booking-info-detail">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold mb-0">服務名稱 | {{ service.title || '尚無名稱' }}</h5>
-        <div class="text-primary-emphasis fw-bold text-decoration-underline cursor-pointer">
-        </div>
-
-        <div class="service-type">
-            <span class="service-icon-wrapper">
-              <SvgIcon :name="icon" class="service-icon-img" color="#452B14"/>
-            </span>
-            <span class="service-text">{{ type }}</span>
-        </div>
-      </div>
-
-      <div class="service-info">
-        <p class="mb-2">
-          <span class="fw-bold me-2">時間 |</span> 
-          <span class="text-muted small">{{ date }}</span>
-        </p>
-        <p class="mb-2">
-          <span class="fw-bold me-2 ">地點 |</span> 
-          <span class="text-muted small">{{ `${ freelancer.city } ${ freelancer.area }` }}</span>
-        </p>
-        <div class="mb-3 d-flex flex-row gap-2">
-          <p class="fw-bold mb-1">備註 |</p>
-          <p> {{ note }}</p>
-        </div>
-      </div>
-    </div>
-        
-    <div class="d-flex justify-content-between align-items-center mt-auto">
-      <p class="booking-price-caption fw-bold fs-5 mb-0">總共</p>
-      <p class="booking-price-amount fw-bold fs-4  mb-0">NT$ {{ order.price }}</p>
-    </div>
-  </div>
-</template>
-
-
 <script setup>
 import { defineProps, onMounted, computed } from 'vue';
 
@@ -76,6 +36,45 @@ onMounted(() => {
   // console.log('booking, order data:', props.orderData);
 });
 </script>
+
+<template>
+  <div class="booking-info">
+    <div class="booking-info-detail">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">服務名稱 | {{ service.title || '尚無名稱' }}</h5>
+        <div class="text-primary-emphasis fw-bold text-decoration-underline cursor-pointer">
+        </div>
+
+        <div class="service-type">
+            <span class="service-icon-wrapper">
+              <SvgIcon :name="icon" class="service-icon-img" color="#452B14"/>
+            </span>
+            <span class="service-text">{{ type }}</span>
+        </div>
+      </div>
+
+      <div class="service-info">
+        <p class="mb-2">
+          <span class="fw-bold me-2">時間 |</span> 
+          <span class="text-muted small">{{ date }}</span>
+        </p>
+        <p class="mb-2">
+          <span class="fw-bold me-2 ">地點 |</span> 
+          <span class="text-muted small">{{ `${ freelancer.city } ${ freelancer.area }` }}</span>
+        </p>
+        <div class="mb-3 d-flex flex-row gap-2">
+          <p class="fw-bold mb-1">備註 |</p>
+          <p> {{ note }}</p>
+        </div>
+      </div>
+    </div>
+        
+    <div class="d-flex justify-content-between align-items-center mt-auto">
+      <p class="booking-price-caption fw-bold fs-5 mb-0">總共</p>
+      <p class="booking-price-amount fw-bold fs-4  mb-0">NT$ {{ order.price }}</p>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .booking-info {
