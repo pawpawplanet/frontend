@@ -16,3 +16,15 @@ export function getServiceDetail(id) {
     method: 'get',
   })
 }
+
+export function getServiceReviews({ service_id, limit = 10, page = 1 }) {
+  return service({
+    url: `${root}/reviews`,
+    method: 'get',
+    params: {
+      service_id,
+      limit,
+      page,
+    },
+  })
+}

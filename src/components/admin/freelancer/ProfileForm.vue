@@ -30,22 +30,35 @@
     </div>
     <div :class="{ 'col-md-8': modelValue?.avatar?.length || editMode }">
       <div class="mb-2">
-        <label class="form-label">姓名:</label>
-        <input v-model="modelValue.name" class="form-control" :disabled="!editMode" />
+        <label class="form-label required" for="input-name">姓名:</label>
+        <input
+          id="input-name"
+          v-model="modelValue.name"
+          class="form-control"
+          :disabled="!editMode"
+        />
+        <small v-if="errors?.name && editMode" class="text-danger">{{ errors.name }}</small>
       </div>
       <div class="mb-2">
-        <label class="form-label">所在地區:</label>
+        <label class="form-label required" for="input-city">所在地區:</label>
         <div class="row">
           <div class="col-md-6 mb-2">
-            <select v-model="modelValue.city" class="form-select" :disabled="!editMode">
+            <select
+              id="input-city"
+              v-model="modelValue.city"
+              class="form-select"
+              :disabled="!editMode"
+            >
               <option disabled value="">選擇縣市</option>
               <option v-for="city in cityData" :key="city.name" :value="city.name">
                 {{ city.name }}
               </option>
             </select>
+            <small v-if="errors?.city && editMode" class="text-danger">{{ errors.city }}</small>
           </div>
           <div class="col-md-6">
             <select
+              id="input-area"
               v-model="modelValue.area"
               class="form-select"
               :disabled="!editMode || !modelValue.city"
@@ -55,50 +68,71 @@
                 {{ area.name }}
               </option>
             </select>
+            <small v-if="errors?.area && editMode" class="text-danger">{{ errors.area }}</small>
           </div>
         </div>
       </div>
       <div class="mb-2">
-        <label class="form-label">電話:</label>
-        <input v-model="modelValue.phone" class="form-control" :disabled="!editMode" />
+        <label for="input-phone" class="form-label required">電話:</label>
+        <input
+          id="input-phone"
+          v-model="modelValue.phone"
+          class="form-control"
+          :disabled="!editMode"
+        />
+        <small v-if="errors?.phone && editMode" class="text-danger">{{ errors.phone }}</small>
       </div>
       <div class="mb-2">
         <label class="form-label">Email:</label>
         <input v-model="modelValue.email" class="form-control" disabled />
       </div>
       <div class="mb-2">
-        <label class="form-label">銀行帳戶:</label>
+        <label for="input-bank" class="form-label required">銀行帳戶:</label>
         <input
+          id="input-bank"
           v-model="modelValue.bank_account.bank"
           class="form-control"
           placeholder="銀行名稱"
           :disabled="!editMode"
         />
+        <small v-if="errors?.bank && editMode" class="text-danger">{{ errors.bank }}</small>
       </div>
       <div class="mb-2">
-        <label class="form-label">戶名:</label>
+        <label for="input-account_name" class="form-label required">戶名:</label>
         <input
+          id="input-account_name"
           v-model="modelValue.bank_account.account_name"
           class="form-control"
           :disabled="!editMode"
         />
+        <small v-if="errors?.account_name && editMode" class="text-danger">{{
+          errors.account_name
+        }}</small>
       </div>
       <div class="mb-2">
-        <label class="form-label">帳號:</label>
+        <label for="input-account_number" class="form-label required">帳號:</label>
         <input
+          id="input-account_number"
           v-model="modelValue.bank_account.account_number"
           class="form-control"
           :disabled="!editMode"
         />
+        <small v-if="errors?.account_number && editMode" class="text-danger">{{
+          errors.account_number
+        }}</small>
       </div>
       <div>
-        <label class="form-label">自我介紹:</label>
+        <label for="input-description" class="form-label required">自我介紹:</label>
         <textarea
+          id="input-description"
           v-model="modelValue.description"
           class="form-control"
           rows="3"
           :disabled="!editMode"
         ></textarea>
+        <small v-if="errors?.description && editMode" class="text-danger">{{
+          errors.description
+        }}</small>
       </div>
     </div>
   </div>
@@ -114,6 +148,10 @@ defineProps({
   editMode: {
     type: Boolean,
     default: true,
+  },
+  errors: {
+    type: Object,
+    default: () => ({}),
   },
 })
 
@@ -179,6 +217,12 @@ const remove = (file) => {
 }
 </script>
 <style scoped lang="scss">
+.form-label.required::before {
+  content: '*';
+  color: red;
+  margin-right: 4px;
+}
+
 .image-uploader {
   display: flex;
   flex-wrap: wrap;

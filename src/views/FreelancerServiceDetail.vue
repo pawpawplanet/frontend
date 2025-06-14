@@ -15,10 +15,12 @@
           <div class="row align-items-center">
             <div class="freelancer-info d-flex align-items-center">
               <img
+                v-if="freelancerProfile?.avatar?.[0]"
                 :src="freelancerProfile?.avatar?.[0]"
                 :alt="freelancerProfile.name"
                 class="freelancer-avatar"
               />
+              <SvgIcon v-else name="user" color="#452B14" class="freelancer-avatar" />
               <div class="freelancer-details">
                 <h2 class="freelancer-name">
                   {{ serviceInfo.title }} <span>/ {{ freelancerProfile.name }} </span>
@@ -48,7 +50,7 @@
         </div>
 
         <!-- 服務圖片輪播 -->
-        <div class="section">
+        <div class="section" v-if="serviceInfo.images.length">
           <div class="image-carousel">
             <div class="carousel-container" ref="carouselContainer">
               <div class="carousel-track">
@@ -167,55 +169,73 @@
         <!-- 評價區域 -->
         <div class="review-section">
           <div class="review-title text-primary-dark-second fw-bold d-flex align-items-center">
-            評論 <span class="text-black-700">/{{ reviews.length }}則評價</span>
+            評論 <span v-if="totalReviews" class="text-black-700">/{{ totalReviews }}則評價</span>
           </div>
-          <div class="review-container">
-            <div v-for="review in reviews" :key="review.id" class="review-card">
-              <div class="review-header">
-                <img :src="review.avatar" :alt="review.name" class="review-avatar" />
-                <div class="review-info">
-                  <div class="reviewer-name fw-bold text-primary-dark-second">
-                    {{ review.name }}
-                  </div>
-                  <div class="stars">
-                    <div class="row gx-1 align-items-center">
-                      <SvgIcon
-                        v-for="star in 5"
-                        :key="star"
-                        name="star"
-                        :color="star <= serviceProvider.rating ? '#FFCF75' : '#FFFFFF'"
-                      />
+          <template v-if="totalReviews">
+            <div class="review-container">
+              <div v-for="review in reviews" :key="review.id" class="review-card">
+                <div class="review-header">
+                  <img :src="review.owner_avatar" :alt="review.owner_name" class="review-avatar" />
+                  <div class="review-info">
+                    <div class="reviewer-name fw-bold text-primary-dark-second">
+                      {{ review.owner_name }}
+                    </div>
+                    <div class="stars">
+                      <div class="row gx-1 align-items-center">
+                        <SvgIcon
+                          v-for="star in 5"
+                          :key="star"
+                          name="star"
+                          :color="star <= review.rating ? '#FFCF75' : '#FFFFFF'"
+                        />
+                      </div>
                     </div>
                   </div>
+                  <span class="review-date text-black-700">{{
+                    formatDate(review.created_at)
+                  }}</span>
                 </div>
-                <span class="review-date text-black-700">{{ review.date }}</span>
+                <div class="review-comment text-black">{{ review.comment }}</div>
               </div>
-              <div class="review-comment text-black">{{ review.comment }}</div>
             </div>
-          </div>
-          <!-- 分頁器-->
-          <div class="pagination d-flex justify-content-between align-items-center">
-            <!-- Prev -->
-            <div class="arrow arrow-left">
-              <SvgIcon name="chevron_left" color="#B6B6B6" />
-            </div>
-
-            <!-- 分頁列表 -->
-            <div class="pages d-flex">
+            <!-- 分頁器-->
+            <div class="pagination d-flex justify-content-between align-items-center">
+              <!-- Prev -->
               <div
-                v-for="page in 5"
-                :key="page"
-                class="page fw-bold d-flex justify-content-center align-items-center"
+                class="arrow arrow-left"
+                :class="{ clickable: currentPage > 1 }"
+                @click="currentPage > 1 && fetchReviews(currentPage - 1)"
               >
-                {{ page }}
+                <SvgIcon name="chevron_left" :color="currentPage > 1 ? '#452B14' : '#B6B6B6'" />
+              </div>
+
+              <!-- 分頁列表 -->
+              <div class="pages d-flex">
+                <div
+                  v-for="page in totalPages"
+                  :key="page"
+                  class="page fw-bold d-flex justify-content-center align-items-center"
+                  :class="{ active: currentPage === page }"
+                  @click="fetchReviews(page)"
+                >
+                  {{ page }}
+                </div>
+              </div>
+
+              <!-- Next -->
+              <div
+                class="arrow arrow-right"
+                :class="{ clickable: currentPage < totalPages }"
+                @click="currentPage < totalPages && fetchReviews(currentPage + 1)"
+              >
+                <SvgIcon
+                  name="chevron_right"
+                  :color="currentPage < totalPages ? '#452B14' : '#B6B6B6'"
+                />
               </div>
             </div>
-
-            <!-- Next -->
-            <div class="arrow arrow-right">
-              <SvgIcon name="chevron_right" color="#B6B6B6" />
-            </div>
-          </div>
+          </template>
+          <div v-else class="text-center mb-4">尚未有評論資料</div>
         </div>
       </div>
       <!-- 💡 Fixed Booking 區塊 -->
@@ -250,7 +270,7 @@
 
 <script setup>
 import ReserveModal from '@/components/modal/reserve-modal.vue'
-import { getServiceDetail } from '@/plugins/api/services/services.js'
+import { getServiceDetail, getServiceReviews } from '@/plugins/api/services/services.js'
 import { getFreelancerSchedule } from '@/plugins/api/freelancers/freelancers.js'
 import { getReservedDates } from '@/plugins/api/owner/owner.js'
 import { ref, onMounted } from 'vue'
@@ -258,6 +278,7 @@ import { useRoute } from 'vue-router'
 import { useLoginStore } from '@/stores/login.js'
 import { useToast } from '@/plugins/toast/toast-plugin.js'
 import { getPet } from '@/plugins/api/pets/pets.js'
+import { format } from 'date-fns'
 
 const weeksCn = ['日', '一', '二', '三', '四', '五', '六']
 const bodySizesCn = ['小於10公斤以下', '10公斤以上~20公斤以下', '大於20公斤以上']
@@ -274,11 +295,14 @@ const loading = ref(true)
 const bookingLoading = ref(false)
 
 // 響應式數據
-const serviceProvider = ref({})
 const freelancerProfile = ref({})
 const serviceInfo = ref({})
 const reviewStatus = ref({})
 const reviews = ref([])
+const totalReviews = ref(0)
+const currentPage = ref(1)
+const totalPages = ref(1)
+const limit = 10
 const reserveModal = ref()
 const availableDates = ref([])
 const attributes = ref([])
@@ -312,30 +336,18 @@ const fetchServiceDetail = async (id) => {
 }
 
 // 獲取評價資訊
-const fetchReviews = async () => {
+const fetchReviews = async (page = 1) => {
   try {
-    reviews.value = [
-      {
-        id: 1,
-        name: 'YuFang',
-        rating: 5,
-        date: '2月1日',
-        comment: '第6次預約小莫樓的服務，真的是心中最理想的保姆！對待寵物細心且專業。',
-        avatar:
-          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face',
-      },
-      {
-        id: 2,
-        name: 'MinJun',
-        rating: 5,
-        date: '1月28日',
-        comment: '非常專業的服務，我的狗狗很喜歡她！下次還會再預約。',
-        avatar:
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-      },
-    ]
+    const data = await getServiceReviews({
+      service_id: serviceId,
+      limit,
+      page,
+    })
+    reviews.value = data.reviews
+    totalReviews.value = data.total
+    totalPages.value = Math.ceil(data.total / limit)
   } catch (error) {
-    console.error('獲取評價資訊失敗:', error)
+    console.error('取得評價資訊失敗:', error)
   }
 }
 
@@ -365,15 +377,21 @@ const getSchedule = async (id) => {
 
 const reservedDates = async () => {
   const { reserved_dates } = await getReservedDates()
-  attributes.value = [{
-    highlight: 'red',
-    dates: reserved_dates,
-  }]
+  attributes.value = [
+    {
+      highlight: 'red',
+      dates: reserved_dates,
+    },
+  ]
 }
 
 const getPetDetail = async () => {
   const { pet } = await getPet()
   petDetail.value = pet
+}
+
+function formatDate(dateStr) {
+  return format(new Date(dateStr), 'M月d日')
 }
 
 // 初始化
@@ -668,11 +686,22 @@ onMounted(async () => {
       &:last-child {
         margin-right: 0;
       }
+      &:not(.active) {
+        cursor: pointer;
+      }
       &.active {
         background-color: #ecb88a;
       }
     }
     .arrow {
+      cursor: not-allowed;
+      transition: 0.1s ease-in-out;
+      &.clickable {
+        cursor: pointer;
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
       svg {
         width: 44px;
         height: 44px;
