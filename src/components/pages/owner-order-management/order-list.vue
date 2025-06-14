@@ -3,9 +3,13 @@ import OrderCard from '@/components/pages/owner-order-management/order-card.vue'
 import OrderSelectorModal from '@/components/pages/owner-order-management/order-selector-modal.vue';
 import { ref, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { storeToRefs } from 'pinia'
+import { useLoginStore } from '@/stores/login.js'
 import { getOrders } from '@/plugins/api/users/owners';
-import { patchOrderStatus, getOrdersAcceptedOnSameDate, postPayment } from '@/plugins/api/orders';
+import { patchOrderStatus, getOrdersAcceptedOnSameDate, postPayment, postReview } from '@/plugins/api/orders';
 
+const loginStore = useLoginStore()
+const { user } = storeToRefs(loginStore)
 const router = useRouter();
 const route = useRoute();
 
@@ -63,8 +67,6 @@ function changeTab(tag) {
 }
 
 const getOrderStatusActions = (orderData, tag) => {
-  const order = orderData.order;
-
   switch (tag) {
     case 0:
       return {
@@ -84,7 +86,7 @@ const getOrderStatusActions = (orderData, tag) => {
         rightBtn: { caption: '結案', action: 'close' }
       };
     case 4: {
-      switch (order.status) {
+      switch (orderData.order.status) {
         case 0:
         case 1:
         case 2:
@@ -111,13 +113,16 @@ const getOrderStatusActions = (orderData, tag) => {
             showStatus: true
           };
         case 7: {
-          return (order.review && Object.keys(order.review).length === 0)
+          return (!orderData.review || Object.keys(orderData.review).length === 0)
             ? {
               status: { caption: '訂單完成', bgColor: '#648458', icon: 'completed' },
-              leftBtn: { caption: '取消', action: 'cancel' },
-              rightBtn: { caption: '付款', action: 'pay' },
-              showStatus: true
-            } : null;
+              rightBtn: { caption: '評論', action: 'comment' },
+              showStatus: true,
+            } : {
+              status: { caption: '訂單完成', bgColor: '#648458', icon: 'completed' },
+              showStatus: true,
+              showComment: true
+            };
         }
 
         return {};
@@ -226,7 +231,7 @@ async function processOrder(orderData, action) {
         await handlePayAction(orderData)
         break;
       case 'comment':
-        await addReview(orderData.order.id)
+        addReview(orderData)
         break;
       case 'accept':
       case 'cancel':
@@ -250,6 +255,11 @@ async function handlePayAction(orderData) {
   } catch (error) {
     console.error('處理訂單付款有誤:', error);
   }
+}
+
+function addReview(orderData) {
+  orderDataBeingCommented.value = orderData;
+  showModal();
 }
 
 async function updateStatus(orderId, action) {
@@ -306,10 +316,6 @@ function showOrdersAcceptedOnSameDate(theOrderData, otherJSOrders) {
   showOrderSelectorModal.value = true; // 將此變數設為 true，Modal 就會出現
 }
 
-async function addReview(orderId) {
-
-}
-
 // 處理 Modal 關閉後的邏輯
 const handleModalHidden = () => {
   console.log('Modal 已關閉。');
@@ -332,6 +338,36 @@ onMounted(() => {
     }
   });
 });
+
+// import { ref} from 'vue';
+import Modal from '@/components/modal/order-owner-comment-modal.vue';
+const thisModal = ref();
+const orderDataBeingCommented = ref({})
+function showModal(){
+  thisModal.value.p_show()
+}
+
+async function submitComment(reviewData, orderData){
+  try{
+    orderData.review.rating = reviewData.selectedRating;
+    orderData.review.comment = reviewData.comment;
+
+    const data = {
+      orderId: orderData.order.id,
+      rating: reviewData.selectedRating,
+      comment: reviewData.comment,
+      // reviewerId: orderData.owner.id,
+      revieweeId: orderData.freelancer.id
+    }
+
+    return
+    const response = await postReview(orderData.order.id, data);
+    console.log('新增評論結果: response', response);
+    orderDataBeingCommented.value = {};
+  } catch(error) {
+    console.error('評論流程有誤:', error);
+  }
+}
 </script>
 
 <template>
@@ -388,6 +424,14 @@ onMounted(() => {
        @hidden="handleModalHidden"
        @selected="handleOrderSelected" 
        ref="orderSelectorModalRef" />
+
+    <Modal 
+      title="Modal1" 
+      ref="thisModal" 
+      :orderData="orderDataBeingCommented"
+      @submit-comment="submitComment">
+    </Modal>
+      
   </div>
 </template>
 

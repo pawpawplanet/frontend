@@ -25,6 +25,7 @@ const rightBtn = computed(() => { return props.orderStatusActions?.rightBtn });
 const leftBtn = computed(() => { return props.orderStatusActions?.leftBtn });
 const showStatus = computed(() => { return props.orderStatusActions?.showStatus });
 const status = computed(() => { return props.orderStatusActions?.status });
+const showComment = computed(() => { return props.orderStatusActions?.showComment });
 
 const cardBorderStyle = computed(() => {
   const defaultRadius = '40px';
@@ -90,6 +91,22 @@ onMounted(() => {
           </div>
         </div> 
 
+      </div>
+
+
+      <div v-if="showComment" class="position-relative border rounded-4 text-center p-3 mt-4">
+        <div class="position-absolute top-0 start-50 translate-middle">
+          <div class="text-brown fw-bold bg-white p-2">\ 評論 /</div>
+        </div>
+        <div class="mb-2">
+          <i
+            v-for="i in 5"
+            :key="i"
+            class="bi mx-1"
+            :class="i <= orderData.review.rating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"
+          ></i>
+        </div>
+        <p class="mb-0 text-dark">{{ orderData.review.comment }}</p>
       </div>
     </div>
   </div>  

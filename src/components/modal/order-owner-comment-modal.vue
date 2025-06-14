@@ -4,6 +4,10 @@
 
   const prop = defineProps({
     title: String,
+    orderData: {
+      type: Object,
+      required: true
+    }
   });
   const emit = defineEmits(['submitComment']);
   let modal_ref = ref(null);
@@ -84,7 +88,7 @@
                 <button class="btn btn-outline-primary btn-lg rounded-pill w-100" data-bs-dismiss="modal">取消</button>
               </div>
               <div class="col">
-                <button class="btn btn-primary btn-lg rounded-pill w-100" data-bs-dismiss="modal" @click="emit('submitComment', formData)">送出</button>
+                <button class="btn btn-primary btn-lg rounded-pill w-100" data-bs-dismiss="modal" @click="emit('submitComment', formData, orderData)">送出</button>
               </div>
             </div>
           </div>

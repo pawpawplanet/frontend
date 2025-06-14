@@ -23,3 +23,11 @@ export function postPayment(id) {
     method: 'post'
   });
 }
+
+export function postReview(id, data) {
+  return service({
+    url: `${root}/${id}/review`,
+    method: 'post',
+    data
+  });
+}
