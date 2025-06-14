@@ -39,7 +39,7 @@ const onImageLoad = () => {
 .swiper-prev-btn {
   position: absolute;
   top: 50%;
-  left: -70px;
+  left: -44px;
   transform: translateY(-50%);
   border: none;
   z-index: 2;
@@ -47,7 +47,7 @@ const onImageLoad = () => {
 .swiper-next-btn {
   position: absolute;
   top: 50%;
-  right: -70px;
+  right: -44px;
   transform: translateY(-50%);
   border: none;
   z-index: 2;
@@ -55,7 +55,7 @@ const onImageLoad = () => {
 </style>
 <template>
   <div class="position-relative w-100">
-    <button type="button" class="btn swiper-prev-btn" id="prev" @click="prevEl">
+    <button type="button" class="btn swiper-prev-btn p-0" id="prev" @click="prevEl">
       <SvgIcon name="chevron_left" :size="44" color="#452B14" />
     </button>
     <swiper
@@ -129,7 +129,7 @@ const onImageLoad = () => {
         </div>
       </template>
     </swiper>
-    <button type="button" class="btn swiper-next-btn" id="next" @click="nextEl">
+    <button type="button" class="btn swiper-next-btn p-0" id="next" @click="nextEl">
       <SvgIcon name="chevron_right" :size="44" color="#452B14" />
     </button>
   </div>
