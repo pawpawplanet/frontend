@@ -1,4 +1,23 @@
 <script setup>
+import { useRouter } from 'vue-router'
+import { useLoginStore } from '@/stores/login.js'
+import { useToast } from '@/plugins/toast/toast-plugin.js'
+
+const loginStore = useLoginStore()
+const toast = useToast()
+const router = useRouter()
+
+const registerToFreelancer = () => {
+  if (loginStore.is_login) {
+    if (loginStore.user.role === 'owner') {
+      toast.show('您登入的帳號為飼主，請登出後再重新註冊為接案者')
+    } else {
+      toast.show('您登入的帳號已為接案者')
+    }
+  } else {
+    router.push('/signup')
+  }
+}
 </script>
 <template>
   <main>
@@ -7,9 +26,9 @@
         <h1>成為 PawPawPlanet 的寵物保姆</h1>
         <h5>成為 PawPawPlanet 保姆是一種有趣而靈活的</h5>
         <h5>賺錢方式,同時還可以做你喜歡的事來賺錢,並與寵物共度時光</h5>
-        <RouterLink to="/signup" class="btn btn-outline-dark p-3 my-3">
+        <button type="button" class="btn btn-outline-dark p-3 my-3" @click="registerToFreelancer">
           註冊成為寵物保母
-        </RouterLink>
+        </button>
       </div>
     </div>
     <div class="container main-content text-center mb-3">
@@ -19,8 +38,8 @@
           <img src="https://api.fnkr.net/testimg/300x200/00CED1/FFF/?text=test1" class="img-fluid mb-2" alt="飼主照片">
         </div>
         <div class="col-8">
-            <div class="fw-bold">1. 註冊並建立個人檔案</div>
-            <div class="ms-3">首先,創建帳號並填寫個人資料,讓飼主了解你的專業背景、照顧經驗及提供的服務內容。</div>
+          <div class="fw-bold">1. 註冊並建立個人檔案</div>
+          <div class="ms-3">首先,創建帳號並填寫個人資料,讓飼主了解你的專業背景、照顧經驗及提供的服務內容。</div>
         </div>
       </div>
       <div class="row text-start align-items-center mt-3 flex-row-reverse">
@@ -60,50 +79,50 @@
         </div>
       </div>
       <RouterLink to="/signup" class="btn btn-outline-dark p-3 my-5">
-          立即註冊,開啟你的寵物保母旅程!
+        立即註冊,開啟你的寵物保母旅程!
       </RouterLink>
     </div>
   </main>
 </template>
 
 <style scoped lang="scss">
-  $breakpoints: (
-    sm: 576px,
-    md: 768px,
-    lg: 992px
-  );
-  @mixin responsive-banner {
-    height: 50vh;
-    @media (max-width: map-get($breakpoints, lg)) {
-      height: 40vh;
-    }
-    @media (max-width: map-get($breakpoints, md)) {
-      height: 30vh;
-    }
-    @media (max-width: map-get($breakpoints, sm)) {
-      height: 20vh;
-    }
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px
+);
+@mixin responsive-banner {
+  height: 50vh;
+  @media (max-width: map-get($breakpoints, lg)) {
+    height: 40vh;
   }
-  @mixin responsive-banner-top {
-    padding-top: 50vh;
-    @media (max-width: map-get($breakpoints, lg)) {
-      padding-top: 40vh;
-    }
-    @media (max-width: map-get($breakpoints, md)) {
-      padding-top: 30vh;
-    }
-    @media (max-width: map-get($breakpoints, sm)) {
-      padding-top: 20vh;
-    }
+  @media (max-width: map-get($breakpoints, md)) {
+    height: 30vh;
   }
-  .banner {
-    background-image: url("https://cdn.stocksnap.io/img-thumbs/960w/man-dog_KOEZ5EORMG.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    @include responsive-banner;
+  @media (max-width: map-get($breakpoints, sm)) {
+    height: 20vh;
   }
-  .main-content {
-    @include responsive-banner-top;
+}
+@mixin responsive-banner-top {
+  padding-top: 50vh;
+  @media (max-width: map-get($breakpoints, lg)) {
+    padding-top: 40vh;
   }
+  @media (max-width: map-get($breakpoints, md)) {
+    padding-top: 30vh;
+  }
+  @media (max-width: map-get($breakpoints, sm)) {
+    padding-top: 20vh;
+  }
+}
+.banner {
+  background-image: url("https://cdn.stocksnap.io/img-thumbs/960w/man-dog_KOEZ5EORMG.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  @include responsive-banner;
+}
+.main-content {
+  @include responsive-banner-top;
+}
 </style>
