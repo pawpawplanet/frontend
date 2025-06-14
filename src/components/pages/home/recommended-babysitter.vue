@@ -1,5 +1,22 @@
 <script setup>
 import Swiper from '@/components/pages/home/recommend-swiper.vue'
+import { getRecommendation } from '@/plugins/api/recommendations/recommendations.js'
+import { onMounted, ref } from 'vue'
+
+
+const recommendations = ref([])
+
+const loading = ref(false)
+
+const getRecommendationList = async () => {
+  loading.value = true
+  const { services } = await getRecommendation()
+  recommendations.value = services
+  loading.value = false
+}
+onMounted(async () => {
+  await getRecommendationList()
+})
 
 </script>
 <template>
@@ -18,7 +35,7 @@ import Swiper from '@/components/pages/home/recommend-swiper.vue'
             <p class="home-recommend-description text-center">立即將您的寵物與接案服務者配對</p>
           </div>
         </div>
-        <Swiper />
+        <Swiper :carousels="recommendations" :locaing="loading"/>
       </div>
     </div>
   </div>

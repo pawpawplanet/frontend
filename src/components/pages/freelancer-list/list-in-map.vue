@@ -17,6 +17,7 @@ import { GoogleMap, MarkerCluster, CustomMarker } from 'vue3-google-map'
 import { getService } from '@/plugins/api/services/services.js'
 import Loading from '@/components/loading/loading-component.vue'
 import { format } from 'date-fns'
+import calcRating from '@/utils/calculRating.js'
 
 const router = useRouter()
 
@@ -363,14 +364,6 @@ const checkMarker = (location) => {
 
 const closeDetail = () => {
   chooseService.value = null
-}
-
-const calcRating = (rating, index) => {
-  // 計算評分
-  if (rating !== 0) {
-    if (rating > index - 1) return '#FFCF75'
-  }
-  return '#CECECE'
 }
 
 onMounted(async () => {

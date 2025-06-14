@@ -53,7 +53,7 @@ const calcRating = (rating, index) => {
             </div>
             <div class="w-100 d-flex justify-content-end">
               <p class="freelancer-list-card-price fw-bold text-primary-dark-second">
-                {{ `${props.item.price_unit} ${props.item.price}/次` }}
+                {{ `NT$ ${props.item.price}/${props.item.price_unit}` }}
               </p>
             </div>
           </div>
