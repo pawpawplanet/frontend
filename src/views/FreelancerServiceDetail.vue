@@ -136,28 +136,28 @@
             </div>
           </div>
         </div>
-        <div class="section service-info-section">
+        <div v-if="showServiceInfo" class="section service-info-section">
           <div class="section-title text-primary-dark-second fw-bold">我提供的服務</div>
           <div class="info-grid">
-            <div class="info-item">
+            <div class="info-item" v-if="serviceInfo.extra_options?.pee_poo_times_per_day">
               <span class="info-label fw-bold">每天尿尿及便便次數</span>
               <span class="info-value fw-bold text-black-800"
                 >{{ serviceInfo.extra_options?.pee_poo_times_per_day }}次</span
               >
             </div>
-            <div class="info-item">
+            <div class="info-item" v-if="serviceInfo.extra_options?.walk_times_per_day">
               <span class="info-label fw-bold">每天散步次數</span>
               <span class="info-value fw-bold text-black-800"
                 >{{ serviceInfo.extra_options?.walk_times_per_day }}次</span
               >
             </div>
-            <div class="info-item">
+            <div class="info-item" v-if="serviceInfo.extra_options?.house_type">
               <span class="info-label fw-bold">養護環境</span>
               <span class="info-value fw-bold text-black-800">{{
                 serviceInfo.extra_options?.house_type
               }}</span>
             </div>
-            <div class="info-item">
+            <div class="info-item" v-if="serviceInfo.extra_options?.outdoor_area_size">
               <span class="info-label fw-bold">區域面積坪數</span>
               <span class="info-value fw-bold text-black-800"
                 >{{ serviceInfo.extra_options?.outdoor_area_size }}坪</span
@@ -273,7 +273,7 @@ import ReserveModal from '@/components/modal/reserve-modal.vue'
 import { getServiceDetail, getServiceReviews } from '@/plugins/api/services/services.js'
 import { getFreelancerSchedule } from '@/plugins/api/freelancers/freelancers.js'
 import { getReservedDates } from '@/plugins/api/owner/owner.js'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLoginStore } from '@/stores/login.js'
 import { useToast } from '@/plugins/toast/toast-plugin.js'
@@ -294,6 +294,12 @@ const serviceId = route.params.id
 const loading = ref(true)
 const bookingLoading = ref(false)
 
+const showServiceInfo = computed(() => {
+  const { house_type, outdoor_area_size, pee_poo_times_per_day, walk_times_per_day } =
+    serviceInfo.value.extra_options
+
+  return house_type || outdoor_area_size || pee_poo_times_per_day || walk_times_per_day
+})
 // 響應式數據
 const freelancerProfile = ref({})
 const serviceInfo = ref({})
@@ -618,8 +624,11 @@ onMounted(async () => {
   font-size: 16px;
 }
 
+.pet-info-section {
+  margin-bottom: 100px;
+}
 .service-info-section {
-  margin: 100px 0 88px;
+  margin-bottom: 88px;
 }
 
 //評論
@@ -866,9 +875,13 @@ onMounted(async () => {
     font-size: 14px;
   }
 
-  .service-info-section {
-    margin: 40px 0 44px;
+  .pet-info-section {
+    margin-bottom: 40px;
   }
+  .service-info-section {
+    margin-bottom: 44px;
+  }
+
   //評論
   .review-section {
     padding: 12px;
