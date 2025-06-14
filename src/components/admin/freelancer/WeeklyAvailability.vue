@@ -22,6 +22,8 @@
         @click="toggleDay(index)"
       >{{ day }}</button>
     </div>
+    <small v-if="errors?.working_days && editMode" class="text-danger">{{ errors.working_days }}</small>
+    <div class="mt-2 small text-primary-dark" v-if="selectedDays.length && !editMode">最後可工作日： {{ endDate }}</div>
   </div>
 </template>
 
@@ -38,6 +40,14 @@ const props = defineProps({
   editMode: {
     type: Boolean,
     default: true
+  },
+  endDate: {
+    type: String,
+    default: ''
+  },
+  errors: {
+    type: Object,
+    default: () => ({}),
   },
 })
 const emit = defineEmits(['update:weeklyMode', 'update:selectedDays'])

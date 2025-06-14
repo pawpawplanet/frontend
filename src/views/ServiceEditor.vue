@@ -2,31 +2,29 @@
   <div class="py-4">
     <h4 class="mb-3">
       <i :class="service.icon" class="me-2"></i>
-    {{ service.label }}
+      {{ service.label }}
     </h4>
     <div class="form-check form-switch float-end mb-3">
-      <input class="form-check-input" type="checkbox" v-model="form.enabled" />
+      <input class="form-check-input" role="button" type="checkbox" v-model="form.enabled" />
       <label class="form-check-label">啟用服務</label>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">服務標題:</label>
-      <input v-model="form.title" class="form-control" />
+      <label for="input-title" class="form-label required">服務標題:</label>
+      <input id="input-title" v-model="form.title" class="form-control" />
+      <small v-if="errors.title" class="text-danger">{{ errors.title }}</small>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">服務介紹:</label>
-      <textarea v-model="form.description" rows="4" class="form-control" />
+      <label for="input-description" class="form-label required">服務介紹:</label>
+      <textarea id="input-description" v-model="form.description" rows="4" class="form-control" />
+      <small v-if="errors.description" class="text-danger">{{ errors.description }}</small>
     </div>
 
     <div class="mb-3">
       <label class="form-label">服務圖片:</label>
       <div class="image-uploader">
-        <div
-          class="img-box"
-          v-for="(file, index) in form.images"
-          :key="index"
-        >
+        <div class="img-box" v-for="(file, index) in form.images" :key="index">
           <img :src="file.blob || file.url" />
           <div class="close" @click="remove(file)">
             <div class="icon-close">×</div>
@@ -51,69 +49,157 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label d-block">寵物種類:</label>
+      <label class="form-label d-block required">寵物種類:</label>
       <div class="form-check form-check-inline">
-        <input type="checkbox" class="form-check-input" value="0" v-model="form.allowed_pet_types" />
-        <label class="form-check-label">狗</label>
+        <input
+          id="dog"
+          type="checkbox"
+          class="form-check-input"
+          value="0"
+          v-model="form.allowed_pet_types"
+        />
+        <label for="dog" class="form-check-label">狗</label>
       </div>
       <div class="form-check form-check-inline">
-        <input type="checkbox" class="form-check-input" value="1" v-model="form.allowed_pet_types" />
-        <label class="form-check-label">貓</label>
+        <input
+          id="cat"
+          type="checkbox"
+          class="form-check-input"
+          value="1"
+          v-model="form.allowed_pet_types"
+        />
+        <label for="cat" class="form-check-label">貓</label>
       </div>
+      <small v-if="errors.allowed_pet_types" class="text-danger">{{
+        errors.allowed_pet_types
+      }}</small>
     </div>
 
     <div class="mb-3">
-      <label class="form-label d-block">體型:</label>
+      <label class="form-label d-block required">體型:</label>
       <div class="form-check form-check-inline" v-for="(size, index) in bodySizes" :key="size">
-        <input type="checkbox" class="form-check-input" :value="index" v-model="form.allowed_pet_sizes" />
-        <label class="form-check-label">{{ size }}</label>
+        <input
+          :id="'size' + index"
+          type="checkbox"
+          class="form-check-input"
+          :value="index"
+          v-model="form.allowed_pet_sizes"
+        />
+        <label :for="'size' + index" class="form-check-label">{{ size }}</label>
       </div>
+      <small v-if="errors.allowed_pet_sizes" class="text-danger">{{
+        errors.allowed_pet_sizes
+      }}</small>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">年齡範圍:</label>
+      <label for="input-age" class="form-label required">年齡範圍:</label>
       <div class="d-flex gap-2">
-        <input v-model="form.allowed_pet_ages.min" type="number" class="form-control" placeholder="最小" />
-        <input v-model="form.allowed_pet_ages.max" type="number" class="form-control" placeholder="最大" />
+        <input
+          id="input-age"
+          v-model="form.allowed_pet_ages.min"
+          type="number"
+          class="form-control"
+          placeholder="最小"
+        />
+        <input
+          v-model="form.allowed_pet_ages.max"
+          type="number"
+          class="form-control"
+          placeholder="最大"
+        />
       </div>
+      <small v-if="errors.allowed_pet_ages" class="text-danger">{{
+        errors.allowed_pet_ages
+      }}</small>
     </div>
     <div class="mb-3">
-      <label class="form-label">性別:</label>
+      <label class="form-label required">性別:</label>
       <div>
         <div class="form-check form-check-inline">
-          <input type="checkbox" value="0" v-model="form.allowed_pet_genders" class="form-check-input" />
-          <label class="form-check-label">男生</label>
+          <input
+            id="male"
+            type="checkbox"
+            value="0"
+            v-model="form.allowed_pet_genders"
+            class="form-check-input"
+          />
+          <label for="male" class="form-check-label">男生</label>
         </div>
         <div class="form-check form-check-inline">
-          <input type="checkbox" value="1" v-model="form.allowed_pet_genders" class="form-check-input" />
-          <label class="form-check-label">女生</label>
+          <input
+            id="female"
+            type="checkbox"
+            value="1"
+            v-model="form.allowed_pet_genders"
+            class="form-check-input"
+          />
+          <label for="female" class="form-check-label">女生</label>
         </div>
       </div>
+      <small v-if="errors.allowed_pet_genders" class="text-danger">{{
+        errors.allowed_pet_genders
+      }}</small>
     </div>
 
     <div class="mb-3">
-      <label class="form-label">價格: <input v-model="form.price_unit" type="text" class="form-control" />費用</label>
-      <input v-model="form.price" type="number" class="form-control" />
+      <label for="price-unit" class="form-label required">價格單位: </label>
+      <input
+        id="price-unit"
+        placeholder="1天8小時費用"
+        v-model="form.price_unit"
+        type="text"
+        class="form-control"
+      />
     </div>
 
     <div class="mb-3">
-      <label class="form-label">每天尿尿及便便次數:</label>
-      <input v-model="form.extra_options.pee_poo_times_per_day" type="number" class="form-control" />
+      <label for="price" class="form-label required">價格: </label>
+      <input id="price" v-model="form.price" type="number" class="form-control" />
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">每天散步次數:</label>
-      <input v-model="form.extra_options.walk_times_per_day" type="number" class="form-control" />
+    <div v-if="service.pee_poo_times_per_day" class="mb-3">
+      <label for="pee_poo_times_per_day" class="form-label required">每天尿尿及便便次數:</label>
+      <input
+        id="pee_poo_times_per_day"
+        v-model="form.extra_options.pee_poo_times_per_day"
+        type="number"
+        class="form-control"
+      />
+      <small v-if="errors.pee_poo_times_per_day" class="text-danger">{{
+        errors.pee_poo_times_per_day
+      }}</small>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">我家類型:</label>
-      <input v-model="form.extra_options.house_type" class="form-control" />
+    <div v-if="service.walk_times_per_day" class="mb-3">
+      <label for="walk_times_per_day" class="form-label required">每天散步次數:</label>
+      <input
+        id="walk_times_per_day"
+        v-model="form.extra_options.walk_times_per_day"
+        type="number"
+        class="form-control"
+      />
+      <small v-if="errors.walk_times_per_day" class="text-danger">{{
+        errors.walk_times_per_day
+      }}</small>
     </div>
 
-    <div class="mb-4">
-      <label class="form-label">我家戶外區域面積坪數:</label>
-      <input v-model="form.extra_options.outdoor_area_size" class="form-control" />
+    <div v-if="service.house_type" class="mb-3">
+      <label for="house_type" class="form-label required">我家類型:</label>
+      <input id="house_type" v-model="form.extra_options.house_type" class="form-control" />
+      <small v-if="errors.house_type" class="text-danger">{{ errors.house_type }}</small>
+    </div>
+
+    <div v-if="service.outdoor_area_size" class="mb-4">
+      <label for="outdoor_area_size" class="form-label required">我家戶外區域面積坪數:</label>
+      <input
+        id="outdoor_area_size"
+        v-model="form.extra_options.outdoor_area_size"
+        class="form-control"
+      />
+      <small v-if="errors.outdoor_area_size" class="text-danger">{{
+        errors.outdoor_area_size
+      }}</small>
     </div>
 
     <div class="text-end">
@@ -124,23 +210,42 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import FileUpload from 'vue-upload-component'
 import { uploadImage } from '@/plugins/api/upload/upload.js'
-import { createOrUpdateService, getFreelancerServiceDetail } from '@/plugins/api/freelancers/freelancers.js';
+import {
+  createOrUpdateService,
+  getFreelancerServiceDetail,
+} from '@/plugins/api/freelancers/freelancers.js'
+import { useToast } from '@/plugins/toast/toast-plugin.js'
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 const type = route.params.type
 
+//錯誤訊息內容
+const errors = ref({})
 const bodySizes = ['小於10公斤以下', '10公斤以上~20公斤以下', '大於20公斤以上']
 
 const serviceMap = {
-  0: { label: '日托', icon: 'bi bi-sun' },
+  0: {
+    label: '日托',
+    icon: 'bi bi-sun',
+    pee_poo_times_per_day: true,
+    walk_times_per_day: true,
+    house_type: true,
+    outdoor_area_size: true,
+  },
   1: { label: '散步', icon: 'bi bi-person-walking' },
   2: { label: '美容', icon: 'bi bi-scissors' },
-  3: { label: '到府照顧', icon: 'bi bi-house-door' }
+  3: {
+    label: '到府照顧',
+    icon: 'bi bi-house-door',
+    pee_poo_times_per_day: true,
+    walk_times_per_day: true,
+  },
 }
 
 const service = computed(() => serviceMap[type] || { label: '', icon: '' })
@@ -160,8 +265,8 @@ const form = ref({
     outdoor_area_size: null,
     house_type: null,
     pee_poo_times_per_day: null,
-    walk_times_per_day: null
-  }
+    walk_times_per_day: null,
+  },
 })
 onMounted(async () => {
   await init()
@@ -178,27 +283,58 @@ async function init() {
 function normalizeFormData(data = {}) {
   return {
     ...data,
-    images: Array.isArray(data.images)
-      ? data.images.map(url => ({ url, blob: null }))
-      : []//圖片返回資料整理，避免是null以及整理成套件要的資料格式
+    images: Array.isArray(data.images) ? data.images.map((url) => ({ url, blob: null })) : [], //圖片返回資料整理，避免是null以及整理成套件要的資料格式
   }
 }
 
 async function submit() {
+  if (!validateForm()) {
+    toast.show('請填寫完整表單內容', 'error')
+    return
+  }
+
   const payload = {
     service_type_id: Number(type),
     ...form.value,
-    images: getImageUrls(form.value.images)
+    images: getImageUrls(form.value.images),
   }
-  console.log('儲存資料', payload)
-  console.log('儲存資料', form.value.images)
 
   try {
     await createOrUpdateService(payload)
     goBack()
-  } catch(error) {
+  } catch (error) {
     console.log(error)
   }
+}
+
+function validateForm() {
+  const formValue = form.value
+  errors.value = {} // 清空錯誤
+
+  if (!formValue.title) errors.value.title = '請填寫服務標題'
+  if (!formValue.description) errors.value.description = '請填寫服務介紹'
+  if (!formValue.price_unit) errors.value.price_unit = '請填寫價格單位'
+  if (formValue.price == null || formValue.price === '') errors.value.price = '請填寫價格'
+  if (formValue.allowed_pet_types.length === 0) errors.value.allowed_pet_types = '請選擇寵物種類'
+  if (formValue.allowed_pet_sizes.length === 0) errors.value.allowed_pet_sizes = '請選擇體型'
+  if (formValue.allowed_pet_genders.length === 0) errors.value.allowed_pet_genders = '請選擇性別'
+
+  if (formValue.allowed_pet_ages.min == null || formValue.allowed_pet_ages.max == null) {
+    errors.value.allowed_pet_ages = '請填寫年齡範圍'
+  }
+
+  const { outdoor_area_size, house_type, pee_poo_times_per_day, walk_times_per_day } =
+    formValue.extra_options
+
+  if (service.value.pee_poo_times_per_day && !pee_poo_times_per_day)
+    errors.value.pee_poo_times_per_day = '請填寫提供每天尿尿及便便次數'
+  if (service.value.walk_times_per_day && !walk_times_per_day)
+    errors.value.walk_times_per_day = '請填寫提供每天散步次數'
+  if (service.value.house_type && !house_type) errors.value.house_type = '請填寫我家類型'
+  if (service.value.outdoor_area_size && !outdoor_area_size)
+    errors.value.outdoor_area_size = '請填寫我家戶外區域面積坪數'
+
+  return Object.keys(errors.value).length === 0
 }
 
 function goBack() {
@@ -224,12 +360,12 @@ const filter = (newFile, oldFile, prevent) => {
     prevent()
     return
   }
- // 創建 blob 字段 用於圖片預覽
+  // 創建 blob 字段 用於圖片預覽
   const URL = window.URL || window.webkitURL
   newFile.blob = URL.createObjectURL(newFile.file)
 }
 
-const handleInput =  async (newFile) => {
+const handleInput = async (newFile) => {
   if (!newFile || !newFile.file) return
 
   if (newFile.size / 1024 / 1024 > 5) {
@@ -249,12 +385,12 @@ const handleInput =  async (newFile) => {
   } catch (err) {
     console.error('圖片上傳失敗:', err)
     alert('圖片上傳失敗，請重試')
-    remove(newFile)//移除這筆失敗的檔案
+    remove(newFile) //移除這筆失敗的檔案
   }
 }
 
 const remove = (file) => {
-  const index = form.value.images.findIndex(f => f.url === file.url)
+  const index = form.value.images.findIndex((f) => f.url === file.url)
   if (index !== -1) {
     form.value.images.splice(index, 1)
   }
@@ -263,11 +399,16 @@ const remove = (file) => {
 //整理圖片入參網址
 const getImageUrls = (fileList = []) => {
   return fileList
-    .map(file => file?.url || '')  // 取得 .url 屬性
-    .filter(url => typeof url === 'string' && url.trim() !== '') // 過濾掉空字串、null、undefined
+    .map((file) => file?.url || '') // 取得 .url 屬性
+    .filter((url) => typeof url === 'string' && url.trim() !== '') // 過濾掉空字串、null、undefined
 }
 </script>
 <style scoped lang="scss">
+.form-label.required::before {
+  content: '*';
+  color: red;
+  margin-right: 4px;
+}
 .image-uploader {
   display: flex;
   flex-wrap: wrap;
