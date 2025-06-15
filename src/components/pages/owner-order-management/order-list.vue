@@ -331,7 +331,12 @@ const handleModalHidden = () => {
   });
 };
 
-onMounted(() => {
+onMounted(async () => {
+  if (!loginStore.is_login || loginStore.user.role !== 'owner') {
+    await router.push('/')
+    return
+  }
+    
   nextTick(() => {
     if (tabButtonRefs.value[currentTag.value]) {
       tabButtonRefs.value[currentTag.value].focus();
