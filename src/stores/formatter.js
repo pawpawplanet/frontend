@@ -4,11 +4,13 @@ export default function formatter(data) {
   //資料轉換
   const formatMapping = {
     species_id: { 0: '貓', 1: '狗' },
-    gender: { 0: '男', 1: '女' },
+    gender: { 0: '男生', 1: '女生' },
     is_ligation: { true: '是', false: '否' },
-    size: { 0: '小型-10公斤以下', 1: '中型-10公斤以上，20公斤以下', 2: '大型- 20公斤以上' },
-    size_id: { 0: '小型-10公斤以下', 1: '中型-10公斤以上，20公斤以下', 2: '大型- 20公斤以上' },
-    tag: { 0: '等待接受', 1: '等待付款', 2: '即將執行', 3: '最新回應', 4: '結案' }
+    size: { 0: '小型-10公斤以下', 1: '中型-10公斤以上，20公斤以下', 2: '大型-20公斤以上' },
+    size_id: { 0: '小型-10公斤以下', 1: '中型-10公斤以上，20公斤以下', 2: '大型-20公斤以上' },
+    tag: { 0: '等待接受', 1: '等待付款', 2: '即將執行', 3: '最新回應', 4: '結案' },
+    payment_method: { 0: '信用卡', 1: 'ATM', 2: '其他' },
+    status: { 0: '飼主請求預約', 1: '保姆接受預約', 2: '飼主完成付款', 3: '保姆拒絕', 4: '飼主取消', 5: '飼主逾期未付款', 6: '飼主逾期未付款', 7: '訂單完成' }
   };
   // const formatData = (key) => computed(() => formatMapping[key][data.value[key]] || null);
   const formatData = (key) => computed(() => formatMapping[key][data[key]] || null);
@@ -25,12 +27,12 @@ export default function formatter(data) {
 
   // 計算年齡
   const formatAge = computed(() => {
-    if (!data.birthday) return null;
+    if(!data.birthday) return null;
     const birth = new Date(data.birthday);
     const today = new Date();
 
     let age = today.getFullYear() - birth.getFullYear();
-    if (today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) {
+    if(today.getMonth() < birth.getMonth() || (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) {
       age--;
     }
 
@@ -44,6 +46,8 @@ export default function formatter(data) {
     formatSize: formatData('size'),
     formatSizeId: formatData('size_id'),
     formatTag: formatData('tag'),
+    formatStatus: formatData('status'),
+    formatPaymentMethod: formatData('payment_method'),
     formatAge,
     formatServerType: formatServerTypeData('service_type_id')
   };

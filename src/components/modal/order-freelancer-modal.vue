@@ -6,7 +6,8 @@
   const prop = defineProps({
     title: String,
     samedayOrdersData: Object,
-    acceptOrder: Function
+    pageData: Object,
+    patchOrderApi: Function
   });
 
   let modal_ref = ref(null);
@@ -56,9 +57,16 @@
 
   function c_show() {
     modal.show();
-  };
+    startIndex.value = 0;
+  }
+  function c_hide() {
+    modal.hide();
+  }
 
-  defineExpose({ p_show: c_show });
+  defineExpose({
+    p_show: c_show,
+    p_hide: c_hide
+  });
 </script>
 <template>
   <div class="modal fade" ref="modal_ref" :id="title" tabindex="-1" :aria-labelledby="title + 'Label'" aria-hidden="true">
@@ -77,7 +85,7 @@
           <div class="container-fluid">
             <div class="row mb-3">
               <div v-for="orderData in visibleCards" :key="orderData.order.id" class="col-lg-6">
-                <OrderCard :notModal="false" :orderData="orderData" @accept-order="acceptOrder"></OrderCard>
+                <OrderCard :notModal="false" :pageData="pageData" :orderData="orderData" @patch-order-api="patchOrderApi"></OrderCard>
               </div>
             </div>
             <div class="d-flex justify-content-between">
