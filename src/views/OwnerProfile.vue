@@ -7,8 +7,8 @@
   import { getPet, postPet, patchPet } from '@/plugins/api/pets/pets.js';
   import { useLoginStore } from '@/stores/login.js';
   import { useToast } from '@/plugins/toast/toast-plugin.js'
+  
 
-  const { saveUserInfo } = useLoginStore()
   const toast = useToast()
   const loading = ref(true);
   const router = useRouter();
@@ -61,11 +61,11 @@
       }
       //console.log("送出資料：", updatedOwner)
       const response = await PatchOwnerProfile(updatedOwner);
+      //console.log('送出成功:', response.data);
       toast.show('更新成功', 'success')
       //thisModal.value.p_hide(); // 關閉 Modal
       owner.value = Object.assign({}, owner.value, updatedOwner);
-      localStorage.setItem('user_info', JSON.stringify(owner.value))
-      saveUserInfo(owner.value)
+
 
     } catch (error) {
       //console.error('送出失敗:', error);
@@ -154,7 +154,7 @@
       <h2 class="text-center mb-4">飼主及毛小孩個人中心</h2>
       <div class="card mx-auto p-4" style="max-width: 700px; border-radius: 20px;">
         <div class="d-flex flex-column flex-md-row">
-          <img v-if="owner?.avatar?.length" :src="owner.avatar" alt="飼主照片" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" />
+          <img v-if="owner.avatar" :src="owner.avatar" alt="飼主照片" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" />
           <div class="flex-fill">
             <div class="text-end">
               <button class="btn btn-outline-secondary btn-sm" @click="editProfile">
@@ -202,44 +202,39 @@
       </div>
 
       <div class="mt-5" v-if="hasPet">
-        <div class="card p-4 mx-auto" style="max-width: 700px;">
-          <div class="row">
-            <div class="d-md-none text-end">
-              <button class="btn btn-outline-secondary btn-sm" @click="addPetProfile">
-                <i class="bi bi-pencil-square"></i>
-              </button>
-            </div>
-            <div v-if="petCardData.avatar" class="col-md-3 text-center p-3">
-              <img :src="petCardData.avatar" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" alt="寵物照片" />
-            </div>
-            <div class="col-md-8">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-5 col-md-4 text-end d-flex flex-column gap-1">
-                    <p>種類<span>｜</span></p>
-                    <p>性別<span>｜</span></p>
-                    <p>出生年月日<span>｜</span></p>
-                    <p>是否結紮<span>｜</span></p>
-                    <p>體型<span>｜</span></p>
-                  </div>
-                  <div class="col-7 col-md-8 d-flex flex-column gap-1 ps-0">
-                    <p>{{ petCardData.species_id }}</p>
-                    <p>{{ petCardData.gender }}</p>
-                    <p>{{ petCardData.birthday }}</p>
-                    <p>{{ petCardData.is_ligation }}</p>
-                    <p>{{ petCardData.size_id }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="d-none d-md-block col-md-1 pt-3">
-              <button class="btn btn-outline-secondary btn-sm" @click="addPetProfile">
-                <i class="bi bi-pencil-square"></i>
-              </button>
-            </div>
+  <div class="card mx-auto p-4" style="max-width: 700px; border-radius: 20px;">
+    <div class="d-flex flex-column flex-md-row">
+      <img v-if="petCardData.avatar" :src="petCardData.avatar" alt="毛小孩照片" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" />
+      <div class="flex-fill">
+        <div class="text-end">
+          <button class="btn btn-outline-secondary btn-sm" @click="addPetProfile">
+            <i class="bi bi-pencil-square"></i>
+          </button>
+        </div>
+
+        <div class="row">
+          <div class="col-5 col-md-4 text-end d-flex flex-column gap-1">
+            <p>名字<span>｜</span></p>
+            <p>種類<span>｜</span></p>
+            <p>性別<span>｜</span></p>
+            <p>出生年月日<span>｜</span></p>
+            <p>是否結紮<span>｜</span></p>
+            <p>體型<span>｜</span></p>
+          </div>
+          <div class="col-7 col-md-8 d-flex flex-column gap-1 ps-0">
+            <p>{{ petCardData.name }}</p>
+            <p>{{ petCardData.species_id }}</p>
+            <p>{{ petCardData.gender }}</p>
+            <p>{{ petCardData.birthday }}</p>
+            <p>{{ petCardData.is_ligation }}</p>
+            <p>{{ petCardData.size_id }}</p>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
     </div>
 
     <Modal title="modal1" ref="thisModal" :ownerData="owner" @submit-owner="submitOwner">
