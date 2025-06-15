@@ -4,14 +4,16 @@
   const hasBadge = ref(true);
   const props = defineProps({
     orderData: Object,
-    notModal: Boolean
+    notModal: Boolean,
+    pageData: Object
   });
-  const emit = defineEmits(['acceptOrder']);
+  const emit = defineEmits(['patchOrderApi', 'getSamedayOrderApi']);
   const { formatSpecies, formatGender, formatSize, formatAge } = formatter(props.orderData['pet']);
+  const { formatStatus } = formatter(props.orderData['order']);
   const { formatServerType } = formatter(props.orderData['service']);
 </script>
 <template>
-  <div v-if="hasBadge && notModal" class="d-inline-block bg-primary small rounded-top p-1"><span></span>{{ orderData.order.status }}</div>
+  <div v-if="hasBadge && notModal" class="d-inline-block bg-primary small rounded-top p-1"><span></span>{{ formatStatus }}</div>
   <div class="card rounded-5 shadow-sm mb-3" :class="{ 'card-round': hasBadge && notModal }">
     <div class="card-body">
       <div class="row">
@@ -34,7 +36,7 @@
               <div><span class="badge rounded-pill bg-primary text-dark mb-2">{{ formatSpecies }}</span></div>
               <img v-if="orderData.pet.avatar" :src="orderData.pet.avatar" class="rounded-circle avatar mb-1" alt="寵物頭像" />
               <SvgIcon v-if="!orderData.pet.avatar" name="user" class="rounded-circle avatar mb-1" color="#452B14"/>
-              <div>{{ orderData.pet.name }}</div>
+              <div class="pet-name">{{ orderData.pet.name }}</div>
             </div>
             <div class="row w-100">
               <template v-for="i in 4" :key="i">
@@ -81,14 +83,19 @@
               <p>NT$ {{ orderData.service.price }}</p>
             </div>
           </div>
-          <div class="d-flex">
-            <button class="btn btn-outline-primary text-dark flex-fill rounded-pill p-3 me-2">忍痛拒絕</button>
-            <button class="btn btn-primary flex-fill rounded-pill p-3" @click="emit('acceptOrder',111)">接受預約</button>
+          <div class="row">
+            <div class="col-6">
+              <button v-if="notModal && pageData.tag === 0" class="btn btn-outline-primary w-100 text-dark rounded-pill p-3"  @click="emit('patchOrderApi', orderData.order.id, 'reject')">忍痛拒絕</button>
+            </div>
+            <div class="col-6">
+              <button v-if="pageData.tag === 0" class="btn btn-primary w-100 rounded-pill p-3" @click="notModal ? emit('getSamedayOrderApi', orderData) : emit('patchOrderApi', orderData.order.id, 'accept')">接受預約</button>
+              <button v-if="pageData.tag === 3" class="btn btn-primary w-100 rounded-pill p-3" @click="emit('patchOrderApi', orderData.order.id, 'close')">確認</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="position-relative border rounded-4 text-center p-3 mt-4">
+      <div v-if="!Object.keys(orderData.review).length === 0" class="position-relative border rounded-4 text-center p-3 mt-4">
         <div class="position-absolute top-0 start-50 translate-middle">
           <div class="text-brown fw-bold bg-white p-2">\ 評論 /</div>
         </div>
@@ -117,5 +124,8 @@
     height: 80px;
     object-fit: cover;
     background-color: rgb(249, 234, 220);
+  }
+  .pet-name{
+    width: 80px;
   }
 </style>

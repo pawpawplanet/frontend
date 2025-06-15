@@ -2,23 +2,27 @@
   import { ref, computed } from 'vue';
   const activeClass = ref('page-link bg-primary rounded-5 border-0');
   const NotActiveClass = ref('page-link bg-transparent border-0');
-  const emit = defineEmits(['getOrderApi']);
-  const pageData = ref({
-    "limit": 5,
-    "page": 1,
-    "total": 20
+  const emit = defineEmits(['changePage']);
+  const props = defineProps({
+    pageData: Object
   });
+  
+  const countTotalPage = computed(() => {
+    return Math.ceil(props.pageData.total /props.pageData.limit)
+  });
+
   const showPages = computed(() => {
-    if(pageData.value.total <= 0 || !pageData.value.total) return null;
-    if(pageData.value.total === 1) return [1];
-    if(pageData.value.total === 2) return [1, 2];
-    if(pageData.value.page === 1) return [1, 2, 3];
-    if(pageData.value.page === pageData.value.total) return [pageData.value.total - 2, pageData.value.total - 1, pageData.value.total];
-    return [pageData.value.page - 1, pageData.value.page, pageData.value.page + 1];
+    if(countTotalPage.value <= 0 || !countTotalPage.value) return null;
+    if(countTotalPage.value === 1) return [1];
+    if(countTotalPage.value === 2) return [1, 2];
+    if(props.pageData.page === 1) return [1, 2, 3];
+    if(props.pageData.page === countTotalPage.value) return [countTotalPage.value - 2, countTotalPage.value - 1, countTotalPage.value];
+    return [props.pageData.page - 1, props.pageData.page, props.pageData.page + 1];
   });
+
   function clickPage(page) {
-    if(page !== pageData.value.page && page > 0 && page <= pageData.value.total) emit('getOrderApi', page);
-  };
+    if(page !== props.pageData.page && page > 0 && page <= countTotalPage.value) emit('changePage', page);
+  }
 </script>
 <template>
   <div class="flex-center" v-if="showPages">
@@ -38,7 +42,7 @@
             <a :class="[pageData.page == page ? activeClass : NotActiveClass]">{{ page }}</a>
           </li>
         </template>
-        <li class="page-item" :class="{ 'disabled': pageData.page == pageData.total }" @click="clickPage(pageData.page + 1)">
+        <li class="page-item" :class="{ 'disabled': pageData.page == countTotalPage }" @click="clickPage(pageData.page + 1)">
           <a :class="NotActiveClass" aria-label="Next">
             <SvgIcon name="chevron_right" size="24"/>
           </a>
