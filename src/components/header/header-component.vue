@@ -107,7 +107,8 @@ onMounted(() => {
           </div>
           <div v-if="is_login">
             <RouterLink
-              to="/owner-order-management"
+              v-if="user && user.role"
+              :to="user.role === 'owner' ? '/owner-order-management' : 'freelancer-order-list'"
               class="btn text-decoration-none text-primary-dark-second header-link fw-bold"
             >
               管理訂單
