@@ -56,6 +56,8 @@ import { useLoginStore } from '@/stores/login.js'
 import { useRouter } from 'vue-router'
 import { useToast } from '@/plugins/toast/toast-plugin.js'
 
+const { saveUserInfo } = useLoginStore()
+
 const emptyForm = {
   name: '',
   city: '',
@@ -160,6 +162,13 @@ async function confirmSave() {
       working_days,
     }
     await updateFreelancerProfile(params)
+    const cachedData = JSON.parse(localStorage.getItem('user_info')) || {}
+    const updatedData = {
+      ...cachedData,
+      ...params,
+    }
+    localStorage.setItem('user_info', JSON.stringify(updatedData))
+    saveUserInfo(updatedData)
     isEditMode.value = false
     //更新保姆資料
     await init()

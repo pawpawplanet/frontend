@@ -8,6 +8,7 @@
   import { useLoginStore } from '@/stores/login.js';
   import { useToast } from '@/plugins/toast/toast-plugin.js'
 
+  const { saveUserInfo } = useLoginStore()
   const toast = useToast()
   const loading = ref(true);
   const router = useRouter();
@@ -60,11 +61,11 @@
       }
       //console.log("送出資料：", updatedOwner)
       const response = await PatchOwnerProfile(updatedOwner);
-      //console.log('送出成功:', response.data);
       toast.show('更新成功', 'success')
       //thisModal.value.p_hide(); // 關閉 Modal
       owner.value = Object.assign({}, owner.value, updatedOwner);
-
+      localStorage.setItem('user_info', JSON.stringify(owner.value))
+      saveUserInfo(owner.value)
 
     } catch (error) {
       //console.error('送出失敗:', error);
@@ -153,7 +154,7 @@
       <h2 class="text-center mb-4">飼主及毛小孩個人中心</h2>
       <div class="card mx-auto p-4" style="max-width: 700px; border-radius: 20px;">
         <div class="d-flex flex-column flex-md-row">
-          <img v-if="owner.avatar" :src="owner.avatar" alt="飼主照片" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" />
+          <img v-if="owner?.avatar?.length" :src="owner.avatar" alt="飼主照片" class="rounded img-fluid me-md-4 mb-3 mb-md-0" style="max-width: 250px; height: auto;" />
           <div class="flex-fill">
             <div class="text-end">
               <button class="btn btn-outline-secondary btn-sm" @click="editProfile">
