@@ -1,13 +1,13 @@
 <template>
   <div class="weekly-availability">
-    <div class="form-check form-switch mb-2">
+    <!-- <div class="form-check form-switch mb-2">
       <input class="form-check-input" type="checkbox"
         :checked="weeklyMode"
         @change="$emit('update:weeklyMode', $event.target.checked)"
         :disabled="!editMode" 
       />
       <label class="form-check-label">開啟每週重複</label>
-    </div>
+    </div> -->
 
     <div class="d-flex flex-wrap gap-2">
       <button
@@ -23,7 +23,7 @@
       >{{ day }}</button>
     </div>
     <small v-if="errors?.working_days && editMode" class="text-danger">{{ errors.working_days }}</small>
-    <div class="mt-2 small text-primary-dark" v-if="selectedDays.length && !editMode">最後可工作日： {{ endDate }}</div>
+    <!-- <div class="mt-2 small text-primary-dark" v-if="selectedDays.length && !editMode">最後可工作日： {{ endDate }}</div> -->
   </div>
 </template>
 

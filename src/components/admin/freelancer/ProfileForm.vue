@@ -3,8 +3,13 @@
     <div class="col-md-4 text-center" v-show="modelValue?.avatar?.length || editMode">
       <div class="image-uploader">
         <div class="img-box" v-for="(file, index) in modelValue.avatar" :key="index">
+          <div v-if="file.uploading" class="loading-overlay">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
           <img :src="file.blob || file.url" />
-          <div v-show="editMode" class="close" @click="remove(file)">
+          <div v-show="editMode && !file.uploading" class="close" @click="remove(file)">
             <div class="icon-close">×</div>
           </div>
         </div>
@@ -184,6 +189,8 @@ const filter = (newFile, oldFile, prevent) => {
   // 創建 blob 字段 用於圖片預覽
   const URL = window.URL || window.webkitURL
   newFile.blob = URL.createObjectURL(newFile.file)
+  //圖片上傳中
+  newFile.uploading = true
 }
 
 const handleInput = async (newFile) => {
@@ -202,6 +209,7 @@ const handleInput = async (newFile) => {
     const imageUrl = res?.image_url
     // 把圖片上傳後的 URL 設進 file 中，這樣就會存在 form.avatar 裡
     newFile.url = imageUrl
+    newFile.uploading = false // 圖片上傳完成
   } catch (err) {
     console.error('圖片上傳失敗:', err)
     alert('圖片上傳失敗，請重試')
@@ -217,6 +225,18 @@ const remove = (file) => {
 }
 </script>
 <style scoped lang="scss">
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
 .form-label.required::before {
   content: '*';
   color: red;

@@ -126,9 +126,9 @@ onMounted(() => {
               >
                 <div class="header-avatar">
                   <!--                  無上傳會員大頭貼預設 svg-->
-                  <SvgIcon v-if="!user.avatar" name="user" color="#452B14" size="20"/>
+                  <SvgIcon v-if="!user?.avatar?.length" name="user" color="#452B14" size="20"/>
                   <!--                  上傳會員大頭貼顯示圖片-->
-                  <img v-else :src="user.avatar" alt="">
+                  <img v-else :src="user.avatar[0]" alt="">
                 </div>
                 <div class="px-2">
 <!--                  無填寫會員名稱預設 會員-->
