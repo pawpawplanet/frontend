@@ -11,6 +11,13 @@
   const { formatSpecies, formatGender, formatSize, formatAge } = formatter(props.orderData['pet']);
   const { formatStatus } = formatter(props.orderData['order']);
   const { formatServerType } = formatter(props.orderData['service']);
+  // const { formatPaymentMethod } = formatter(props.orderData['payment']);
+  const payment = ref({
+    payment_method: 1,
+    amount: 200,
+    paid_at: '2024-03-22'
+  })
+  const { formatPaymentMethod } = formatter(payment.value);
 </script>
 <template>
   <div v-if="hasBadge && notModal" class="d-inline-block bg-primary small rounded-top p-1"><span></span>{{ formatStatus }}</div>
@@ -95,7 +102,7 @@
         </div>
       </div>
 
-      <div v-if="!Object.keys(orderData.review).length === 0" class="position-relative border rounded-4 text-center p-3 mt-4">
+      <div v-if="!(Object.keys(orderData.review).length === 0)" class="position-relative border rounded-4 text-center p-3 mt-2">
         <div class="position-absolute top-0 start-50 translate-middle">
           <div class="text-brown fw-bold bg-white p-2">\ 評論 /</div>
         </div>
@@ -108,6 +115,17 @@
           ></i>
         </div>
         <p class="mb-0 text-dark">{{ orderData.review.comment }}</p>
+      </div>
+
+      <!-- <div v-if="!(Object.keys(orderData.payment).length === 0)" class="border rounded-4 p-3 mt-2">
+        <p>支付方式<span>｜</span>{{ formatPaymentMethod }}</p>
+        <p>金額<span>｜</span>{{ orderData.payment.amount }}</p>
+        <p>付款日期<span>｜</span>{{ orderData.payment.paid_at }}</p>
+      </div> -->
+      <div v-if="!(Object.keys(payment).length === 0)" class="border rounded-4 p-3 mt-2">
+        <p>支付方式<span>｜</span>{{ formatPaymentMethod }}</p>
+        <p>金額<span>｜</span>{{ payment.amount }}</p>
+        <p>付款日期<span>｜</span>{{ payment.paid_at }}</p>
       </div>
     </div>
   </div>
