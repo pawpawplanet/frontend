@@ -35,7 +35,7 @@ const registerToFreelancer = () => {
       <h1 class="mt-3">寵物保母的流程</h1>
       <div class="row text-start align-items-center mt-3">
         <div class="col-4">
-          <img src="https://api.fnkr.net/testimg/300x200/00CED1/FFF/?text=test1" class="img-fluid mb-2" alt="飼主照片">
+          <img src="@/assets/images/become-a-sister/step1.png" class="img-fluid mb-2" alt="飼主照片">
         </div>
         <div class="col-8">
           <div class="fw-bold">1. 註冊並建立個人檔案</div>
@@ -44,7 +44,7 @@ const registerToFreelancer = () => {
       </div>
       <div class="row text-start align-items-center mt-3 flex-row-reverse">
         <div class="col-4">
-          <img src="https://api.fnkr.net/testimg/300x200/00CED1/FFF/?text=test2" class="img-fluid mb-2" alt="飼主照片">
+          <img src="@/assets/images/become-a-sister/step2.png" class="img-fluid mb-2" alt="飼主照片">
         </div>
         <div class="col-8">
           <div class="fw-bold">2. 設定你的服務與價格選擇</div>
@@ -53,7 +53,7 @@ const registerToFreelancer = () => {
       </div>
       <div class="row text-start align-items-center mt-3">
         <div class="col-4">
-          <img src="https://api.fnkr.net/testimg/300x200/00CED1/FFF/?text=test3" class="img-fluid mb-2" alt="飼主照片">
+          <img src="@/assets/images/become-a-sister/step3.png" class="img-fluid mb-2" alt="飼主照片">
         </div>
         <div class="col-8">
           <div class="fw-bold">3. 接受預訂並確認服務與時間安排當飼主發送</div>
@@ -62,7 +62,7 @@ const registerToFreelancer = () => {
       </div>
       <div class="row text-start align-items-center mt-3 flex-row-reverse">
         <div class="col-4">
-          <img src="https://api.fnkr.net/testimg/300x200/00CED1/FFF/?text=test4" class="img-fluid mb-2" alt="飼主照片">
+          <img src="@/assets/images/become-a-sister/step4.png" class="img-fluid mb-2" alt="飼主照片">
         </div>
         <div class="col-8">
           <div class="fw-bold">4. 提供專業寵物照護</div>
@@ -71,7 +71,7 @@ const registerToFreelancer = () => {
       </div>
       <div class="row text-start align-items-center mt-3">
         <div class="col-4">
-          <img src="https://api.fnkr.net/testimg/300x200/00CED1/FFF/?text=test5" class="img-fluid mb-2" alt="飼主照片">
+          <img src="@/assets/images/become-a-sister/step5.png" class="img-fluid mb-2" alt="飼主照片">
         </div>
         <div class="col-8">
           <div class="fw-bold">5. 完成服務並獲得報酬</div>
