@@ -38,7 +38,7 @@
               <div class="fw-bold mb-1 ms-1">{{ orderData.freelancer.name }}</div>
               <div class="d-flex align-items-center text-primary small">
                 <SvgIcon name="map" color="#ECB88A" class="me-1" :size="24" />
-                <span>{{ orderData.freelancer.city }} {{ orderData.freelancer.area }}</span>
+                <span>{{ orderData.service.city }} {{ orderData.service.area }}</span>
               </div>
             </div>
           </div>
@@ -86,7 +86,7 @@
                     <span>{{ formatServerType.name }}</span>
                   </p>
                   <p v-if="i == 2">{{ orderData.order.service_date }}</p>
-                  <p v-if="i == 3">{{ orderData.freelancer.city }} {{ orderData.freelancer.area }}</p>
+                  <p v-if="i == 3">{{ orderData.service.city }} {{ orderData.service.area }}</p>
                   <p v-if="i == 4">{{ orderData.order.note }}</p>
                 </div>
               </template>

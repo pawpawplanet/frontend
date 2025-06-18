@@ -10,7 +10,8 @@
   import { useRouter, useRoute } from 'vue-router';
 
   const loginStore = useLoginStore()
-  const { user } = storeToRefs(loginStore)
+  const { is_login, user } = storeToRefs(loginStore)
+
   const router = useRouter();
   const route = useRoute();
 
@@ -64,11 +65,7 @@
   }, { immediate: true });
 
   onMounted(async () => {
-    if (!loginStore.is_login || user.role !== 'owner') {
-      console.log('................. wrong path')
-      console.log('................. loginStore.is_login:', loginStore.is_login)
-      console.log('................. user.role:', user.role)
-
+    if (!is_login || user.role !== 'owner') {
       await router.push('/')
       return
     }
@@ -112,7 +109,7 @@
       let getSamedayOrdersData = await getSamedayOrder(data.order.id);
       console.log(getSamedayOrdersData);
       samedayOrdersData.value = [data, ...getSamedayOrdersData];
-      if(Object.keys(getSamedayOrdersData).length === 0) patchOrderApi(data.order.id, 'accept');
+      if(Object.keys(getSamedayOrdersData).length === 0) postPaymentApi(data.order.id);
       else showModal();
     }catch (err){
       console.log('錯誤getSameDayOrder', err);
@@ -135,7 +132,7 @@
   async function postPaymentApi(id) {
     try{
       const ecpayParams = await postPayment(id)
-      console.log('處理訂單付款，取得綠界資料: ', ecpayPara)
+      console.log('處理訂單付款，取得綠界資料: ', ecpayParams)
       if (!ecpayForm.value) { 
         throw new Error('未找到綠界支付表單元 "ecpayForm")。');
       }

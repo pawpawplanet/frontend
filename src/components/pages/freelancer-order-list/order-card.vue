@@ -79,7 +79,7 @@
                     <span>{{ formatServerType.name }}</span>
                   </p>
                   <p v-if="i == 2">{{ orderData.order.service_date }}</p>
-                  <p v-if="i == 3">{{ orderData.owner.city }} {{ orderData.owner.area }}</p>
+                  <p v-if="i == 3">{{ orderData.service.city }} {{ orderData.service.area }}</p>
                   <p v-if="i == 4">{{ orderData.order.note }}</p>
                 </div>
               </template>

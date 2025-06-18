@@ -20,7 +20,7 @@ export function getSamedayOrder(id) {
 
 export function patchOrder(id, data) {
   return service({
-    url: `${root2}${id}`,
+    url: `${root2}/${id}`,
     method: 'patch',
     data,
   });
