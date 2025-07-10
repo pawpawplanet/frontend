@@ -269,26 +269,26 @@ const remove = (file) => {
                 ></textarea>
               </div>
             </div>
-            <div class="flex-center mt-5">
-              <button
-                class="btn btn-outline-dark btn-lg rounded-pill w-100 me-3"
-                data-bs-dismiss="modal"
-              >
-                取消
-              </button>
-              <!-- <button class="btn btn-outline-dark btn-lg px-4" data-bs-dismiss="modal" 
-               @click="submitForm" :disabled="!isFormValid">
-                確定
-              </button> -->
-              <button
-                class="btn btn-primary btn-lg rounded-pill w-100"
-                data-bs-dismiss="modal"
-                @click="submitForm"
-                :disabled="!isFormValid"
-              >
-                確定
-              </button>
-            </div>
+            <div class="row mt-5">
+              <div class="col-6">
+                <button
+                    class="btn btn-outline-dark btn-lg rounded-pill w-100 me-3"
+                    data-bs-dismiss="modal"
+                  >
+                    取消
+                </button>
+              </div>
+              <div class="col-6">
+                <button
+                    class="btn btn-primary btn-lg rounded-pill w-100"
+                    data-bs-dismiss="modal"
+                    @click="submitForm"
+                    :disabled="!isFormValid"
+                  >
+                    確定
+                  </button>
+              </div>
+            </div>    
           </div>
         </div>
       </div>
